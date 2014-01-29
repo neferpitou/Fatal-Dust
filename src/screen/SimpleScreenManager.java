@@ -1,6 +1,7 @@
 package screen;
 
 import java.awt.*;
+
 import javax.swing.JFrame;
 
 /**
@@ -10,7 +11,7 @@ import javax.swing.JFrame;
  * @author Marcos Davila
  * @date 1/29/2014
  */
-public class SimpleScreenManager {
+public class SimpleScreenManager extends JFrame {
 	private GraphicsDevice device;
 
 	/**
@@ -55,5 +56,35 @@ public class SimpleScreenManager {
 			window.dispose();
 		}
 		device.setFullScreenWindow(null);
+	}
+	
+	private static final long DEMO_TIME = 5000;
+
+	public void run(DisplayMode displayMode) {
+		setBackground(Color.blue);
+		setBackground(Color.white);
+		setFont(new Font("Dialog", Font.PLAIN, 24));
+
+		SimpleScreenManager screen = new SimpleScreenManager();
+		try {
+			screen.setFullScreen(displayMode, this);
+			try {
+				Thread.sleep(DEMO_TIME);
+			} catch (InterruptedException ex) {
+				System.out
+						.println("Seems like your computer does not support this display mode!");
+			}
+		} finally {
+			screen.restoreScreen();
+		}
+	}
+	
+	public void paint(Graphics g){
+		
+		if (g instanceof Graphics2D){
+			Graphics2D g2 = (Graphics2D)g;
+			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		}
+		g.drawString("Hello  World!", 20, 50);
 	}
 }
