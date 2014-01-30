@@ -73,6 +73,12 @@ public class LoadScreen extends JFrame {
 		 
 		try {
 			screen.setFullScreen(displayMode, this);
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// TODO: Set loading screen
 			
 		} finally {
@@ -118,6 +124,7 @@ public class LoadScreen extends JFrame {
 		@Override
 		public void run() {
 			// TODO Load Materials
+			System.out.println("Thread!");
 		}
 
 	}
