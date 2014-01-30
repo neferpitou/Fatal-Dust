@@ -1,7 +1,7 @@
 package main;
 
 import java.awt.*;
-import screen.SimpleScreenManager;
+import screen.LoadScreen;
 
 public class GameDriver {
 
@@ -22,8 +22,8 @@ public class GameDriver {
 						DisplayMode.REFRESH_RATE_UNKNOWN);
 			}
 
-			SimpleScreenManager test = new SimpleScreenManager();
-			test.run(displayMode);
+			LoadScreen test = new LoadScreen();
+			test.init(displayMode);
 		}
 
 	}

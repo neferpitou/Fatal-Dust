@@ -2,7 +2,7 @@ package test;
 
 import java.awt.*;
 import javax.swing.JFrame;
-import screen.SimpleScreenManager;
+import screen.LoadScreen;
 
 /**
  * The FullScreenTest class tests initializing and displaying full screen
@@ -44,7 +44,7 @@ public class FullScreenTest extends JFrame {
 		setBackground(Color.white);
 		setFont(new Font("Dialog", Font.PLAIN, 24));
 
-		SimpleScreenManager screen = new SimpleScreenManager();
+		LoadScreen screen = new LoadScreen();
 		try {
 			screen.setFullScreen(displayMode, this);
 			try {
