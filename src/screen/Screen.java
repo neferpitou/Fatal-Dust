@@ -1,18 +1,15 @@
 package screen;
 
-import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Window;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
+import panel.MainMenuPanel;
 
 /**
  * The abstract Screen class manages behavior that should be common to all views
@@ -23,128 +20,88 @@ import javax.swing.JPanel;
  */
 
 @SuppressWarnings("serial")
-public abstract class Screen extends JFrame {
+public class Screen extends JFrame {
 
-	protected GraphicsDevice device;
+	private GraphicsDevice device;
 	private int RESOLUTION_WIDTH;
 	private int RESOLUTION_HEIGHT;
 	private final int BIT_DEPTH = 24;
-	protected DisplayMode displayMode;
-
+	private DisplayMode displayMode;
+	private JPanel cards;
 
 	/**
-	 * Constructor sets the default screen device
+	 * Constructor sets the default screen device and sets up the panel to hold cards
+	 * 
+	 * @param args - Command line specification of desired width, height, depth of 
+	 * window. Defaults to screens max resolution if not specified.
 	 */
-	public Screen() {
-		GraphicsEnvironment environment = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+	public Screen(String[] args) {
+		// Handle resolution issues before making frames and panels
+		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		device = environment.getDefaultScreenDevice();
-		
+
 		// Get default screen resolution for this computer
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		RESOLUTION_WIDTH = gd.getDisplayMode().getWidth();
 		RESOLUTION_HEIGHT = gd.getDisplayMode().getHeight();
-	}
-
-	/**
-	 * Enters full screen mode and changes the display mode
-	 */
-	public void setFullScreen(DisplayMode displayMode, JFrame window) {
-		window.setUndecorated(true);
-		window.setResizable(false);
-
-		device.setFullScreenWindow(window);
-		if (displayMode != null && device.isDisplayChangeSupported()) {
-			try {
-				device.setDisplayMode(displayMode);
-			} catch (IllegalArgumentException ex) {
-				// ignore - illegal mode for this device
-			}
-		}
-	}
-
-	/**
-	 * Returns the window currently used in full screen mode
-	 */
-	public Window getFullScreenWindow() {
-		return device.getFullScreenWindow();
-	}
-
-	/**
-	 * Restores the screen's display mode.
-	 */
-	public void restoreScreen() {
-		Window window = device.getFullScreenWindow();
-		if (window != null) {
-			window.dispose();
-		}
-		device.setFullScreenWindow(null);
-	}
-
-	/**
-	 * Every class that extends this base class must know how to draw their
-	 * images.
-	 */
-	public abstract void paint(Graphics g);
-
-	/**
-	 * 
-	 * A wrapper method to add an image to a JLabel. The parameter passed is the
-	 * file as a string that is to be the background image.
-	 */
-	protected void setBackgroundImage(String filename) {
-		try {
-			// Create a new JPanel with a BorderLayout to eventually store the JLabel in
-			JPanel p = new JPanel(new BorderLayout());
-			
-			// Get relative pathname for the img resource directory
-			URL pathname = getClass().getResource("/img/" + filename);
-			
-			// Create the JLabel the image will be in
-			JLabel label = new JLabel();
-			
-			// Get the image from the pathname and resize the image to the user's 
-			// native resolution
-			Image image = this.getToolkit().createImage(pathname);
-			Image resizedImage = 
-				    image.getScaledInstance(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, Image.SCALE_FAST);
-			ImageIcon icon = new ImageIcon(resizedImage);
-			
-			// Put the resized image into the label, add the label to the 
-			// panel, add the panel to the frame, set the frame visible
-			label.setIcon(icon);
-			p.add(label, BorderLayout.CENTER);
-			add(p);
-			setVisible(true);
-		} catch (NullPointerException e) {
-			System.out.println("Error: image could not be found!");
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Detects and sets the proper display mode based on the users configuration
-	 * 
-	 * @param args
-	 */
-	public void setDisplayMode(String[] args){
+		
+		// Set the display mode
 		if (args.length == 3) {
 			displayMode = new DisplayMode(Integer.parseInt(args[0]),
-					Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-					DisplayMode.REFRESH_RATE_UNKNOWN);
+			Integer.parseInt(args[1]), Integer.parseInt(args[2]),
+			DisplayMode.REFRESH_RATE_UNKNOWN);
 		} else {
 			displayMode = new DisplayMode(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, BIT_DEPTH,
-					DisplayMode.REFRESH_RATE_UNKNOWN);
+			DisplayMode.REFRESH_RATE_UNKNOWN);
 		}
 		
+		// Frame properties such as title, close operation, etc. go here
+		// DISPOSE_ON_CLOSE is used because EXIT_ON_CLOSE shuts down the
+		// JVM when a frame exits. DISPOSE_ON_CLOSE only removes the 
+		// frame and kills the current program but leaves the JVM up
+		setTitle("Title Here");
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setUndecorated(true);
+		setResizable(false);
+		
+		// JPanel properties such as a CardLayout to move between JPanels,
+		// etc. goes here. Helper methods make moving between JPanels easy.
+		cards = new JPanel(new CardLayout());
+		cards.setPreferredSize(new Dimension(RESOLUTION_WIDTH, RESOLUTION_HEIGHT));
+		addGamePanels();
+		add(cards);
+		pack();
+		setVisible(true);
+		showScreen(MainMenuPanel.tag);
 	}
 	
 	/**
-	 * Returns the displayMode variable
-	 * @param args
-	 * @return
+	 * At the beginning of the game, adds all the game panels that the game
+	 * will use before the main menu is shown. All game panels should be
+	 * subclasses of JPanel that describe the layout of the page
 	 */
-	public DisplayMode getDisplayMode(String[] args){			
-		return displayMode;
+	private void addGamePanels() {
+		addScreen(new MainMenuPanel(), MainMenuPanel.tag);
 	}
+
+	/**
+	 * Adds a card to the CardLayout to enable a screen to be chosen.
+	 * 
+	 * @param newCard - the new card to be added
+	 * @param tag - a tag to be able to uniquely identify cards
+	 */
+	private void addScreen(JPanel newCard, String tag){
+		cards.add(newCard, tag);
+	}
+	
+	/**
+	 * Displays the card in the panel that matches the specified tag.
+	 * 
+	 * @param tag - a tag to be able to uniquely identify cards
+	 */
+	public void showScreen(String tag){
+		CardLayout cl = (CardLayout)(cards.getLayout());
+	    cl.show(cards, tag);
+	}
+
 }
