@@ -1,29 +1,14 @@
 package main;
 
-import java.awt.*;
 import screen.LoadScreen;
+import threads.LoadingThread;
 
 public class GameDriver {
 
-	final static int RESOLUTION_WIDTH = 1366;
-	final static int RESOLUTION_HEIGHT = 768;
-	final static int BIT_DEPTH = 24;
-	
-		public static void main(String[] args) {
-
-			DisplayMode displayMode;
-
-			if (args.length == 3) {
-				displayMode = new DisplayMode(Integer.parseInt(args[0]),
-						Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-						DisplayMode.REFRESH_RATE_UNKNOWN);
-			} else {
-				displayMode = new DisplayMode(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, BIT_DEPTH,
-						DisplayMode.REFRESH_RATE_UNKNOWN);
-			}
-
-			LoadScreen test = new LoadScreen();
-			test.init(displayMode);
-		}
-
+	public static void main(String[] args) {
+		LoadScreen test = new LoadScreen("load-screen-1.gif", new LoadingThread());
+		test.setDisplayMode(args);
+		test.init();
 	}
+
+}

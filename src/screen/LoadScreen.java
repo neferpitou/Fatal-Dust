@@ -12,16 +12,20 @@ import javax.swing.JFrame;
  * @date 1/29/2014
  */
 @SuppressWarnings("serial")
-public class LoadScreen extends JFrame {
-	private GraphicsDevice device;
-
+public class LoadScreen extends Screen {
+	
+	private Runnable task;
+	private String image;
+	
 	/**
-	 * Creates a new SimpleScreenManager object
+	 * A LoadScreen object is created by passing in an image to show as the loading
+	 * screen, and a task that should be run in the background while the loading
+	 * screen is up
 	 */
-	public LoadScreen() {
-		GraphicsEnvironment environment = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
-		device = environment.getDefaultScreenDevice();
+	public LoadScreen(String image, Runnable task) {
+		super();
+		this.task = task;
+		this.image = image;
 	}
 
 	/**
@@ -63,16 +67,12 @@ public class LoadScreen extends JFrame {
 	 * The job of init is twofold: preload all large materials so the game runs smoothly,
 	 * and presents a loading screen while it takes place.
 	 */
-	public void init(DisplayMode displayMode) {
-		setBackground(Color.blue);
-		setBackground(Color.white);
-		setFont(new Font("Dialog", Font.PLAIN, 24));
-
-		LoadScreen screen = new LoadScreen();
-		Thread t = new Thread(new LoadingThread()); // Launches a new thread where loading takes place
+	public void init() {
+		Thread t = new Thread(task); // Launches a new thread where loading takes place
 		 
 		try {
-			screen.setFullScreen(displayMode, this);
+			setFullScreen(displayMode, this);
+			
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
@@ -89,12 +89,15 @@ public class LoadScreen extends JFrame {
 				e.printStackTrace();
 			}
 			// TODO: Remove when class is finalized
-			screen.restoreScreen();
+			restoreScreen();
 		}
 		
 		// TODO: Instantiate and load main menu panel
 	}
 
+	/**
+	 * What gets painted on the screen, eg. the background image
+	 */
 	public void paint(Graphics g) {
 
 		if (g instanceof Graphics2D) {
@@ -102,30 +105,9 @@ public class LoadScreen extends JFrame {
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		}
-		g.drawString("Hello  World!", 20, 50);
+		
+		// The specified background image for this loading panel
+		setBackgroundImage(image);
 	}
 
-	
-	/**
-	 * A dedicated thread class that determines what to load and how to load it
-	 * at the beginning of the game. It is an inner class to simplify access
-	 * issues in conjunction with the loading screen.
-	 * @author Marcos Davila
-	 * @date 1/29/2014
-	 */
-	class LoadingThread implements Runnable {
-		
-		Thread t;
-		LoadingThread(){
-			t = new Thread(this);
-			t.start();
-		}
-		
-		@Override
-		public void run() {
-			// TODO Load Materials
-			System.out.println("Thread!");
-		}
-
-	}
 }
