@@ -1,14 +1,14 @@
 package main;
 
-import screen.LoadScreen;
-import threads.LoadingThread;
+import screen.Screen;
 
 public class GameDriver {
 
 	public static void main(String[] args) {
-		LoadScreen test = new LoadScreen("load-screen-1.gif", new LoadingThread());
-		test.setDisplayMode(args);
-		test.init();
+		new Screen(args);
+		//LoadScreen test = new LoadScreen("load-screen-1.gif", new LoadingThread());
+		//test.setDisplayMode(args);
+		//test.init();
 	}
 
 }
