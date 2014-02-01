@@ -1,14 +1,11 @@
 package main;
 
-import screen.Screen;
+import kernel.VGKernel;
 
 public class GameDriver {
 
 	public static void main(String[] args) {
-		new Screen(args);
-		//LoadScreen test = new LoadScreen("load-screen-1.gif", new LoadingThread());
-		//test.setDisplayMode(args);
-		//test.init();
+		new VGKernel(args);
 	}
 
 }
