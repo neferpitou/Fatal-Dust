@@ -20,8 +20,8 @@ public class VGKernel {
 	CardLayout cl;
 
 	/**
-	 * Create a screen to render images to and start the
-	 * main loop of the game at the main menu
+	 * Create a screen to render images to and start the main loop of the game
+	 * at the main menu
 	 */
 	public VGKernel(String[] args) {
 		// Create a screen object to be able to initialize images
@@ -32,7 +32,7 @@ public class VGKernel {
 		// JPanel properties such as a CardLayout to move between JPanels,
 		// etc. goes here. Helper methods make moving between JPanels easy.
 		createCards();
-		
+
 		// Start the game
 		startGame();
 	}
@@ -44,13 +44,13 @@ public class VGKernel {
 		// Set main menu screen as visible
 		screen.showScreen(MainMenuPanel.tag);
 	}
-	
+
 	/**
 	 * From this section on, all methods have to do with initializing
-	 * CardLayout, panels to display images, and all things related to
-	 * the screen class or initialization before the startGame() method 
+	 * CardLayout, panels to display images, and all things related to the
+	 * screen class or initialization before the startGame() method
 	 */
-	
+
 	/**
 	 * Private helper method to initialize as many cards as possible at the
 	 * beginning of the game. This should only be called once.
@@ -64,39 +64,42 @@ public class VGKernel {
 	}
 
 	/**
-	 * Present the opening loading screen while as many things as possible
-	 * are loaded into memory and made available for the game to use. This
-	 * can also be where many other things are initialized.
+	 * Present the opening loading screen while as many things as possible are
+	 * loaded into memory and made available for the game to use. This can also
+	 * be where many other things are initialized.
 	 * 
-	 * This method is multithreaded - one thread shows the loading screen
-	 * and the other fetches from disk.
+	 * This method is multithreaded - one thread shows the loading screen and
+	 * the other fetches from disk.
 	 */
-	private void loadMaterials(){
-		Thread t = new Thread(new Runnable(){
+	private void loadMaterials() {
+		screen.setFullScreen(screen.getDisplayMode());
+
+		// Set loading screen
+		screen.showScreen(LoadingPanel.tag);
+
+		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				// TODO Insert materials for this thread to run here
-				
-				try{
+			
+				try {
 					Thread.sleep(5000);
-				} catch (Exception e){
-					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				
-			}});
-
-			screen.setFullScreen(screen.getDisplayMode());
-			
-			// Set loading screen
-			screen.showScreen(LoadingPanel.tag);
-			
-			try {
-				t.join();	// Wait on the thread loading materials to finish
-			} catch (InterruptedException e) {
-				// TODO Handle if threads are interrupted whilst we wait			
-				e.printStackTrace();
 			}
+		});
+
+		t.start();	// start loading materials
+
+		try {
+			t.join(); // Wait on the thread loading materials to finish
+		} catch (InterruptedException e) {
+			// TODO Handle if threads are interrupted whilst we wait
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -107,6 +110,8 @@ public class VGKernel {
 	private void initFirstSetOfGamePanels() {
 		// Create the panels here
 		JPanel mm_panel = new MainMenuPanel();
+		
+		// TODO: Find/create a better loading screen and put it into resources folder
 		JPanel ld_panel = new LoadingPanel("loading1-screen-1.gif");
 
 		// Add them to the cardlayout
@@ -142,9 +147,9 @@ public class VGKernel {
 	}
 
 	/**
-	 * The Screen class manages behavior that should be common to all
-	 * views for the video game. Since only the kernel should know about the
-	 * screen and how to draw to it, it is an inner class within the kernel.
+	 * The Screen class manages behavior that should be common to all views for
+	 * the video game. Since only the kernel should know about the screen and
+	 * how to draw to it, it is an inner class within the kernel.
 	 * 
 	 * @author Marcos Davila
 	 * @date 1/31/2014
@@ -186,9 +191,10 @@ public class VGKernel {
 		 */
 
 		private void setup(String[] args) {
-			GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsEnvironment environment = GraphicsEnvironment
+					.getLocalGraphicsEnvironment();
 			device = environment.getDefaultScreenDevice();
-		
+
 			// Get default screen resolution for this computer
 			GraphicsDevice gd = GraphicsEnvironment
 					.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -215,30 +221,31 @@ public class VGKernel {
 			setUndecorated(true);
 			setResizable(false);
 		}
-		
+
 		/**
 		 * 
 		 * Enters full screen mode and changes the display mode
 		 */
 		public void setFullScreen(DisplayMode displayMode) {
-			screen.dispose();	// Hide the screen if it's visible
+			screen.dispose(); // Hide the screen if it's visible
 			setUndecorated(true);
 			setResizable(false);
 			screen.pack(); // make the screen visible again
 			device.setFullScreenWindow(this);
-			
+
 			if (displayMode != null && device.isDisplayChangeSupported()) {
 				try {
 					device.setDisplayMode(displayMode);
 				} catch (IllegalArgumentException ex) {
 					// ignore -- illegal display
-				} catch (Exception e){
-					//Simulate full-screen with RESOLUTION variables
-					setPreferredSize(new Dimension(RESOLUTION_WIDTH, RESOLUTION_HEIGHT));
+				} catch (Exception e) {
+					// Simulate full-screen with RESOLUTION variables
+					setPreferredSize(new Dimension(RESOLUTION_WIDTH,
+							RESOLUTION_HEIGHT));
 				}
 			}
 		}
-		
+
 		/**
 		 * 
 		 * Restores the screen's display mode.
@@ -250,7 +257,7 @@ public class VGKernel {
 
 			device.setFullScreenWindow(null);
 		}
-		
+
 		public void showScreen(String tag) {
 			CardLayout cl = (CardLayout) (cards.getLayout());
 			cl.show(cards, tag);
@@ -274,8 +281,8 @@ public class VGKernel {
 		public void setRESOLUTION_HEIGHT(int rESOLUTION_HEIGHT) {
 			RESOLUTION_HEIGHT = rESOLUTION_HEIGHT;
 		}
-		
-		public DisplayMode getDisplayMode(){
+
+		public DisplayMode getDisplayMode() {
 			return displayMode;
 		}
 

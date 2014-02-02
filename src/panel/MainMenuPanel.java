@@ -8,10 +8,8 @@ import javax.swing.JPanel;
 public class MainMenuPanel extends JPanel {
 
 	public final static String tag = "MAINMENU";
-	
-	public MainMenuPanel(){
 		
-		// A simple test to see if the panel is rendered
-		setBackground(Color.blue);
-	}
+    public MainMenuPanel(){
+    	setBackground(Color.BLUE);
+    }
 }
