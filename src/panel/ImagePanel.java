@@ -20,7 +20,7 @@ import javax.swing.JPanel;
  * 		1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class LoadingPanel extends JPanel {
+public class ImagePanel extends JPanel {
 
 	
 	private int RESOLUTION_WIDTH;
@@ -28,12 +28,12 @@ public class LoadingPanel extends JPanel {
 	public static String tag;
 	private Image i;
 	
-	public LoadingPanel(String imgPath, LayoutManager newLayout){
+	public ImagePanel(String imgPath, LayoutManager newLayout){
 		setLayout(newLayout);
-		new LoadingPanel(imgPath);
+		new ImagePanel(imgPath);
 	}
 	
-	public LoadingPanel(String imgpath) {
+	public ImagePanel(String imgpath) {
 		tag = imgpath;
 		
 		// Get default screen resolution for this computer

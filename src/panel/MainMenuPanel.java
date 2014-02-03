@@ -10,6 +10,6 @@ public class MainMenuPanel extends JPanel {
 	public final static String tag = "MAINMENU";
 		
     public MainMenuPanel(){
-    	setBackground(Color.BLUE);
+    	setBackground(Color.RED);
     }
 }

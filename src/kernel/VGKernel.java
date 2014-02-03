@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import panel.LoadingPanel;
+import panel.ImagePanel;
 import panel.MainMenuPanel;
 
 public class VGKernel {
@@ -75,7 +75,7 @@ public class VGKernel {
 		screen.setFullScreen(screen.getDisplayMode());
 
 		// Set loading screen
-		screen.showScreen(LoadingPanel.tag);
+		screen.showScreen(ImagePanel.tag);
 
 		Thread t = new Thread(new Runnable() {
 
@@ -112,10 +112,10 @@ public class VGKernel {
 		JPanel mm_panel = new MainMenuPanel();
 		
 		// TODO: Find/create a better loading screen and put it into resources folder
-		JPanel ld_panel = new LoadingPanel("loading1-screen-1.gif");
+		JPanel ld_panel = new ImagePanel("loading1-screen-1.gif");
 
 		// Add them to the cardlayout
-		addScreen(ld_panel, LoadingPanel.tag);
+		addScreen(ld_panel, ImagePanel.tag);
 		addScreen(mm_panel, MainMenuPanel.tag);
 
 		// Add the layout to the screen and make it visible
