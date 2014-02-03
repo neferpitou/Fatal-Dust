@@ -112,7 +112,7 @@ public class VGKernel {
 		JPanel mm_panel = new MainMenuPanel();
 		
 		// TODO: Find/create a better loading screen and put it into resources folder
-		JPanel ld_panel = new ImagePanel("loading1-screen-1.gif");
+		JPanel ld_panel = new ImagePanel("game-loader.gif");
 
 		// Add them to the cardlayout
 		addScreen(ld_panel, ImagePanel.tag);
