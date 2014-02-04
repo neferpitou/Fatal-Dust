@@ -1,17 +1,25 @@
 package kernel;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import panel.ImagePanel;
-import panel.MainMenuPanel;
+import etc.LoadImage;
 
 public class VGKernel {
 
@@ -99,6 +107,8 @@ public class VGKernel {
 		} catch (InterruptedException e) {
 			// TODO Handle if threads are interrupted whilst we wait
 			e.printStackTrace();
+		} finally {
+			
 		}
 	}
 
@@ -287,5 +297,96 @@ public class VGKernel {
 		}
 
 	}
+	
+	/**
+	 * Displays a loading GIF on a panel while threads handle loading of resources
+	 * 
+	 * @author Marcos Davila
+	 * @date 2/2/2014
+	 * @revisionhistory 
+	 * 2/3/2014 - Details of loading images refactored into LoadImage class, this class
+	 * 			  refactored into the kernel
+	 * 2/2/2014 - Changed from ImageIO to Toolkit to be able to load and run GIF 
+	 * 			  animations. Moved drawing of images into overriden 
+	 * 			  paintComponent() method 
+	 * 1/30/2014 - File created
+	 */
+	@SuppressWarnings("serial")
+	public class ImagePanel extends JPanel {
 
+		public static final String tag = "LOADING";
+		private Image i;
+
+		public ImagePanel(String imgPath, LayoutManager newLayout) {
+			setLayout(newLayout);
+			new ImagePanel(imgPath);
+		}
+
+		public ImagePanel(String imgpath) {
+			LoadImage li = new LoadImage();
+			i = li.loadImage(imgpath);
+		}
+
+		@Override
+		public void paintComponent(Graphics g) {
+			g.drawImage(i, 0, 0, this);
+		}
+		
+	}
+	
+	/**
+	 * Displays the main menu with buttons to move through the functions of the game
+	 * 
+	 * @author Marcos Davila
+	 * @date 2/2/2014
+	 * @revisionhistory 
+	 * 2/3/2014 - Class refactored into the kernel because the buttons may or may not
+	 * 			  affect the state of the screen and only the kernel has access to it
+	 * 1/30/2014 - File created
+	 */
+	@SuppressWarnings("serial")
+	public class MainMenuPanel extends JPanel {
+
+		public final static String tag = "MAINMENU";
+		private Image img;
+			
+	    public MainMenuPanel(){
+	    	setLayout(new BorderLayout(0, 0));
+	    	
+	    	JPanel panel = new JPanel();
+	    	// Set the background, black with 125 as alpha value
+	        // This is less transparent
+	        panel.setBackground(new Color(0,0,0,125));
+	    	add(panel, BorderLayout.SOUTH);
+	    	
+	    	JButton startGame = new JButton("Start Game");
+	    	panel.add(startGame);
+	    	
+	    	JButton btnQuit = new JButton("Quit");
+	    	btnQuit.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// Closes the screen and exits the game
+					screen.restoreScreen();
+				}
+	    		
+	    	});
+	    	panel.add(btnQuit);
+
+	    
+	    	/*
+	    	 * Describes the layout of all components on this panel
+	    	 */
+	    		    	
+	    	// TODO: Get a better background image
+	    	LoadImage li = new LoadImage();
+	    	img = li.loadImage("index.jpg");	    	
+	    }
+	    
+	    @Override
+		public void paintComponent(Graphics g) {
+			g.drawImage(img, 0, 0, this);
+		}
+	}
 }
