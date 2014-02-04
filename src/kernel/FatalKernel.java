@@ -21,7 +21,7 @@ import javax.swing.WindowConstants;
 
 import etc.LoadImage;
 
-public class VGKernel {
+public class FatalKernel {
 
 	private JPanel cards;
 	private Screen screen;
@@ -31,7 +31,7 @@ public class VGKernel {
 	 * Create a screen to render images to and start the main loop of the game
 	 * at the main menu
 	 */
-	public VGKernel(String[] args) {
+	public FatalKernel(String[] args) {
 		// Create a screen object to be able to initialize images
 		// and content as well as have a way to write to it
 		screen = new Screen(args);
