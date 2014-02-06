@@ -1,31 +1,25 @@
 package kernel;
 
-import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.LayoutManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import etc.LoadImage;
+import etc.FatalCardLayout;
+import panels.CharacterSelectionScreen;
+import panels.ImagePanel;
+import panels.MainMenuPanel;
 
 public class FatalKernel {
 
 	private JPanel cards;
 	private Screen screen;
-	CardLayout cl;
+	private FatalCardLayout fl = new FatalCardLayout();
 
 	/**
 	 * Create a screen to render images to and start the main loop of the game
@@ -64,7 +58,7 @@ public class FatalKernel {
 	 * beginning of the game. This should only be called once.
 	 */
 	private void createCards() {
-		cards = new JPanel(new CardLayout());
+		cards = fl.getPanel();
 		cards.setPreferredSize(new Dimension(screen.getRESOLUTION_WIDTH(),
 				screen.getRESOLUTION_HEIGHT()));
 		initFirstSetOfGamePanels();
@@ -119,41 +113,22 @@ public class FatalKernel {
 	 */
 	private void initFirstSetOfGamePanels() {
 		// Create the panels here
-		JPanel mm_panel = new MainMenuPanel();
+		JPanel mm_panel = new MainMenuPanel(screen);
 		
 		// TODO: Find/create a better loading screen and put it into resources folder
 		JPanel ld_panel = new ImagePanel("game-loader.gif");
+		
+		// TODO: Find/create a better background screen and put it into resources folder
+		JPanel cs_panel = new CharacterSelectionScreen();
 
 		// Add them to the cardlayout
-		addScreen(ld_panel, ImagePanel.tag);
-		addScreen(mm_panel, MainMenuPanel.tag);
+		fl.addScreen(ld_panel, ImagePanel.tag);
+		fl.addScreen(mm_panel, MainMenuPanel.tag);
+		fl.addScreen(cs_panel, CharacterSelectionScreen.tag);
 
 		// Add the layout to the screen and make it visible
 		screen.add(cards);
 		screen.pack();
-	}
-
-	/**
-	 * Adds a card to the CardLayout to enable a screen to be chosen.
-	 * 
-	 * @param newCard
-	 *            - the new card to be added
-	 * @param tag
-	 *            - a tag to be able to uniquely identify cards
-	 */
-	public void addScreen(JPanel newCard, String tag) {
-		cards.add(newCard, tag);
-	}
-
-	/**
-	 * Displays the card in the panel that matches the specified tag.
-	 * 
-	 * @param tag
-	 *            - a tag to be able to uniquely identify cards
-	 */
-	public void showPanel(String tag) {
-		CardLayout cl = (CardLayout) (cards.getLayout());
-		cl.show(cards, tag);
 	}
 
 	/**
@@ -165,7 +140,7 @@ public class FatalKernel {
 	 * @date 1/31/2014
 	 */
 	@SuppressWarnings("serial")
-	class Screen extends JFrame {
+	public class Screen extends JFrame {
 
 		private GraphicsDevice device;
 		private int RESOLUTION_WIDTH;
@@ -296,97 +271,5 @@ public class FatalKernel {
 			return displayMode;
 		}
 
-	}
-	
-	/**
-	 * Displays a loading GIF on a panel while threads handle loading of resources
-	 * 
-	 * @author Marcos Davila
-	 * @date 2/2/2014
-	 * @revisionhistory 
-	 * 2/3/2014 - Details of loading images refactored into LoadImage class, this class
-	 * 			  refactored into the kernel
-	 * 2/2/2014 - Changed from ImageIO to Toolkit to be able to load and run GIF 
-	 * 			  animations. Moved drawing of images into overriden 
-	 * 			  paintComponent() method 
-	 * 1/30/2014 - File created
-	 */
-	@SuppressWarnings("serial")
-	public class ImagePanel extends JPanel {
-
-		public static final String tag = "LOADING";
-		private Image i;
-
-		public ImagePanel(String imgPath, LayoutManager newLayout) {
-			setLayout(newLayout);
-			new ImagePanel(imgPath);
-		}
-
-		public ImagePanel(String imgpath) {
-			LoadImage li = new LoadImage();
-			i = li.loadImage(imgpath);
-		}
-
-		@Override
-		public void paintComponent(Graphics g) {
-			g.drawImage(i, 0, 0, this);
-		}
-		
-	}
-	
-	/**
-	 * Displays the main menu with buttons to move through the functions of the game
-	 * 
-	 * @author Marcos Davila
-	 * @date 2/2/2014
-	 * @revisionhistory 
-	 * 2/3/2014 - Class refactored into the kernel because the buttons may or may not
-	 * 			  affect the state of the screen and only the kernel has access to it
-	 * 1/30/2014 - File created
-	 */
-	@SuppressWarnings("serial")
-	public class MainMenuPanel extends JPanel {
-
-		public final static String tag = "MAINMENU";
-		private Image img;
-			
-	    public MainMenuPanel(){
-	    	setLayout(new BorderLayout(0, 0));
-	    	
-	    	JPanel panel = new JPanel();
-	    	// Set the background, black with 125 as alpha value
-	        // This is less transparent
-	        panel.setBackground(new Color(0,0,0,125));
-	    	add(panel, BorderLayout.SOUTH);
-	    	
-	    	JButton startGame = new JButton("Start Game");
-	    	panel.add(startGame);
-	    	
-	    	JButton btnQuit = new JButton("Quit");
-	    	btnQuit.addActionListener(new ActionListener(){
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// Closes the screen and exits the game
-					screen.restoreScreen();
-				}
-	    		
-	    	});
-	    	panel.add(btnQuit);
-
-	    
-	    	/*
-	    	 * Describes the layout of all components on this panel
-	    	 */
-	    		    	
-	    	// TODO: Get a better background image
-	    	LoadImage li = new LoadImage();
-	    	img = li.loadImage("index.jpg");	    	
-	    }
-	    
-	    @Override
-		public void paintComponent(Graphics g) {
-			g.drawImage(img, 0, 0, this);
-		}
-	}
+	}	
 }
