@@ -25,7 +25,8 @@ import panels.OptionsPanel;
  * This is especially important because the entire game is created and running
  * in memory by the time the user sees the main menu. It is just not shown to
  * the user until they request it via navigating through menus by clicking
- * buttons.
+ * buttons. What is left TODO is to implement the most efficient method of loading
+ * such resources.
  * 
  * • Housing the Screen class as an inner class and managing the sole instance
  * of that class. Other classes that require this instance to function properly
@@ -51,9 +52,19 @@ import panels.OptionsPanel;
  *                  or Screen objects to function properly. These are provided
  *                  via parameters to the constructors with the final keyword,
  *                  so the instances cannot be modified by these classes.
+ *                  
+ *                  I envision the code that sets up the games panels to become
+ *                  large very soon, so the order that panels are initialized
+ *                  has changed. Most of the loading takes place in the thread
+ *                  in the loadMaterials() class and the try-catch block that 
+ *                  halted the thread for five seconds has been removed. The
+ *                  result is that the loading screen is essentially skipped
+ *                  for now.
  * 
  *                  2/3/2014 - Panel classes refactored into the kernel to
- *                  simplify access issues 1/30/2014 - File created
+ *                  simplify access issues 
+ *                  
+ *                  1/30/2014 - File created
  */
 public class FatalKernel {
 
@@ -101,7 +112,6 @@ public class FatalKernel {
 		cards = fcl.getPanel();
 		cards.setPreferredSize(new Dimension(screen.getRESOLUTION_WIDTH(),
 				screen.getRESOLUTION_HEIGHT()));
-		initFirstSetOfGamePanels();
 		loadMaterials();
 	}
 
@@ -115,6 +125,13 @@ public class FatalKernel {
 	 */
 	private void loadMaterials() {
 		screen.setFullScreen(screen.getDisplayMode());
+		
+		// Create the loading screen to show the user while the rest of the
+		// resources are being loaded
+		// TODO: Find/create a better loading screen and put it into resources folder
+		JPanel ld_panel = new ImagePanel("game-loader.gif");
+		fcl.addScreen(ld_panel, ImagePanel.tag);
+		screen.add(cards);
 
 		// Set loading screen
 		screen.showScreen(ImagePanel.tag);
@@ -123,14 +140,8 @@ public class FatalKernel {
 
 			@Override
 			public void run() {
-				// TODO Insert materials for this thread to run here
-			
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// Initialize all other panels
+				initFirstSetOfGamePanels();			
 			}
 		});
 
@@ -154,23 +165,18 @@ public class FatalKernel {
 	private void initFirstSetOfGamePanels() {
 		// Create the panels here
 		JPanel mm_panel = new MainMenuPanel(screen);
-		
-		// TODO: Find/create a better loading screen and put it into resources folder
-		JPanel ld_panel = new ImagePanel("game-loader.gif");
-		
+			
 		// TODO: Find/create a better background screen and put it into resources folder
 		JPanel cs_panel = new CharacterSelectionScreen();
 
 		JPanel opt_panel = new OptionsPanel(fcl);
 		
 		// Add them to the cardlayout
-		fcl.addScreen(ld_panel, ImagePanel.tag);
 		fcl.addScreen(mm_panel, MainMenuPanel.tag);
 		fcl.addScreen(cs_panel, CharacterSelectionScreen.tag);
 		fcl.addScreen(opt_panel, OptionsPanel.tag);
 
 		// Add the layout to the screen and make it visible
-		screen.add(cards);
 		screen.pack();
 	}
 

@@ -3,12 +3,15 @@ package panels;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
 import etc.FatalCardLayout;
+import etc.LoadImage;
 
 /**
  * Displays an options menu where a user can change settings such as display and
@@ -24,6 +27,7 @@ import etc.FatalCardLayout;
 public class OptionsPanel extends JPanel {
 	
 	public static final String tag = "OPTIONS";
+	private Image img;
 
 	public OptionsPanel(final FatalCardLayout fcl){
 		// TODO: Insert background image for optionsPanel
@@ -57,8 +61,14 @@ public class OptionsPanel extends JPanel {
 			
 		});
 		panel.add(btnBack);
+		
+		// TODO: Get a better background image
+    	LoadImage li = new LoadImage();
+    	img = li.loadImage("index.jpg");	
 	}
 	
-	// TODO: Overwrite paintComponent() method to draw image
-
+	@Override
+	public void paintComponent(Graphics g) {
+		g.drawImage(img, 0, 0, this);
+	}
 }
