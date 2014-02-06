@@ -14,12 +14,52 @@ import etc.FatalCardLayout;
 import panels.CharacterSelectionScreen;
 import panels.ImagePanel;
 import panels.MainMenuPanel;
+import panels.OptionsPanel;
 
+/**
+ * The kernel of the game which deals with the logic of the program which should
+ * not be handled by specific instances of objects that the kernel maintains.
+ * Currently, duties of the kernel include:
+ * 
+ * • Loading and initializing all resources and views before the game begins.
+ * This is especially important because the entire game is created and running
+ * in memory by the time the user sees the main menu. It is just not shown to
+ * the user until they request it via navigating through menus by clicking
+ * buttons.
+ * 
+ * • Housing the Screen class as an inner class and managing the sole instance
+ * of that class. Other classes that require this instance to function properly
+ * should be passed this instance as a parameter, and the parameter should be
+ * final to avoid accidental changes. Any updates that need to happen to this
+ * instance should be returned to the kernel, and the kernel should update these
+ * values.
+ * 
+ * In the future, duties of the kernel may include:
+ * 
+ * • TBD
+ * 
+ * @author Marcos Davila
+ * @date 1/30/2014
+ * @revisionhistory 2/5/2014 - FatalCardLayout created as an extension of
+ *                  CardLayout to function as a wrapper for the layout mechanism
+ *                  with helper methods to reduce boilerplate code for accessing
+ *                  the panels managed by FCL.
+ * 
+ *                  Panel classes refactored out of the kernel to slim the
+ *                  kernel down and improve the modularity of the class. These
+ *                  panel classes may require an instance of the FatalCardLayout
+ *                  or Screen objects to function properly. These are provided
+ *                  via parameters to the constructors with the final keyword,
+ *                  so the instances cannot be modified by these classes.
+ * 
+ *                  2/3/2014 - Panel classes refactored into the kernel to
+ *                  simplify access issues 1/30/2014 - File created
+ */
 public class FatalKernel {
 
 	private JPanel cards;
 	private Screen screen;
-	private FatalCardLayout fl = new FatalCardLayout();
+	private FatalCardLayout fcl = new FatalCardLayout();
 
 	/**
 	 * Create a screen to render images to and start the main loop of the game
@@ -58,7 +98,7 @@ public class FatalKernel {
 	 * beginning of the game. This should only be called once.
 	 */
 	private void createCards() {
-		cards = fl.getPanel();
+		cards = fcl.getPanel();
 		cards.setPreferredSize(new Dimension(screen.getRESOLUTION_WIDTH(),
 				screen.getRESOLUTION_HEIGHT()));
 		initFirstSetOfGamePanels();
@@ -121,10 +161,13 @@ public class FatalKernel {
 		// TODO: Find/create a better background screen and put it into resources folder
 		JPanel cs_panel = new CharacterSelectionScreen();
 
+		JPanel opt_panel = new OptionsPanel(fcl);
+		
 		// Add them to the cardlayout
-		fl.addScreen(ld_panel, ImagePanel.tag);
-		fl.addScreen(mm_panel, MainMenuPanel.tag);
-		fl.addScreen(cs_panel, CharacterSelectionScreen.tag);
+		fcl.addScreen(ld_panel, ImagePanel.tag);
+		fcl.addScreen(mm_panel, MainMenuPanel.tag);
+		fcl.addScreen(cs_panel, CharacterSelectionScreen.tag);
+		fcl.addScreen(opt_panel, OptionsPanel.tag);
 
 		// Add the layout to the screen and make it visible
 		screen.add(cards);

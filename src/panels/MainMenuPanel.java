@@ -50,6 +50,18 @@ public class MainMenuPanel extends JPanel {
     	});
     	panel.add(startGame);
     	
+    	JButton options = new JButton("Options");
+    	options.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				screen.showScreen(OptionsPanel.tag);
+			}
+    		
+    	});
+    	panel.add(options);
+    	
     	JButton btnQuit = new JButton("Quit");
     	btnQuit.addActionListener(new ActionListener(){
 

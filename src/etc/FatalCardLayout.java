@@ -4,17 +4,28 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
+/**
+ * A custom layout that functions as a CardLayout wrapper with additional methods
+ * to reduce boilerplate code in managing CardLayout's ability to switch JPanels
+ * on the fly.
+ * 
+ * @author Marcos Davila
+ * @date 2/2/2014
+ * @revisionhistory 
+ * 2/5/2014 - File created
+ */
 @SuppressWarnings("serial")
 public class FatalCardLayout extends CardLayout {
 	
-	private JPanel panel = new JPanel(new CardLayout());
+	// Initialize an instance of the JPanel with a FatalCardLayout
+	private JPanel panel = new JPanel(this);
 
 	public JPanel getPanel(){
 		return panel;
 	}
 	
 	/**
-	 * Adds a card to the CardLayout to enable a screen to be chosen.
+	 * Adds a card to the FatalCardLayout to enable a screen to be chosen.
 	 * 
 	 * @param newCard
 	 *            - the new card to be added
