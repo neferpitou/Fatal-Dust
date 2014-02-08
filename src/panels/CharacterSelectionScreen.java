@@ -2,6 +2,8 @@ package panels;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
@@ -24,8 +26,9 @@ public class CharacterSelectionScreen extends JPanel {
     		    	
     	// TODO: Get a better background image
     	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");	    	
-    }
+    	img = li.loadImage("index.jpg");
+    	
+	}
     
     @Override
 	public void paintComponent(Graphics g) {
