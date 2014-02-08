@@ -15,7 +15,8 @@ import panels.CharacterSelectionScreen;
 import panels.ImagePanel;
 import panels.MainMenuPanel;
 import panels.OptionsPanel;
-
+//make comments above revision history
+//kernel is in control of everything
 /**
  * The kernel of the game which deals with the logic of the program which should
  * not be handled by specific instances of objects that the kernel maintains.

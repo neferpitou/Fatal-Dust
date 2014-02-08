@@ -1,5 +1,6 @@
 package etc;
-
+//panel is the reoslution that is always the same
+//cards are different for the panels
 import java.awt.CardLayout;
 
 import javax.swing.JPanel;
