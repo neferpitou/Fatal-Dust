@@ -18,6 +18,7 @@ Strategy System
 		- A quick dash that covers half the screen
 
 Characters
+
 	* Ayako Turner
 		- 25
 		- Blasian
@@ -62,12 +63,12 @@ Optional Things:
 	* story mode
 	* BGM
 	
-controls:
+Controls:
 	* light-medium-heavy-dust controls system
 	* ctrl pad + buttons
 	
-duties:
+Duties:
 	marcos - Framework Expert: look into controller input, skinning buttons, ai, 
 	dana - Framework Expert: set up panels and decorate them, collision detection
 	stu - Drawing Expert: looks into animation sprites, sprite sheets, making it work, artwork, ai
-	rafael - 
+	rafael - investigate loading gif issues
