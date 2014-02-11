@@ -3,6 +3,7 @@ package panels;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -10,7 +11,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
-import etc.FatalCardLayout;
+import kernel.FatalKernel;
 import etc.LoadImage;
 
 /**
@@ -26,29 +27,19 @@ import etc.LoadImage;
 @SuppressWarnings("serial")
 public class OptionsPanel extends JPanel {
 	
-	public static final String tag = "OPTIONS";
+	private OptionsPanel op_reference = this;
+	private FatalKernel fk_reference;
 	private Image img;
 
-	public OptionsPanel(final FatalCardLayout fcl){
-		// TODO: Insert background image for optionsPanel
+	public OptionsPanel(final FatalKernel fk){
+		fk_reference = fk;
 		
+		// TODO: Insert background image for optionsPanel		
 		setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel = new JPanel();
+		panel.setBackground(new Color(0,0,0,125));
 		add(panel, BorderLayout.SOUTH);
-		
-		JButton btnApply = new JButton("Apply");
-		btnApply.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO: Persist changes and notify the kernel
-				
-			}
-			
-			
-		});
-		panel.add(btnApply);
 		
 		JButton btnBack = new JButton("Back");
 		btnBack.addActionListener(new ActionListener(){
@@ -56,9 +47,9 @@ public class OptionsPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Persist changes and notify the kernel
-				fcl.showPanel(MainMenuPanel.tag);
-			}
-			
+				MainMenuPanel mmp = new MainMenuPanel(fk_reference);
+				fk.redrawScreen(op_reference, mmp);			
+			}		
 		});
 		panel.add(btnBack);
 		

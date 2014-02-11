@@ -2,7 +2,6 @@ package panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -11,7 +10,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import kernel.FatalKernel.Screen;
+import kernel.FatalKernel;
 import etc.LoadImage;
 
 /**
@@ -27,10 +26,10 @@ import etc.LoadImage;
 @SuppressWarnings("serial")
 public class MainMenuPanel extends JPanel {
 
-	public final static String tag = "MAINMENU";
 	private Image img;
+	private JPanel reference = this;
 		
-    public MainMenuPanel(final Screen screen){
+    public MainMenuPanel(final FatalKernel fk){
     	setLayout(new BorderLayout(0, 0));
     	
     	JPanel panel = new JPanel();
@@ -45,8 +44,8 @@ public class MainMenuPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// Shows the character selection screen
-				screen.showScreen(CharacterSelectionScreen.tag);
-				CharacterSelectionScreen.startThreads();
+				CharacterSelectionPanel csp = new CharacterSelectionPanel(fk);
+				fk.redrawScreen(reference, csp);
 			}
     		
     	});
@@ -58,7 +57,8 @@ public class MainMenuPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				screen.showScreen(OptionsPanel.tag);
+				OptionsPanel op = new OptionsPanel(fk);
+				fk.redrawScreen(reference, op);
 			}
     		
     	});
@@ -70,7 +70,7 @@ public class MainMenuPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// Closes the screen and exits the game
-				screen.restoreScreen();
+				fk.exit();
 			}
     		
     	});

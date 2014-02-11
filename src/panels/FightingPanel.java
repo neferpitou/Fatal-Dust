@@ -5,14 +5,14 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
+import kernel.FatalKernel;
 import etc.LoadImage;
 
 public class FightingPanel extends JPanel {
 
 	private Image img;
-	public static final String tag = "FIGHT";
 
-	public FightingPanel(){
+	public FightingPanel(FatalKernel fk_reference){
 		// TODO: Get a better background image
     	LoadImage li = new LoadImage();
     	img = li.loadImage("index.jpg");

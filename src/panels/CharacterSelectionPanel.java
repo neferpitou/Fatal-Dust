@@ -11,6 +11,7 @@ import etc.LoadImage;
 
 import javax.swing.JButton;
 
+import kernel.FatalKernel;
 import kernel.FatalKernel.Screen;
 
 /**
@@ -19,18 +20,18 @@ import kernel.FatalKernel.Screen;
  * @author: Marcos Davila
  */
 @SuppressWarnings("serial")
-public class CharacterSelectionScreen extends JPanel {
+public class CharacterSelectionPanel extends JPanel {
 	public final static String tag = "CHARACTERSELECT";
 	private Image img;
-	private static javax.swing.Timer timer;
+	private javax.swing.Timer timer;
 	private final static int SELECTION_TIME = 60;
 	private final static int ONE_MINUTE = 1000;
-	private static Screen screen;
+	private Screen screen;
+	private CharacterSelectionPanel csp_reference = this;
+	private FatalKernel fk_reference;
 	
-	public CharacterSelectionScreen(final Screen screen) {
-		// Store this screen object (it should never change) in a local
-		// variable to be referenced if a fight should commence
-		CharacterSelectionScreen.screen = screen;
+	public CharacterSelectionPanel(final FatalKernel fk) {
+		fk_reference = fk;
 		
 		/*
 		 * Create a back and a start button to either back out of this menu
@@ -42,8 +43,8 @@ public class CharacterSelectionScreen extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Show the main menu and stop all running threads
-				stopThreads();
-				screen.showScreen(MainMenuPanel.tag);			
+				timer.stop();
+				fk.redrawScreen(csp_reference, new MainMenuPanel(fk));
 			}
 			
 		});
@@ -61,6 +62,21 @@ public class CharacterSelectionScreen extends JPanel {
 		});
 		add(btnGo);
 		
+		timer = new javax.swing.Timer(ONE_MINUTE, new ActionListener(){
+    		int ctr = SELECTION_TIME;
+    		
+    		public void actionPerformed(ActionEvent tc) {
+    			ctr--;
+    			if (ctr >= 1) {
+    				System.out.println("Time left: " + ctr);
+    			} else {
+    				// TODO: Launch the fighting panel
+    				startFight(screen);
+    			}
+    		}
+    	});
+    	timer.start();
+		
 		/*
     	 * Describes the layout of all components on this panel
     	 */
@@ -77,41 +93,12 @@ public class CharacterSelectionScreen extends JPanel {
 	}
     
     /*
-     * When this class is displayed by the CardLayout , start
-     * any threads that this panel must run
-     */
-    public static void startThreads(){
-    	timer = new javax.swing.Timer(ONE_MINUTE, new ActionListener(){
-    		int ctr = SELECTION_TIME;
-    		
-    		public void actionPerformed(ActionEvent tc) {
-    			ctr--;
-    			if (ctr >= 1) {
-    				System.out.println("Time left: " + ctr);
-    			} else {
-    				// TODO: Launch the fighting panel
-    				startFight(screen);
-    			}
-    		}
-    	});
-    	timer.start();
-    }
-    
-    /*
      * This method holds tasks that should be done when a fight is about
      * to commence
      */
-    private static void startFight(final Screen screen) {
+    private void startFight(final Screen screen) {
 		// TODO Takes the selected characters and proceeds to the fighting screen
     	timer.stop();
-    	screen.showScreen(FightingPanel.tag);
+    	fk_reference.redrawScreen(csp_reference, new FightingPanel(fk_reference));
 	}
-
-	/*
-     * When this class is no longer the displayed class, stop any threads this panel is
-     * running
-     */
-    public static void stopThreads(){
-    	timer.stop();
-    }
 }

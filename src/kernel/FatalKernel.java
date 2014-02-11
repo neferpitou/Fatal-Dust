@@ -1,6 +1,7 @@
 package kernel;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
@@ -10,8 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import etc.FatalCardLayout;
-import panels.CharacterSelectionScreen;
+import panels.CharacterSelectionPanel;
 import panels.FightingPanel;
 import panels.ImagePanel;
 import panels.MainMenuPanel;
@@ -67,25 +67,21 @@ import panels.OptionsPanel;
  *                  
  *                  1/30/2014 - File created
  */
-public class FatalKernel {
+@SuppressWarnings("serial")
+public class FatalKernel extends JPanel {
 
-	private JPanel cards;
 	private Screen screen;
-	private FatalCardLayout fcl = new FatalCardLayout();
+	private ImagePanel ip;
+	private MainMenuPanel mmp;
+	private FatalKernel kernel_reference = this;
 
 	/**
 	 * Create a screen to render images to and start the main loop of the game
 	 * at the main menu
 	 */
 	public FatalKernel(String[] args) {
-		// Create a screen object to be able to initialize images
-		// and content as well as have a way to write to it
 		screen = new Screen(args);
-
-		// Creates all the views for the game when first initialized
-		// JPanel properties such as a CardLayout to move between JPanels,
-		// etc. goes here. Helper methods make moving between JPanels easy.
-		createCards();
+		screen.setFullScreen(screen.getDisplayMode());
 
 		// Start the game
 		startGame();
@@ -95,58 +91,23 @@ public class FatalKernel {
 	 * TODO: Where the main bulk of the game will be
 	 */
 	public void startGame() {
-		// Set main menu screen as visible
-		screen.showScreen(MainMenuPanel.tag);
-	}
-
-	/**
-	 * From this section on, all methods have to do with initializing
-	 * CardLayout, panels to display images, and all things related to the
-	 * screen class or initialization before the startGame() method
-	 */
-
-	/**
-	 * Private helper method to initialize as many cards as possible at the
-	 * beginning of the game. This should only be called once.
-	 */
-	private void createCards() {
-		cards = fcl.getPanel();
-		cards.setPreferredSize(new Dimension(screen.getRESOLUTION_WIDTH(),
-				screen.getRESOLUTION_HEIGHT()));
-		loadMaterials();
-	}
-
-	/**
-	 * Present the opening loading screen while as many things as possible are
-	 * loaded into memory and made available for the game to use. This can also
-	 * be where many other things are initialized.
-	 * 
-	 * This method is multithreaded - one thread shows the loading screen and
-	 * the other fetches from disk.
-	 */
-	private void loadMaterials() {
-		screen.setFullScreen(screen.getDisplayMode());
-		
 		// Create the loading screen to show the user while the rest of the
 		// resources are being loaded
-		// TODO: Find/create a better loading screen and put it into resources folder
-		JPanel ld_panel = new ImagePanel("game-loader.gif");
-		fcl.addScreen(ld_panel, ImagePanel.tag);
-		screen.add(cards);
-
-		// Set loading screen
-		screen.showScreen(ImagePanel.tag);
+		// TODO: Find/create a better loading screen and put it into resources
+		// folder
+		ip = new ImagePanel("game-loader.gif");
+		screen.add(ip);
 
 		Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				// Initialize all other panels
-				initFirstSetOfGamePanels();			
+				// TODO some tasks
+				mmp = new MainMenuPanel(kernel_reference);
 			}
 		});
 
-		t.start();	// start loading materials
+		t.start(); // start loading materials
 
 		try {
 			t.join(); // Wait on the thread loading materials to finish
@@ -154,25 +115,22 @@ public class FatalKernel {
 			// TODO Handle if threads are interrupted whilst we wait
 			e.printStackTrace();
 		} finally {
-			
+			redrawScreen(ip, mmp);
 		}
 	}
 
 	/**
-	 * At the beginning of the game, adds all the game panels that the game will
-	 * use before the main menu is shown. All game panels should be subclasses
-	 * of JPanel that describe the layout of the page
+	 * Removes one panel and replaces it with another panel 
+	 * 
+	 * @param remove - JPanel to remove
+	 * @param add - JPanel to add
 	 */
-	private void initFirstSetOfGamePanels() {
-		
-		// Add them to the cardlayout
-		fcl.addScreen(new MainMenuPanel(screen), MainMenuPanel.tag);
-		fcl.addScreen(new CharacterSelectionScreen(screen), CharacterSelectionScreen.tag);
-		fcl.addScreen(new OptionsPanel(fcl), OptionsPanel.tag);
-		fcl.addScreen(new FightingPanel(), FightingPanel.tag);
-
-		// Add the layout to the screen and make it visible
-		screen.pack();
+	public void redrawScreen(JPanel remove, JPanel add) {
+		// TODO Auto-generated method stub
+		screen.remove(remove);
+		screen.add(add);
+		screen.revalidate();
+		screen.repaint();
 	}
 
 	/**
@@ -183,7 +141,6 @@ public class FatalKernel {
 	 * @author Marcos Davila
 	 * @date 1/31/2014
 	 */
-	@SuppressWarnings("serial")
 	public class Screen extends JFrame {
 
 		private GraphicsDevice device;
@@ -249,6 +206,7 @@ public class FatalKernel {
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			setUndecorated(true);
 			setResizable(false);
+			setVisible(true);
 		}
 
 		/**
@@ -287,11 +245,6 @@ public class FatalKernel {
 			device.setFullScreenWindow(null);
 		}
 
-		public void showScreen(String tag) {
-			CardLayout cl = (CardLayout) (cards.getLayout());
-			cl.show(cards, tag);
-		}
-
 		/**
 		 * Getters and setters
 		 */
@@ -314,6 +267,16 @@ public class FatalKernel {
 		public DisplayMode getDisplayMode() {
 			return displayMode;
 		}
-
 	}	
+	
+	public MainMenuPanel getMainMenu(){
+		return mmp;
+	}
+
+	/*
+	 * Shuts down the kernel
+	 */
+	public void exit() {
+		screen.dispose();
+	}
 }
