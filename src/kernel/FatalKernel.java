@@ -12,6 +12,7 @@ import javax.swing.WindowConstants;
 
 import etc.FatalCardLayout;
 import panels.CharacterSelectionScreen;
+import panels.FightingPanel;
 import panels.ImagePanel;
 import panels.MainMenuPanel;
 import panels.OptionsPanel;
@@ -163,18 +164,12 @@ public class FatalKernel {
 	 * of JPanel that describe the layout of the page
 	 */
 	private void initFirstSetOfGamePanels() {
-		// Create the panels here
-		JPanel mm_panel = new MainMenuPanel(screen);
-			
-		// TODO: Find/create a better background screen and put it into resources folder
-		JPanel cs_panel = new CharacterSelectionScreen();
-
-		JPanel opt_panel = new OptionsPanel(fcl);
 		
 		// Add them to the cardlayout
-		fcl.addScreen(mm_panel, MainMenuPanel.tag);
-		fcl.addScreen(cs_panel, CharacterSelectionScreen.tag);
-		fcl.addScreen(opt_panel, OptionsPanel.tag);
+		fcl.addScreen(new MainMenuPanel(screen), MainMenuPanel.tag);
+		fcl.addScreen(new CharacterSelectionScreen(screen), CharacterSelectionScreen.tag);
+		fcl.addScreen(new OptionsPanel(fcl), OptionsPanel.tag);
+		fcl.addScreen(new FightingPanel(), FightingPanel.tag);
 
 		// Add the layout to the screen and make it visible
 		screen.pack();

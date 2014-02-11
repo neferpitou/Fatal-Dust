@@ -2,6 +2,7 @@ package panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -45,6 +46,7 @@ public class MainMenuPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				// Shows the character selection screen
 				screen.showScreen(CharacterSelectionScreen.tag);
+				CharacterSelectionScreen.startThreads();
 			}
     		
     	});
@@ -88,4 +90,5 @@ public class MainMenuPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
 	}
+
 }

@@ -4,6 +4,11 @@ import java.awt.CardLayout;
 
 import javax.swing.JPanel;
 
+import panels.CharacterSelectionScreen;
+import panels.ImagePanel;
+import panels.MainMenuPanel;
+import panels.OptionsPanel;
+
 /**
  * A custom layout that functions as a CardLayout wrapper with additional methods
  * to reduce boilerplate code in managing CardLayout's ability to switch JPanels
