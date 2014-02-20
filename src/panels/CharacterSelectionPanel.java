@@ -29,9 +29,11 @@ public class CharacterSelectionPanel extends JPanel {
 	private Screen screen;
 	private CharacterSelectionPanel csp_reference = this;
 	private FatalKernel fk_reference;
+	private String[] parameters;
 	
 	public CharacterSelectionPanel(final FatalKernel fk) {
 		fk_reference = fk;
+    	parameters = fk.getGameParameters();
 		
 		/*
 		 * Create a back and a start button to either back out of this menu

@@ -74,6 +74,7 @@ public class FatalKernel extends JPanel {
 	private ImagePanel ip;
 	private MainMenuPanel mmp;
 	private FatalKernel kernel_reference = this;
+	private String[] params = { "Medium" };
 
 	/**
 	 * Create a screen to render images to and start the main loop of the game
@@ -131,6 +132,21 @@ public class FatalKernel extends JPanel {
 		screen.add(add);
 		screen.revalidate();
 		screen.repaint();
+	}
+	
+	/**
+	 * Gets and sets parameters for the game to function
+	 * 
+	 * @return
+	 */
+	public String[] getGameParameters(){
+		return params;
+	}
+	
+	public void setGameParameters(String[] parameters){
+		for (int i = 0; i < params.length; i++){
+			params[i] = parameters[i];
+		}
 	}
 
 	/**
