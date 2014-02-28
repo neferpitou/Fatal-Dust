@@ -12,57 +12,95 @@ import javax.swing.JPanel;
 
 import kernel.FatalKernel;
 import etc.LoadImage;
+import etc.ViewLabels;
 
 /**
- * Displays the main menu with buttons to move through the functions of the game
+ * Displays the main menu with buttons to move through the functions of the game.
  * 
  * @author Marcos Davila
- * @date 2/2/2014
- * @revisionhistory 
- * 2/3/2014 - Class refactored into the kernel because the buttons may or may not
- * 			  affect the state of the screen and only the kernel has access to it
- * 1/30/2014 - File created
+ * @date 2/27/2014
+ * @revisionhistory 2/27/2014 - TransPanel and MainMenuPanel more cleanly separated. This
+ * 					view now extends a parent class AbstractPanel which helps in the 
+ * 					management of this view's threads when the page is not active.
+ * 
+ * 					1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class MainMenuPanel extends JPanel {
-
+public class MainMenuPanel extends AbstractPanel implements ViewLabels {
+	
 	private Image img;
-	private JPanel reference = this;
-		
+	private TransPanel transPanel;
+	private LoadImage li = new LoadImage();
+	
     public MainMenuPanel(final FatalKernel fk){
+		// TODO: Get a better background image
+    	img = li.loadImage("index.jpg");
+    	
     	setLayout(new BorderLayout(0, 0));
+    	setDoubleBuffered(true);
     	
-    	JPanel panel = new JPanel();
-    	// Set the background, black with 125 as alpha value
-        // This is less transparent
-        panel.setBackground(new Color(0,0,0,125));
-    	add(panel, BorderLayout.SOUTH);
+    	transPanel = new TransPanel(fk, this);
     	
+    	add(transPanel, BorderLayout.SOUTH);    	
+    }
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		g.drawImage(img, 0, 0, this);	
+	}
+
+	@Override
+	public void startThreads() {
+		// TODO Auto-generated method stub
+		;
+	}
+
+	@Override
+	public void stopThreads() {
+		// TODO Auto-generated method stub
+		;
+	}
+}
+
+/**
+ * The transparent nested panel that holds the buttons.
+ * 
+ * @author Marcos Davila
+ * @revisionhistory
+ * 		2/27/2014 - TransPanel separated more cleanly from the MainMenuPanel.
+ * 					redrawScreen calls now call only one instance of a view.
+ *
+ */
+@SuppressWarnings("serial")
+class TransPanel extends JPanel implements ViewLabels {
+	
+	public TransPanel(final FatalKernel fk, AbstractPanel reference){
+		renderButtons(fk);
+	}
+	
+	private void renderButtons(final FatalKernel fk) {
     	JButton startGame = new JButton("Versus");
     	startGame.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// Shows the character selection screen
-				CharacterSelectionPanel csp = new CharacterSelectionPanel(fk);
-				fk.redrawScreen(reference, csp);
+				fk.redrawScreen(fk.getView(MAIN), fk.getView(SELECT));
 			}
     		
     	});
-    	panel.add(startGame);
+    	add(startGame);
     	
     	JButton options = new JButton("Options");
     	options.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				OptionsPanel op = new OptionsPanel(fk);
-				fk.redrawScreen(reference, op);
+				fk.redrawScreen(fk.getView(MAIN), fk.getView(OPTIONS));
 			}
     		
     	});
-    	panel.add(options);
+    	add(options);
     	
     	JButton btnQuit = new JButton("Quit");
     	btnQuit.addActionListener(new ActionListener(){
@@ -74,21 +112,23 @@ public class MainMenuPanel extends JPanel {
 			}
     		
     	});
-    	panel.add(btnQuit);
+    	add(btnQuit);
 
-    
-    	/*
-    	 * Describes the layout of all components on this panel
-    	 */
-    		    	
-    	// TODO: Get a better background image
-    	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");	    	
-    }
-    
-    @Override
-	public void paintComponent(Graphics g) {
-		g.drawImage(img, 0, 0, this);
 	}
 
+	@Override
+	public void paintComponent(Graphics g) {
+		final int ALPHA_VALUE = 125;
+		final int DELAY = 16;
+		
+		// Set the transparency
+        setBackground(new Color(0, 0, 0, ALPHA_VALUE));
+        setDoubleBuffered(true);
+        
+        try {
+        	Thread.sleep(DELAY);
+        } catch (InterruptedException e) {
+        	
+        }
+	}
 }

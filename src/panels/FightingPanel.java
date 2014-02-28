@@ -3,12 +3,11 @@ package panels;
 import java.awt.Graphics;
 import java.awt.Image;
 
-import javax.swing.JPanel;
-
 import kernel.FatalKernel;
 import etc.LoadImage;
 
-public class FightingPanel extends JPanel {
+@SuppressWarnings("serial")
+public class FightingPanel extends AbstractPanel {
 
 	private Image img;
 
@@ -21,5 +20,17 @@ public class FightingPanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
+	}
+
+	@Override
+	public void startThreads() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopThreads() {
+		// TODO Auto-generated method stub
+		
 	}
 }

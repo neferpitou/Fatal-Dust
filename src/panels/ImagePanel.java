@@ -4,8 +4,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
 
-import javax.swing.JPanel;
-
 import etc.LoadImage;
 
 /**
@@ -24,9 +22,9 @@ import etc.LoadImage;
  * 1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class ImagePanel extends JPanel {
+public class ImagePanel extends AbstractPanel {
 
-	public static final String tag = "LOADING";
+	public final String tag = "LOADING";
 	private Image i;
 
 	public ImagePanel(String imgPath, LayoutManager newLayout) {
@@ -42,6 +40,22 @@ public class ImagePanel extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(i, 0, 0, this);
+	}
+
+	public String getTag() {
+		return tag;
+	}
+
+	@Override
+	public void startThreads() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopThreads() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

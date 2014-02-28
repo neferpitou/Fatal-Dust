@@ -1,16 +1,18 @@
 package kernel;
 
-import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import etc.ViewLabels;
+import panels.AbstractPanel;
 import panels.CharacterSelectionPanel;
 import panels.FightingPanel;
 import panels.ImagePanel;
@@ -26,8 +28,8 @@ import panels.OptionsPanel;
  * This is especially important because the entire game is created and running
  * in memory by the time the user sees the main menu. It is just not shown to
  * the user until they request it via navigating through menus by clicking
- * buttons. What is left TODO is to implement the most efficient method of loading
- * such resources.
+ * buttons. What is left to do is to implement the most efficient method of
+ * loading such resources.
  * 
  * • Housing the Screen class as an inner class and managing the sole instance
  * of that class. Other classes that require this instance to function properly
@@ -41,8 +43,22 @@ import panels.OptionsPanel;
  * • TBD
  * 
  * @author Marcos Davila
- * @date 1/30/2014
- * @revisionhistory 2/5/2014 - FatalCardLayout created as an extension of
+ * @date 2/27/2014
+ * @revisionhistory 2/27/2014 - Views now placed into a hashmap that identifies
+ *                  them by a string. A new method getView() has been created to
+ *                  index the hashmap and return the panel identified by the
+ *                  string parameter. The kernel now implements an interface
+ *                  ViewLabels which holds only variables to be able to identify
+ *                  the views to be switched in all of the actionlisteners for
+ *                  each view. Now views do not have to be created and destroyed
+ *                  every time a button is pressed.
+ * 
+ *                  Kernel threading has also been updated to reflect the
+ *                  changes in how views are accessed.
+ *                  
+ *                  Parameters implementation changed from arrays to collections.
+ * 
+ *                  2/5/2014 - FatalCardLayout created as an extension of
  *                  CardLayout to function as a wrapper for the layout mechanism
  *                  with helper methods to reduce boilerplate code for accessing
  *                  the panels managed by FCL.
@@ -53,28 +69,28 @@ import panels.OptionsPanel;
  *                  or Screen objects to function properly. These are provided
  *                  via parameters to the constructors with the final keyword,
  *                  so the instances cannot be modified by these classes.
- *                  
+ * 
  *                  I envision the code that sets up the games panels to become
  *                  large very soon, so the order that panels are initialized
  *                  has changed. Most of the loading takes place in the thread
- *                  in the loadMaterials() class and the try-catch block that 
+ *                  in the loadMaterials() class and the try-catch block that
  *                  halted the thread for five seconds has been removed. The
- *                  result is that the loading screen is essentially skipped
- *                  for now.
+ *                  result is that the loading screen is essentially skipped for
+ *                  now.
  * 
  *                  2/3/2014 - Panel classes refactored into the kernel to
- *                  simplify access issues 
- *                  
+ *                  simplify access issues
+ * 
  *                  1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class FatalKernel extends JPanel {
+public class FatalKernel extends JPanel implements ViewLabels {
 
 	private Screen screen;
 	private ImagePanel ip;
-	private MainMenuPanel mmp;
 	private FatalKernel kernel_reference = this;
-	private String[] params = { "Medium" };
+	private ArrayList<String> parameters = new ArrayList<String>();
+	private HashMap<String, AbstractPanel> views;
 
 	/**
 	 * Create a screen to render images to and start the main loop of the game
@@ -84,14 +100,17 @@ public class FatalKernel extends JPanel {
 		screen = new Screen(args);
 		screen.setFullScreen(screen.getDisplayMode());
 
-		// Start the game
-		startGame();
+		views = new HashMap<String, AbstractPanel>();
+
+		// Start the kernel
+		startKernel();
 	}
 
 	/**
-	 * TODO: Where the main bulk of the game will be
+	 * Starts the core activities for the game to function
 	 */
-	public void startGame() {
+	public void startKernel() {
+
 		// Create the loading screen to show the user while the rest of the
 		// resources are being loaded
 		// TODO: Find/create a better loading screen and put it into resources
@@ -103,9 +122,15 @@ public class FatalKernel extends JPanel {
 
 			@Override
 			public void run() {
-				// TODO some tasks
-				mmp = new MainMenuPanel(kernel_reference);
+				parameters.add("Medium");
+				
+				views.put(MAIN, new MainMenuPanel(kernel_reference));
+				views.put(OPTIONS, new OptionsPanel(kernel_reference));
+				views.put(VERSUS, new FightingPanel(kernel_reference));
+				views.put(SELECT, new CharacterSelectionPanel(kernel_reference));
+				views.put(LOADING, ip);
 			}
+
 		});
 
 		t.start(); // start loading materials
@@ -116,43 +141,75 @@ public class FatalKernel extends JPanel {
 			// TODO Handle if threads are interrupted whilst we wait
 			e.printStackTrace();
 		} finally {
-			redrawScreen(ip, mmp);
+			redrawScreen(getView(LOADING), getView(MAIN));
 		}
+
 	}
 
 	/**
-	 * Removes one panel and replaces it with another panel 
+	 * Removes one panel and replaces it with another panel
 	 * 
-	 * @param remove - JPanel to remove
-	 * @param add - JPanel to add
+	 * @param remove
+	 *            JPanel to remove from the JFrame
+	 * @param add
+	 *            JPanel to add to the JFrame
 	 */
-	public void redrawScreen(JPanel remove, JPanel add) {
+	public void redrawScreen(AbstractPanel remove, AbstractPanel add) {
 		// TODO Auto-generated method stub
 		screen.remove(remove);
+		remove.stopThreads();
+
 		screen.add(add);
+		add.startThreads();
+
 		screen.revalidate();
 		screen.repaint();
 	}
-	
+
 	/**
-	 * Gets and sets parameters for the game to function
+	 * Gets parameters for the game to function.
 	 * 
-	 * @return
+	 * @return a list of the game settings
 	 */
-	public String[] getGameParameters(){
-		return params;
+	public ArrayList<String> getGameParameters() {
+		ArrayList<String> p = new ArrayList<String>(parameters.size());
+		return p;
 	}
-	
-	public void setGameParameters(String[] parameters){
-		for (int i = 0; i < params.length; i++){
-			params[i] = parameters[i];
+
+	/**
+	 * Sets parameters for the game to function.
+	 */
+	public void setGameParameters(ArrayList<String> params) {
+		for (int i = 0; i < params.size(); i++) {
+			parameters.add(params.get(i));
 		}
 	}
 
 	/**
-	 * The Screen class manages behavior that should be common to all views for
-	 * the video game. Since only the kernel should know about the screen and
-	 * how to draw to it, it is an inner class within the kernel.
+	 * Shuts down the kernel, kills the display, and ends all running threads
+	 */
+	public void exit() {
+		screen.dispose();
+	}
+
+	/**
+	 * Returns a view from the hashmap.
+	 * 
+	 * @param screen
+	 *            a string identifier of the object that should be retrieved
+	 *            from the hashmap
+	 *            
+	 * @return a view from the hashmap
+	 */
+	public AbstractPanel getView(String screen) {
+		// TODO Auto-generated method stub
+		return views.get(screen);
+	}
+
+	/**
+	 * The Screen class manages behavior common to all views for the video game.
+	 * Since only the kernel should know about the screen and how to draw to it,
+	 * it is an inner class within the kernel.
 	 * 
 	 * @author Marcos Davila
 	 * @date 1/31/2014
@@ -261,38 +318,10 @@ public class FatalKernel extends JPanel {
 			device.setFullScreenWindow(null);
 		}
 
-		/**
-		 * Getters and setters
-		 */
-		public int getRESOLUTION_WIDTH() {
-			return RESOLUTION_WIDTH;
-		}
-
-		public void setRESOLUTION_WIDTH(int rESOLUTION_WIDTH) {
-			RESOLUTION_WIDTH = rESOLUTION_WIDTH;
-		}
-
-		public int getRESOLUTION_HEIGHT() {
-			return RESOLUTION_HEIGHT;
-		}
-
-		public void setRESOLUTION_HEIGHT(int rESOLUTION_HEIGHT) {
-			RESOLUTION_HEIGHT = rESOLUTION_HEIGHT;
-		}
-
 		public DisplayMode getDisplayMode() {
-			return displayMode;
+			DisplayMode defensiveDisplayMode = displayMode;
+			return defensiveDisplayMode;
 		}
-	}	
-	
-	public MainMenuPanel getMainMenu(){
-		return mmp;
 	}
 
-	/*
-	 * Shuts down the kernel
-	 */
-	public void exit() {
-		screen.dispose();
-	}
 }

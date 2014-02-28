@@ -1,5 +1,6 @@
 package panels;
 
+import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -8,99 +9,109 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import etc.LoadImage;
+import etc.ViewLabels;
 
 import javax.swing.JButton;
 
 import kernel.FatalKernel;
-import kernel.FatalKernel.Screen;
 
 /**
  * Character selection menu
  * 
  * @author: Marcos Davila
+ * @revisionhistory
+ * 		2/27/2014 - Timer thread rewritten into this class' run method. Translucent
+ * 					panel turned into transparent panel.
  */
 @SuppressWarnings("serial")
-public class CharacterSelectionPanel extends JPanel {
-	public final static String tag = "CHARACTERSELECT";
+public class CharacterSelectionPanel extends AbstractPanel implements ViewLabels, Runnable {
+
 	private Image img;
 	private javax.swing.Timer timer;
 	private final static int SELECTION_TIME = 60;
 	private final static int ONE_MINUTE = 1000;
-	private Screen screen;
-	private CharacterSelectionPanel csp_reference = this;
-	private FatalKernel fk_reference;
-	private String[] parameters;
-	
-	public CharacterSelectionPanel(final FatalKernel fk) {
-		fk_reference = fk;
-    	parameters = fk.getGameParameters();
+	private FatalKernel fk;
+	private Thread timerThread;
+
+	public CharacterSelectionPanel(final FatalKernel fk){
+		// TODO: Insert background image for optionsPanel		
+		setLayout(new BorderLayout(0, 0));
+		this.fk = fk;
 		
-		/*
-		 * Create a back and a start button to either back out of this menu
-		 * or begin the game
-		 */
+		JPanel panel = new JPanel();
+		panel.setOpaque(false);
+		add(panel, BorderLayout.SOUTH);
+		
 		JButton btnBack = new JButton("Back");
 		btnBack.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Show the main menu and stop all running threads
-				timer.stop();
-				fk.redrawScreen(csp_reference, new MainMenuPanel(fk));
-			}
-			
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Persist changes and notify the kernel
+				stopThreads();
+				fk.redrawScreen(fk.getView(SELECT), fk.getView(MAIN));			
+			}		
 		});
-		add(btnBack);
+		panel.add(btnBack);
 		
-		JButton btnGo = new JButton("Fight");
-		btnGo.addActionListener(new ActionListener(){
+		JButton btnStart = new JButton("Start");
+		btnStart.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				startFight(screen);
-			}
-			
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Persist changes and notify the kernel
+				stopThreads();
+				fk.redrawScreen(fk.getView(SELECT), fk.getView(VERSUS));			
+			}		
 		});
-		add(btnGo);
+		panel.add(btnStart);
 		
-		timer = new javax.swing.Timer(ONE_MINUTE, new ActionListener(){
-    		int ctr = SELECTION_TIME;
-    		
-    		public void actionPerformed(ActionEvent tc) {
-    			ctr--;
-    			if (ctr >= 1) {
-    				System.out.println("Time left: " + ctr);
-    			} else {
-    				// TODO: Launch the fighting panel
-    				startFight(screen);
-    			}
-    		}
-    	});
-    	timer.start();
-		
-		/*
-    	 * Describes the layout of all components on this panel
-    	 */
-    		    	
-    	// TODO: Get a better background image
+		// TODO: Get a better background image
     	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");
+    	img = li.loadImage("index.jpg");	
     	
 	}
-    
-    @Override
+	
+	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
 	}
-    
-    /*
-     * This method holds tasks that should be done when a fight is about
-     * to commence
-     */
-    private void startFight(final Screen screen) {
-		// TODO Takes the selected characters and proceeds to the fighting screen
-    	timer.stop();
-    	fk_reference.redrawScreen(csp_reference, new FightingPanel(fk_reference));
+
+	@Override
+	public void startThreads() {
+		// TODO Auto-generated method stub
+		timerThread = new Thread(this);
+		timerThread.start();
+	}
+
+	@Override
+	public void stopThreads() {
+		// TODO Auto-generated method stub
+		try {
+			timer.stop();
+			timerThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void run() {
+		timer = new javax.swing.Timer(ONE_MINUTE, new ActionListener() {
+			int ctr = SELECTION_TIME;
+
+			public void actionPerformed(ActionEvent tc) {
+				ctr--;
+				if (ctr >= 1) {
+					System.out.println("Time left: " + ctr);
+				} else {
+					// TODO: Launch the fighting panel
+					fk.redrawScreen(fk.getView(SELECT), fk.getView(VERSUS));
+				}
+			}
+		});
+		timer.start();
+		
 	}
 }
