@@ -72,11 +72,17 @@ public class CharacterSelectionPanel extends AbstractPanel implements ViewLabels
     	
 	}
 	
+	/**
+	 * Render image background
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
 	}
 
+	/**
+	 * Start all threads associated with this view
+	 */
 	@Override
 	public void startThreads() {
 		// TODO Auto-generated method stub
@@ -84,6 +90,9 @@ public class CharacterSelectionPanel extends AbstractPanel implements ViewLabels
 		timerThread.start();
 	}
 
+	/**
+	 * Stop all threads associated with this view
+	 */
 	@Override
 	public void stopThreads() {
 		// TODO Auto-generated method stub
@@ -96,6 +105,9 @@ public class CharacterSelectionPanel extends AbstractPanel implements ViewLabels
 		}
 	}
 
+	/**
+	 * Launches timer thread
+	 */
 	@Override
 	public void run() {
 		timer = new javax.swing.Timer(ONE_MINUTE, new ActionListener() {

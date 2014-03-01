@@ -49,7 +49,7 @@ public class OptionsPanel extends AbstractPanel implements ViewLabels {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Persist changes and notify the kernel
-				fk.setGameParameters(parameters);
+				fk.updateGameParameters(parameters);
 				fk.redrawScreen(fk.getView(OPTIONS), fk.getView(MAIN));			
 			}		
 		});

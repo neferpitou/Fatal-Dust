@@ -7,7 +7,7 @@ import kernel.FatalKernel;
 import etc.LoadImage;
 
 @SuppressWarnings("serial")
-public class FightingPanel extends AbstractPanel {
+public class FightingPanel extends AbstractPanel implements Runnable {
 
 	private Image img;
 
@@ -30,6 +30,12 @@ public class FightingPanel extends AbstractPanel {
 
 	@Override
 	public void stopThreads() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void run() {
 		// TODO Auto-generated method stub
 		
 	}
