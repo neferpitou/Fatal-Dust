@@ -13,28 +13,27 @@ import kernel.FatalKernel;
  * Displays an image panel while threads handle loading of resources
  * 
  * @author Marcos Davila
- * @date 2/2/2014
- * @revisionhistory 
- * 3/1/2014 - Made into a more general image class.
- * 2/5/2014 - Moved out of kernel to reduce kernel size
- * 2/3/2014 - Details of loading images refactored into LoadImage class, this class
- * 			  refactored into the kernel
- * 2/2/2014 - Changed from ImageIO to Toolkit to be able to load and run GIF 
- * 			  animations. Moved drawing of images into overriden 
- * 			  paintComponent() method 
- * 1/30/2014 - File created
  */
 @SuppressWarnings("serial")
 public class ImagePanel extends JPanel implements FatalView {
 
+	// Background image
 	private Image i;
 
+	/**
+	 * Creates a JPanel that paints an image as it's background.
+	 * 
+	 * @param fk kernel instance
+	 * @param imgpath name of image in resources folder
+	 */
 	public ImagePanel(final FatalKernel fk, String imgpath) {
 		this.i = fk.loadImage(imgpath);	
 	}
 	
 	/**
-	 * Return the image
+	 * Returns the image drawn on the background of the JPanel
+	 * 
+	 * @return an Image object that is the background of this JPanel
 	 */
 	public Image getImage(){
 		return i;

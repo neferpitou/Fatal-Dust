@@ -18,19 +18,26 @@ import kernel.FatalKernel;
  * Displays the main menu with buttons to move through the functions of the game.
  * 
  * @author Marcos Davila
- * @date 2/27/2014
- * @revisionhistory 2/27/2014 - TransPanel and MainMenuPanel more cleanly separated. This
- * 					view now extends a parent class AbstractPanel which helps in the 
- * 					management of this view's threads when the page is not active.
- * 
- * 					1/30/2014 - File created
  */
 @SuppressWarnings("serial")
 public class MainMenuPanel extends JPanel implements FatalView {
 	
+	/**
+	 * An Image object holding the background image
+	 */
 	private Image img;
-	private TransPanel transPanel;
 	
+	/**
+	 * The transparent panel that holds the buttons along the
+	 * bottom of the screen.
+	 */
+	private TransparentPanel transparentPanel;
+	
+	/**
+	 * Creates a view of the main menu panel
+	 * 
+	 * @param fk an instance of the kernel
+	 */
     public MainMenuPanel(final FatalKernel fk){
 		// TODO: Get a better background image
     	img = new ImagePanel(fk, "index.jpg").getImage();
@@ -38,9 +45,9 @@ public class MainMenuPanel extends JPanel implements FatalView {
     	setLayout(new BorderLayout(0, 0));
     	setDoubleBuffered(true);
     	
-    	transPanel = new TransPanel(fk, this);
+    	transparentPanel = new TransparentPanel(fk, this);
     	
-    	add(transPanel, BorderLayout.SOUTH);    	
+    	add(transparentPanel, BorderLayout.SOUTH);    	
     }
 	
 	@Override
@@ -63,15 +70,11 @@ public class MainMenuPanel extends JPanel implements FatalView {
  * The transparent nested panel that holds the buttons.
  * 
  * @author Marcos Davila
- * @revisionhistory
- * 		2/27/2014 - TransPanel separated more cleanly from the MainMenuPanel.
- * 					redrawScreen calls now call only one instance of a view.
- *
  */
 @SuppressWarnings("serial")
-class TransPanel extends JPanel implements FatalView {
+class TransparentPanel extends JPanel implements FatalView {
 	
-	public TransPanel(final FatalKernel fk, FatalView reference){
+	public TransparentPanel(final FatalKernel fk, FatalView reference){
 		renderButtons(fk);
 	}
 	
@@ -113,6 +116,9 @@ class TransPanel extends JPanel implements FatalView {
 
 	}
 
+	/**
+	 * Sets the transparency of the panel.
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		final int ALPHA_VALUE = 125;
@@ -129,12 +135,18 @@ class TransPanel extends JPanel implements FatalView {
         }
 	}
 
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void startThreads() {
 		// Do nothing
 		
 	}
 
+	/**
+	 * Does nothing
+	 */
 	@Override
 	public void stopThreads() {
 		// Do nothing

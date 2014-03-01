@@ -16,14 +16,9 @@ import javax.swing.JButton;
 import kernel.FatalKernel;
 
 /**
- * Displays an options menu where a user can change settings such as display and
- * difficulty to their liking
+ * Displays an options menu where a user can change settings.
  * 
  * @author Marcos Davila
- * @date 2/2/2014
- * @revisionhistory 2/27/2014 - redrawScreen calls reworked to interact with hashMap objects.
- * 								Translucent panel turned into transparent panel.
- * 					2/5/2014 - File Created
  */
 
 @SuppressWarnings("serial")
@@ -31,8 +26,17 @@ public class OptionsPanel extends JPanel implements FatalView {
 	
 	private Image img;
 	private ArrayList<String> parameters;
+	
+	/**
+	 * Difficulty level of the game
+	 */
 	public final int DIFFICULTY = 0;
 
+	/**
+	 * Creates the view of the options panel.
+	 * 
+	 * @param fk an instance of the kernel
+	 */
 	public OptionsPanel(final FatalKernel fk){
 		parameters = fk.getGameParameters();
 		
@@ -59,20 +63,29 @@ public class OptionsPanel extends JPanel implements FatalView {
     	img = new ImagePanel(fk, "index.jpg").getImage();	
 	}
 	
+	/**
+	 * Paints the image as the background of the JPanel
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
 	}
 
+	/**
+	 * This class has no threads to start, so this method does nothing.
+	 */
 	@Override
 	public void startThreads() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		
 	}
 
+	/**
+	 * This class has no threads to stop, so this method does nothing.
+	 */
 	@Override
 	public void stopThreads() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		
 	}
 

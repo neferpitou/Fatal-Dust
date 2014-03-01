@@ -15,12 +15,9 @@ import javax.swing.JButton;
 import kernel.FatalKernel;
 
 /**
- * Character selection menu
+ * A visual character selection menu built using Java Swing.
  * 
- * @author: Marcos Davila
- * @revisionhistory
- * 		2/27/2014 - Timer thread rewritten into this class' run method. Translucent
- * 					panel turned into transparent panel.
+ * @author Marcos Davila
  */
 @SuppressWarnings("serial")
 public class CharacterSelectionPanel extends JPanel implements Runnable, FatalView {
