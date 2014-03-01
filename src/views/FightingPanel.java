@@ -1,13 +1,17 @@
-package panels;
+package views;
+
+import interfaces.FatalView;
 
 import java.awt.Graphics;
 import java.awt.Image;
+
+import javax.swing.JPanel;
 
 import kernel.FatalKernel;
 import etc.LoadImage;
 
 @SuppressWarnings("serial")
-public class FightingPanel extends AbstractPanel implements Runnable {
+public class FightingPanel extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 

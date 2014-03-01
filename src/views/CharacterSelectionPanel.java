@@ -1,4 +1,6 @@
-package panels;
+package views;
+
+import interfaces.FatalView;
 
 import java.awt.BorderLayout;
 import java.awt.Graphics;
@@ -9,7 +11,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import etc.LoadImage;
-import etc.ViewLabels;
 
 import javax.swing.JButton;
 
@@ -24,7 +25,7 @@ import kernel.FatalKernel;
  * 					panel turned into transparent panel.
  */
 @SuppressWarnings("serial")
-public class CharacterSelectionPanel extends AbstractPanel implements ViewLabels, Runnable {
+public class CharacterSelectionPanel extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 	private javax.swing.Timer timer;

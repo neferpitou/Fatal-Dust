@@ -1,8 +1,12 @@
-package panels;
+package views;
+
+import interfaces.FatalView;
 
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
 
 import etc.LoadImage;
 
@@ -22,7 +26,7 @@ import etc.LoadImage;
  * 1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class ImagePanel extends AbstractPanel {
+public class ImagePanel extends JPanel implements FatalView {
 
 	public final String tag = "LOADING";
 	private Image i;

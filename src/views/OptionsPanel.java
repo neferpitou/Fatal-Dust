@@ -1,4 +1,6 @@
-package panels;
+package views;
+
+import interfaces.FatalView;
 
 import javax.swing.JPanel;
 
@@ -13,7 +15,6 @@ import javax.swing.JButton;
 
 import kernel.FatalKernel;
 import etc.LoadImage;
-import etc.ViewLabels;
 
 /**
  * Displays an options menu where a user can change settings such as display and
@@ -27,7 +28,7 @@ import etc.ViewLabels;
  */
 
 @SuppressWarnings("serial")
-public class OptionsPanel extends AbstractPanel implements ViewLabels {
+public class OptionsPanel extends JPanel implements FatalView {
 	
 	private Image img;
 	private ArrayList<String> parameters;

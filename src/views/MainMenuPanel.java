@@ -1,4 +1,6 @@
-package panels;
+package views;
+
+import interfaces.FatalView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,7 +14,6 @@ import javax.swing.JPanel;
 
 import kernel.FatalKernel;
 import etc.LoadImage;
-import etc.ViewLabels;
 
 /**
  * Displays the main menu with buttons to move through the functions of the game.
@@ -26,7 +27,7 @@ import etc.ViewLabels;
  * 					1/30/2014 - File created
  */
 @SuppressWarnings("serial")
-public class MainMenuPanel extends AbstractPanel implements ViewLabels {
+public class MainMenuPanel extends JPanel implements FatalView {
 	
 	private Image img;
 	private TransPanel transPanel;
@@ -72,9 +73,9 @@ public class MainMenuPanel extends AbstractPanel implements ViewLabels {
  *
  */
 @SuppressWarnings("serial")
-class TransPanel extends JPanel implements ViewLabels {
+class TransPanel extends JPanel implements FatalView {
 	
-	public TransPanel(final FatalKernel fk, AbstractPanel reference){
+	public TransPanel(final FatalKernel fk, FatalView reference){
 		renderButtons(fk);
 	}
 	
@@ -130,5 +131,17 @@ class TransPanel extends JPanel implements ViewLabels {
         } catch (InterruptedException e) {
         	
         }
+	}
+
+	@Override
+	public void startThreads() {
+		// Do nothing
+		
+	}
+
+	@Override
+	public void stopThreads() {
+		// Do nothing
+		
 	}
 }
