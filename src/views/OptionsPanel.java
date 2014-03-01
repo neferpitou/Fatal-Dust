@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 
 import kernel.FatalKernel;
-import etc.LoadImage;
 
 /**
  * Displays an options menu where a user can change settings such as display and
@@ -57,8 +56,7 @@ public class OptionsPanel extends JPanel implements FatalView {
 		panel.add(btnBack);
 		
 		// TODO: Get a better background image
-    	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");	
+    	img = new ImagePanel(fk, "index.jpg").getImage();	
 	}
 	
 	@Override

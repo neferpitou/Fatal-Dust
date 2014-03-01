@@ -10,8 +10,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
-import etc.LoadImage;
-
 import javax.swing.JButton;
 
 import kernel.FatalKernel;
@@ -68,8 +66,7 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 		panel.add(btnStart);
 		
 		// TODO: Get a better background image
-    	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");	
+    	img = new ImagePanel(fk, "index.jpg").getImage();	
     	
 	}
 	

@@ -8,17 +8,15 @@ import java.awt.Image;
 import javax.swing.JPanel;
 
 import kernel.FatalKernel;
-import etc.LoadImage;
 
 @SuppressWarnings("serial")
 public class FightingPanel extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 
-	public FightingPanel(FatalKernel fk_reference){
+	public FightingPanel(final FatalKernel fk){
 		// TODO: Get a better background image
-    	LoadImage li = new LoadImage();
-    	img = li.loadImage("index.jpg");
+    	img = new ImagePanel(fk, "index.jpg").getImage();
 	}
 	
 	@Override

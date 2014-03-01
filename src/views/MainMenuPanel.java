@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import kernel.FatalKernel;
-import etc.LoadImage;
 
 /**
  * Displays the main menu with buttons to move through the functions of the game.
@@ -31,11 +30,10 @@ public class MainMenuPanel extends JPanel implements FatalView {
 	
 	private Image img;
 	private TransPanel transPanel;
-	private LoadImage li = new LoadImage();
 	
     public MainMenuPanel(final FatalKernel fk){
 		// TODO: Get a better background image
-    	img = li.loadImage("index.jpg");
+    	img = new ImagePanel(fk, "index.jpg").getImage();
     	
     	setLayout(new BorderLayout(0, 0));
     	setDoubleBuffered(true);
@@ -52,14 +50,12 @@ public class MainMenuPanel extends JPanel implements FatalView {
 
 	@Override
 	public void startThreads() {
-		// TODO Auto-generated method stub
-		;
+		// Do nothing
 	}
 
 	@Override
 	public void stopThreads() {
-		// TODO Auto-generated method stub
-		;
+		// Do nothing
 	}
 }
 

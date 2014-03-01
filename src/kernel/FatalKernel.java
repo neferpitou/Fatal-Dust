@@ -6,7 +6,10 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -94,13 +97,6 @@ public class FatalKernel implements Runnable {
 			// frame and kills the current program but leaves the JVM up
 			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			this.setFullScreen(displayMode);
-
-			// Create the loading screen to show the user while the rest of the
-			// resources are being loaded
-			// TODO: Find/create a better loading screen and put it into
-			// resources
-			// folder
-			this.add(ip);
 		}
 
 		/**
@@ -138,6 +134,19 @@ public class FatalKernel implements Runnable {
 				}
 			}
 		}
+		
+		/**
+		 * Returns the bit depth, resolution width and resolution height of the screen in
+		 * an ArrayList. 
+		 * 
+		 * @return 
+		 * 			info - the information about the screen object. The list is sorted by
+		 * 			width, height, depth
+		 */
+		public ArrayList<Integer> screenInfo(){
+			return new ArrayList<Integer>(Arrays.asList(RESOLUTION_WIDTH, RESOLUTION_HEIGHT, BIT_DEPTH));
+		}
+		
 	}
 
 	// The kernel has a copy of these fields that are found in
@@ -149,8 +158,8 @@ public class FatalKernel implements Runnable {
 	public String VERSUS = "VERSUS";
 
 	public String LOADING = "LOADING";
-	private final Screen screen;
-	private final ImagePanel ip = new ImagePanel("game-loader.gif");
+	private final Screen screen = new Screen();
+	private ImagePanel ip;
 	private final FatalKernel kernel_memory_reference = this;
 	private final ArrayList<String> parameters = new ArrayList<String>();
 	private HashMap<String, FatalView> views;
@@ -162,7 +171,6 @@ public class FatalKernel implements Runnable {
 	 * at the main menu
 	 */
 	public FatalKernel(final String[] args) {
-		screen = new Screen();
 		// Start the kernel in it's own thread
 		game_thread.start();
 	}
@@ -185,8 +193,7 @@ public class FatalKernel implements Runnable {
 	 * @return a list of the game settings
 	 */
 	public ArrayList<String> getGameParameters() {
-		final ArrayList<String> p = new ArrayList<String>(parameters.size());
-		return p;
+		return new ArrayList<String>(parameters.size());
 	}
 
 	/**
@@ -199,7 +206,6 @@ public class FatalKernel implements Runnable {
 	 * @return a view from the hashmap
 	 */
 	public FatalView getView(final String screen) {
-		// TODO Auto-generated method stub
 		return views.get(screen);
 	}
 
@@ -229,6 +235,11 @@ public class FatalKernel implements Runnable {
 	@Override
 	public void run() {
 
+		// Create the loading screen to show the user while the rest of the
+		// resources are being loaded
+		ip = new ImagePanel(kernel_memory_reference, "game-loader.gif");
+		screen.add(ip);
+					
 		// The loading screen is visible while this thread runs
 		final Thread t = new Thread(new Runnable() {
 
@@ -259,6 +270,15 @@ public class FatalKernel implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Get attributes of the screen
+	 * @return
+	 * 			A list holding the screen's width, height, and bit depth
+	 */
+	public ArrayList<Integer> getScreenInfo(){
+		return screen.screenInfo();
+	}
 
 	/**
 	 * Sets parameters for the game to function.
@@ -267,6 +287,25 @@ public class FatalKernel implements Runnable {
 		for (int i = 0; i < params.size(); i++) {
 			parameters.add(params.get(i));
 		}
+	}
+	
+	/**
+	 * Loads an image from disk and returns it
+	 * 
+	 * @param imgpath - name of file on hard drive
+	 * @return the image on disk
+	 */
+	public Image loadImage(String imgpath){
+		// Get the image and load it into memory. Resource path should be added
+		// to string here before finding the image
+		imgpath = "resources/" + imgpath;
+		Image i = Toolkit.getDefaultToolkit().createImage(
+				getClass().getClassLoader().getResource(imgpath));
+
+		// Get the image from the pathname and resize the image to the user's
+		// native resolution
+		ArrayList<Integer> info = getScreenInfo();
+		return i.getScaledInstance(info.get(0), info.get(1), Image.SCALE_FAST);
 	}
 
 }

@@ -4,19 +4,18 @@ import interfaces.FatalView;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 
-import etc.LoadImage;
+import kernel.FatalKernel;
 
 /**
- * Displays a loading GIF on a panel while threads handle loading of resources
+ * Displays an image panel while threads handle loading of resources
  * 
  * @author Marcos Davila
  * @date 2/2/2014
  * @revisionhistory 
- * 
+ * 3/1/2014 - Made into a more general image class.
  * 2/5/2014 - Moved out of kernel to reduce kernel size
  * 2/3/2014 - Details of loading images refactored into LoadImage class, this class
  * 			  refactored into the kernel
@@ -28,37 +27,33 @@ import etc.LoadImage;
 @SuppressWarnings("serial")
 public class ImagePanel extends JPanel implements FatalView {
 
-	public final String tag = "LOADING";
 	private Image i;
 
-	public ImagePanel(String imgPath, LayoutManager newLayout) {
-		setLayout(newLayout);
-		new ImagePanel(imgPath);
+	public ImagePanel(final FatalKernel fk, String imgpath) {
+		this.i = fk.loadImage(imgpath);	
 	}
-
-	public ImagePanel(String imgpath) {
-		LoadImage li = new LoadImage();
-		i = li.loadImage(imgpath);
+	
+	/**
+	 * Return the image
+	 */
+	public Image getImage(){
+		return i;
 	}
-
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(i, 0, 0, this);
 	}
 
-	public String getTag() {
-		return tag;
-	}
-
 	@Override
 	public void startThreads() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		
 	}
 
 	@Override
 	public void stopThreads() {
-		// TODO Auto-generated method stub
+		// Do nothing
 		
 	}
 	
