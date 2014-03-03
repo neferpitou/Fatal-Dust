@@ -15,7 +15,7 @@ import kernel.FatalKernel;
  * @author Marcos Davila
  */
 @SuppressWarnings("serial")
-public class ImagePanel extends JPanel implements FatalView {
+public class BackgroundView extends JPanel implements FatalView {
 
 	// Background image
 	private Image i;
@@ -26,10 +26,17 @@ public class ImagePanel extends JPanel implements FatalView {
 	 * @param fk kernel instance
 	 * @param imgpath name of image in resources folder
 	 */
-	public ImagePanel(final FatalKernel fk, String imgpath) {
+	public BackgroundView(final FatalKernel fk, String imgpath) {
 		this.i = fk.loadImage(imgpath);	
 	}
 	
+	/**
+	 * Creates a blank image panel which signifies an error with the view
+	 */
+	public BackgroundView() {
+		
+	}
+
 	/**
 	 * Returns the image drawn on the background of the JPanel
 	 * 
@@ -39,6 +46,11 @@ public class ImagePanel extends JPanel implements FatalView {
 		return i;
 	}
 	
+	/**
+	 * Renders the image on the view.
+	 * 
+	 * @param g a Graphics object to do the rendering
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
 		g.drawImage(i, 0, 0, this);

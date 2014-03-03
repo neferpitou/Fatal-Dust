@@ -1,8 +1,9 @@
 package interfaces;
 
 /**
- * An interface for all views that describe the things views must be capable of
- * doing.
+ * An interface that all views implement. It grants access to identifiers that
+ * views can use to refer to other views and requires all views to be capable of
+ * starting and stopping their threads.
  * 
  * @author Marcos Davila
  */
@@ -10,37 +11,32 @@ package interfaces;
 public interface FatalView {
 	
 	/**
-	 * Identifier for main menu
-	 */
-	public String MAIN = "MAIN";
-	
-	/**
-	 * Identifier for options menu
-	 */
-	public String OPTIONS = "OPTIONS";
-	
-	/**
-	 * Identifier for select menu
+	 * Identifier for the character selection menu
 	 */
 	public String SELECT = "SELECT";
 	
 	/**
-	 * Identifier for versus menu
+	 * Identifier for versus menu.
 	 */
 	public String VERSUS = "VERSUS";
 	
 	/**
-	 * Identifier for loading screen
+	 * Identifier for loading screen.
 	 */
-	public String LOADING = "LOADING";	
+	public String LOADING = "LOADING";
 	
 	/**
-	 *  All classes need to start their own threads when they come into view
+	 * Identifier for error screen.
+	 */
+	public String ERROR = "ERROR";
+	
+	/**
+	 *  Starts all threads of the associated view.
 	 */
 	public abstract void startThreads();
 	
 	/**
-	 * All classes need to know how to kill their own threads
+	 * Stops all threads of the associated view.
 	 */
 	public abstract void stopThreads();
 

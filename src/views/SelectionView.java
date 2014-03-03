@@ -15,12 +15,12 @@ import javax.swing.JButton;
 import kernel.FatalKernel;
 
 /**
- * A visual character selection menu built using Java Swing.
+ * A view that provides a way for the user to choose the character to use in the game. 
  * 
  * @author Marcos Davila
  */
 @SuppressWarnings("serial")
-public class CharacterSelectionPanel extends JPanel implements Runnable, FatalView {
+public class SelectionView extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 	private javax.swing.Timer timer;
@@ -29,7 +29,12 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 	private FatalKernel fk;
 	private Thread timerThread;
 
-	public CharacterSelectionPanel(final FatalKernel fk){
+	/**
+	 * Constructs the elements of the view.
+	 * 
+	 * @param fk an instance of the kernel
+	 */
+	public SelectionView(final FatalKernel fk){
 		// TODO: Insert background image for optionsPanel		
 		setLayout(new BorderLayout(0, 0));
 		this.fk = fk;
@@ -37,18 +42,6 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
 		add(panel, BorderLayout.SOUTH);
-		
-		JButton btnBack = new JButton("Back");
-		btnBack.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Persist changes and notify the kernel
-				stopThreads();
-				fk.redrawScreen(fk.getView(SELECT), fk.getView(MAIN));			
-			}		
-		});
-		panel.add(btnBack);
 		
 		JButton btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener(){
@@ -63,12 +56,14 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 		panel.add(btnStart);
 		
 		// TODO: Get a better background image
-    	img = new ImagePanel(fk, "index.jpg").getImage();	
+    	img = new BackgroundView(fk, "selectionmenu.jpg").getImage();	
     	
 	}
 	
 	/**
-	 * Render image background
+	 * Renders the image on the view.
+	 * 
+	 * @param g a Graphics object to do the rendering
 	 */
 	@Override
 	public void paintComponent(Graphics g) {
@@ -76,7 +71,7 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 	}
 
 	/**
-	 * Start all threads associated with this view
+	 * Start all threads associated with this view.
 	 */
 	@Override
 	public void startThreads() {
@@ -86,7 +81,7 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 	}
 
 	/**
-	 * Stop all threads associated with this view
+	 * Stop all threads associated with this view.
 	 */
 	@Override
 	public void stopThreads() {
@@ -101,7 +96,8 @@ public class CharacterSelectionPanel extends JPanel implements Runnable, FatalVi
 	}
 
 	/**
-	 * Launches timer thread
+	 * Starts the timer, which gives players one minute to decide on their
+	 * character.
 	 */
 	@Override
 	public void run() {

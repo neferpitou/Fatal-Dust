@@ -8,6 +8,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,37 +17,39 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import views.CharacterSelectionPanel;
-import views.FightingPanel;
-import views.ImagePanel;
-import views.MainMenuPanel;
-import views.OptionsPanel;
+import views.SelectionView;
+import views.VersusView;
+import views.BackgroundView;
 
 /**
- * The kernel of the game, which manages the top level threads of the game and
- * provides the game with services for loading images, drawing to the screen,
- * asynchronous input, collision detection, and background music.
+ * The kernel of the video game, where the bulk of the logic will be. It houses
+ * functionality common to many classes in the project and also handles
+ * additional logic that should not be in the domain of those classes.
  * 
- * The kernel of the game deals with the logic needed in the program which
- * should not be handled by specific instances of panels that the kernel
- * maintains. The panels should be passed an instance of the kernel as a
- * parameter to it's constructor. This parameter should be final to avoid
- * accidental changes. Any updates that need to happen to this instance should
- * be returned to the kernel, and the kernel should update these values.
+ * The kernel is also responsible for managing many of the most important
+ * threads in the game. It also provides the game with services for loading
+ * images, drawing to the screen, asynchronous input, collision detection, and
+ * background music.
+ * 
+ * In order for classes to be able to utilize the methods within the kernel, an
+ * instance of the kernel is be passed as a parameter to any constructor of that
+ * class. This parameter is always final to avoid accidental changes. Any
+ * updates that need to happen to the kernel should be handled by a function
+ * call to the kernel from within that class.
  * 
  * @author Marcos Davila
  */
 @SuppressWarnings("serial")
 public class FatalKernel implements Runnable {
 
-	/**
-	 * The Screen class manages behavior common to all views for the video game.
+	/*
+	 * Manages the view objects for the video game.
 	 * Since only the kernel should know about the screen and how to draw to it,
 	 * it is an inner class within the kernel.
 	 * 
 	 * @author Marcos Davila
 	 */
-	public class Screen extends JFrame {
+	private class Screen extends JFrame {
 
 		private final GraphicsDevice device = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -61,27 +64,16 @@ public class FatalKernel implements Runnable {
 				RESOLUTION_WIDTH, RESOLUTION_HEIGHT, BIT_DEPTH,
 				DisplayMode.REFRESH_RATE_UNKNOWN);
 
-		/**
+		/*
 		 * A no-argument constructor which sets the default frame properties.
 		 */
-		public Screen() {
-			
+		public Screen() {			
 			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			this.setFullScreen(displayMode);
 		}
 
-		/**
-		 * Restores the screen's display mode.
-		 */
-		public void restoreScreen() {
-			if (device.getFullScreenWindow() != null) {
-				this.dispose();
-			}
 
-			device.setFullScreenWindow(null);
-		}
-
-		/**
+		/*
 		 * Returns the bit depth, resolution width and resolution height of the
 		 * screen in an ArrayList.
 		 * 
@@ -93,7 +85,7 @@ public class FatalKernel implements Runnable {
 					RESOLUTION_HEIGHT, BIT_DEPTH));
 		}
 
-		/**
+		/*
 		 * 
 		 * Enters full screen mode and changes the display mode
 		 * 
@@ -118,6 +110,15 @@ public class FatalKernel implements Runnable {
 				}
 			}
 		}
+		
+		/*
+		 * Returns the full screen window object
+		 * 
+		 * @returns the fullscreen window object
+		 */
+		public Window getFullScreenWindow(){
+			return device.getFullScreenWindow();
+		}
 
 	}
 
@@ -125,15 +126,6 @@ public class FatalKernel implements Runnable {
 	 * The kernel has a copy of these fields that are found in FatalView. The
 	 * kernel should not have to implement the interface if it doesn't need to.
 	 */
-	/**
-	 * Identifier for main menu
-	 */
-	public final String MAIN = "MAIN";
-	
-	/**
-	 * Identifier for options menu
-	 */
-	public final String OPTIONS = "OPTIONS";
 	
 	/**
 	 * Identifier for the character selection menu
@@ -150,11 +142,16 @@ public class FatalKernel implements Runnable {
 	 */
 	public String LOADING = "LOADING";
 	
+	/**
+	 * Identifier for error screen in hashmap
+	 */
+	public String ERROR = "ERROR";
+	
 	//The screen object which the game resides in
 	private final Screen screen = new Screen();
 	
 	//An image panel to show a loading screen
-	private ImagePanel loadingScreen;
+	private BackgroundView loadingScreen;
 	
 	//Memory reference of the kernel
 	private final FatalKernel kernel_memory_reference = this;
@@ -169,18 +166,15 @@ public class FatalKernel implements Runnable {
 	private final Thread game_thread = new Thread(this);
 
 	/**
-	 * Create a screen to render images to and start the main loop of the game
-	 * at the main menu
-	 * 
-	 * @param args optional command line arguments
+	 * Initializes an instance of the kernel
 	 */
-	public FatalKernel(final String[] args) {
+	public FatalKernel( ) {
 		// Start the kernel in it's own thread
 		game_thread.start();
 	}
 
 	/**
-	 * Shuts down the kernel gracefully
+	 * Exits the kernel. This method stops all currently active threads and disposes of the screen.
 	 */
 	public void exit() {
 		try {
@@ -192,16 +186,17 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Gets parameters for the game to function.
+	 * Returns the settings for the game. The contents returned in the list respectively are
+	 * the difficulty settings.
 	 * 
 	 * @return an ArrayList object with the game settings
 	 */
-	public ArrayList<String> getGameParameters() {
+	public ArrayList<String> getSettings() {
 		return new ArrayList<String>(parameters.size());
 	}
 
 	/**
-	 * Get attributes of the screen
+	 * Returns the screen object's width, height, and bit depth.
 	 * 
 	 * @return an ArrayList object holding the screen's width, height, and bit
 	 *         depth in that order
@@ -211,7 +206,8 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Returns a view from the hashmap.
+	 * Returns a view from the hashmap that matches the name specified, or returns
+	 * an error screen if no such view was found.
 	 * 
 	 * @param screen a string identifier of the object that should be retrieved
 	 *            	from the hashmap
@@ -219,14 +215,24 @@ public class FatalKernel implements Runnable {
 	 * @return the desired view from the hashmap
 	 */
 	public FatalView getView(final String screen) {
-		return views.get(screen);
+		FatalView newView = views.get(screen);
+		
+		return ((newView != null) ? newView : views.get(ERROR));
+	}
+	
+	/**
+	 * Returns the Window object that represents the screen to the user
+	 * 
+	 */
+	public Window getFullScreenWindow(){
+		return screen.getFullScreenWindow();
 	}
 
 	/**
-	 * Loads an image from disk and returns it
+	 * Returns an image with the filename specified.
 	 * 
 	 * @param imgpath name of file on hard drive
-	 * @return an Image object of the file
+	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
 		// Get the image and load it into memory. Resource path should be added
@@ -242,7 +248,7 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Removes one panel and replaces it with another panel
+	 * Removes one view and replaces it with another view
 	 * 
 	 * @param remove desired view to remove
 	 * @param add desired view to add
@@ -260,14 +266,14 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Starts the core activities for the game to function
+	 * Starts the game thread
 	 */
 	@Override
 	public void run() {
 
 		// Create the loading screen to show the user while the rest of the
 		// resources are being loaded
-		loadingScreen = new ImagePanel(kernel_memory_reference, "game-loader.gif");
+		loadingScreen = new BackgroundView(kernel_memory_reference, "game-loader.gif");
 		screen.add(loadingScreen);
 
 		// The loading screen is visible while this thread runs
@@ -279,12 +285,11 @@ public class FatalKernel implements Runnable {
 
 				views = new HashMap<String, FatalView>();
 
-				views.put(MAIN, new MainMenuPanel(kernel_memory_reference));
-				views.put(OPTIONS, new OptionsPanel(kernel_memory_reference));
-				views.put(VERSUS, new FightingPanel(kernel_memory_reference));
-				views.put(SELECT, new CharacterSelectionPanel(
+				views.put(VERSUS, new VersusView(kernel_memory_reference));
+				views.put(SELECT, new SelectionView(
 						kernel_memory_reference));
 				views.put(LOADING, loadingScreen);
+				views.put(ERROR, new BackgroundView()); // for now, error screen is blank panel
 			}
 
 		});
@@ -293,7 +298,7 @@ public class FatalKernel implements Runnable {
 
 		try {
 			t.join(); // Wait on the thread loading materials to finish
-			this.redrawScreen(this.getView(LOADING), this.getView(MAIN));
+			this.redrawScreen(this.getView(LOADING), this.getView(VERSUS));
 		} catch (final InterruptedException e) {
 			// If all of the materials cannot be loaded, the kernel should exit
 			this.exit();
