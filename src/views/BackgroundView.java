@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import kernel.FatalKernel;
 
 /**
- * Displays an image panel while threads handle loading of resources
+ * Displays an image panel while threads handle loading of resources.
  * 
  * @author Marcos Davila
  */

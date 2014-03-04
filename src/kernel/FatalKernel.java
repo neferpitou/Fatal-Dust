@@ -17,7 +17,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import views.SelectionView;
 import views.VersusView;
 import views.BackgroundView;
 
@@ -286,8 +285,6 @@ public class FatalKernel implements Runnable {
 				views = new HashMap<String, FatalView>();
 
 				views.put(VERSUS, new VersusView(kernel_memory_reference));
-				views.put(SELECT, new SelectionView(
-						kernel_memory_reference));
 				views.put(LOADING, loadingScreen);
 				views.put(ERROR, new BackgroundView()); // for now, error screen is blank panel
 			}

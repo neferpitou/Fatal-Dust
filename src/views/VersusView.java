@@ -20,6 +20,7 @@ import kernel.FatalKernel;
 public class VersusView extends JPanel implements Runnable, FatalView {
 
 	private Image img;
+	private boolean isRunning;
 	private FatalKernel fk;
 
 	/**
@@ -29,7 +30,7 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 	 */
 	public VersusView(final FatalKernel fk){
 		this.fk = fk;
-		new Thread(this).start();
+		init();
 	}
 	
 	/**
@@ -68,15 +69,17 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 	 * The main loop of the video game
 	 */
 	private void gameLoop() {
-		
+		// TODO Auto-generated method stub
+		while (isRunning){
+			
+		}
 	}
-	
 
 	// Sets up the view and starts threads for the game to run
 	private void init() {
-		
 		// TODO: Get a better background image
     	img = new BackgroundView(fk, "index.jpg").getImage();
     	startThreads();
 	}
+
 }

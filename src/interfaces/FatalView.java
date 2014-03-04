@@ -31,6 +31,21 @@ public interface FatalView {
 	public String ERROR = "ERROR";
 	
 	/**
+	 * Character panel identifier
+	 */
+	public String CHARACTER_VIEW = "CHARACTER_VIEW";
+	
+	/**
+	 * Background panel identifier
+	 */
+	public String BACKGROUND_VIEW = "BACKGROUND_VIEW";
+	
+	/**
+	 * Versus panel identifier
+	 */
+	public String VERSUS_VIEW = "VERSUS_VIEW";
+	
+	/**
 	 *  Starts all threads of the associated view.
 	 */
 	public abstract void startThreads();
@@ -40,4 +55,8 @@ public interface FatalView {
 	 */
 	public abstract void stopThreads();
 
+	/**
+	 * Panel should be able to identify itself
+	 */
+	public abstract String toString();
 }
