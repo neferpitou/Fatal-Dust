@@ -78,7 +78,7 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 	// Sets up the view and starts threads for the game to run
 	private void init() {
 		// TODO: Get a better background image
-    	img = fk.loadImage("index.jpg");
+    	img = fk.loadImage("stage background.gif");
     	startThreads();
 	}
 
