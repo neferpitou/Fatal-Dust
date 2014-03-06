@@ -237,13 +237,19 @@ public class FatalKernel implements Runnable {
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
-		final Image i = Toolkit.getDefaultToolkit().createImage(
+		Image i = null;
+		try {
+		i = Toolkit.getDefaultToolkit().createImage(
 				this.getClass().getClassLoader().getResource(imgpath));
-
+		} catch (NullPointerException e){
+			e.printStackTrace();
+		}
+		
 		// Get the image from the pathname and resize the image to the user's
 		// native resolution
 		final ArrayList<Integer> info = this.getScreenInfo();
 		return i.getScaledInstance(info.get(0), info.get(1), Image.SCALE_FAST);
+		
 	}
 
 	/**
