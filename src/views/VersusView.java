@@ -21,15 +21,12 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 	private boolean isRunning;
-	private FatalKernel fk;
+	private FatalKernel fk = FatalKernel.getInstance();
 
 	/**
 	 * Sets up the view for the players to fight
-	 * 
-	 * @param fk
 	 */
-	public VersusView(final FatalKernel fk){
-		this.fk = fk;
+	public VersusView(){
 		init();
 	}
 	

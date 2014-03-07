@@ -152,8 +152,8 @@ public class FatalKernel implements Runnable {
 	//An image panel to show a loading screen
 	private BackgroundView loadingScreen;
 	
-	//Memory reference of the kernel
-	private final FatalKernel kernel_memory_reference = this;
+	//Private instance reference of the kernel
+	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
 	
 	//The settings of the game
 	private final ArrayList<String> parameters = new ArrayList<String>();
@@ -166,10 +166,22 @@ public class FatalKernel implements Runnable {
 
 	/**
 	 * Initializes an instance of the kernel
+	 * Private constructor that is only getting called once
 	 */
-	public FatalKernel( ) {
+	private FatalKernel( ) {
 		// Start the kernel in it's own thread
 		game_thread.start();
+	}
+	
+	/**
+	 * Public getter of the only FatalKernel
+	 * 
+	 * @return singleton instance of FatalKernel
+	 */
+	
+	public static FatalKernel getInstance()
+	{
+		return FATAL_KERNEL_INSTANCE;
 	}
 
 	/**
@@ -191,6 +203,9 @@ public class FatalKernel implements Runnable {
 	 * @return an ArrayList object with the game settings
 	 */
 	public ArrayList<String> getSettings() {
+		
+		//this returns an EMPTY ARRAY LIST .. why dont we return parameters and not make it final?
+		
 		return new ArrayList<String>(parameters.size());
 	}
 
@@ -278,7 +293,7 @@ public class FatalKernel implements Runnable {
 
 		// Create the loading screen to show the user while the rest of the
 		// resources are being loaded
-		loadingScreen = new BackgroundView(kernel_memory_reference, "game-loader.gif");
+		loadingScreen = new BackgroundView("game-loader.gif");
 		screen.add(loadingScreen);
 
 		// The loading screen is visible while this thread runs
@@ -290,7 +305,7 @@ public class FatalKernel implements Runnable {
 
 				views = new HashMap<String, FatalView>();
 
-				views.put(VERSUS, new VersusView(kernel_memory_reference));
+				views.put(VERSUS, new VersusView());
 				views.put(LOADING, loadingScreen);
 				views.put(ERROR, new BackgroundView()); // for now, error screen is blank panel
 			}

@@ -18,7 +18,7 @@ public class FatalDriver {
 	 * @param args optional command line arguments
 	 */
 	public static void main(String[] args) {
-		new FatalKernel();
+		FatalKernel.getInstance();
 	}
 
 }

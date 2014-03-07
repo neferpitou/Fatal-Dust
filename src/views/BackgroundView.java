@@ -23,11 +23,10 @@ public class BackgroundView extends JPanel implements FatalView {
 	/**
 	 * Creates a JPanel that paints an image as it's background.
 	 * 
-	 * @param fk kernel instance
 	 * @param imgpath name of image in resources folder
 	 */
-	public BackgroundView(final FatalKernel fk, String imgpath) {
-		this.i = fk.loadImage(imgpath);	
+	public BackgroundView(String imgpath) {
+		this.i = FatalKernel.getInstance().loadImage(imgpath);	
 	}
 	
 	/**
