@@ -4,15 +4,20 @@ import interfaces.FatalView;
 
 import java.awt.Dimension;
 import java.awt.DisplayMode;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -129,22 +134,22 @@ public class FatalKernel implements Runnable {
 	/**
 	 * Identifier for the character selection menu
 	 */
-	public String SELECT = "SELECT";
+	public final String SELECT = "SELECT";
 	
 	/**
 	 * Identifier for the versus screen
 	 */
-	public String VERSUS = "VERSUS";
+	public final String VERSUS = "VERSUS";
 
 	/**
 	 * Identifier for the loading screen
 	 */
-	public String LOADING = "LOADING";
+	public final String LOADING = "LOADING";
 	
 	/**
 	 * Identifier for error screen in hashmap
 	 */
-	public String ERROR = "ERROR";
+	public final String ERROR = "ERROR";
 	
 	//The screen object which the game resides in
 	private final Screen screen = new Screen();
@@ -154,9 +159,6 @@ public class FatalKernel implements Runnable {
 	
 	//Memory reference of the kernel
 	private final FatalKernel kernel_memory_reference = this;
-	
-	//The settings of the game
-	private final ArrayList<String> parameters = new ArrayList<String>();
 	
 	// A hashmap that holds the views. The views are identified and retrieved by their identifiers.
 	private HashMap<String, FatalView> views;
@@ -182,16 +184,6 @@ public class FatalKernel implements Runnable {
 			// Nothing needs to be done since the game is exiting anyway.
 		}
 		screen.dispose();
-	}
-
-	/**
-	 * Returns the settings for the game. The contents returned in the list respectively are
-	 * the difficulty settings.
-	 * 
-	 * @return an ArrayList object with the game settings
-	 */
-	public ArrayList<String> getSettings() {
-		return new ArrayList<String>(parameters.size());
 	}
 
 	/**
@@ -237,18 +229,35 @@ public class FatalKernel implements Runnable {
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
-		Image i = null;
+		
+		/*Image i = null;
 		try {
 		i = Toolkit.getDefaultToolkit().createImage(
 				this.getClass().getClassLoader().getResource(imgpath));
 		} catch (NullPointerException e){
 			e.printStackTrace();
+		}*/
+		
+		BufferedImage i = null;
+		try {
+			i = ImageIO.read(this.getClass().getClassLoader().getResource(imgpath));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		// Get the image from the pathname and resize the image to the user's
-		// native resolution
 		final ArrayList<Integer> info = this.getScreenInfo();
-		return i.getScaledInstance(info.get(0), info.get(1), Image.SCALE_FAST);
+		final int newWidth = info.get(0);
+		final int newHeight = info.get(1);
+		
+		// resize the image	
+		BufferedImage resized = new BufferedImage(newWidth, newHeight, i.getType());
+	    Graphics2D g = resized.createGraphics();
+	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(), i.getHeight(), null);
+	    g.dispose();
+
+		return resized;
 		
 	}
 
@@ -286,8 +295,6 @@ public class FatalKernel implements Runnable {
 
 			@Override
 			public void run() {
-				parameters.add("Medium");
-
 				views = new HashMap<String, FatalView>();
 
 				views.put(VERSUS, new VersusView(kernel_memory_reference));
@@ -308,14 +315,4 @@ public class FatalKernel implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 * Sets parameters for the game to function.
-	 */
-	public void updateGameParameters(final ArrayList<String> params) {
-		for (int i = 0; i < params.size(); i++) {
-			parameters.add(params.get(i));
-		}
-	}
-
 }
