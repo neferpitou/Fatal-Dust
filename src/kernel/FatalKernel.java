@@ -208,8 +208,8 @@ public class FatalKernel implements Runnable {
 	public ArrayList<String> getSettings() {
 		
 		//this returns an EMPTY ARRAY LIST .. why dont we return parameters and not make it final?
-		
-		return new ArrayList<String>(parameters.size());
+		return null;
+		//return new ArrayList<String>(parameters.size());
 	}
 
 	/**
