@@ -9,7 +9,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -179,10 +178,8 @@ public class FatalKernel implements Runnable {
 	 * Public getter of the only FatalKernel
 	 * 
 	 * @return singleton instance of FatalKernel
-	 */
-	
-	public static FatalKernel getInstance()
-	{
+	 */	
+	public static FatalKernel getInstance() {
 		return FATAL_KERNEL_INSTANCE;
 	}
 
@@ -199,22 +196,6 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Returns the settings for the game. The contents returned in the list respectively are
-	 * the difficulty settings.
-	 * 
-	 * @return an ArrayList object with the game settings
-	 */
-	public ArrayList<String> getSettings() {
-		
-		//this returns an EMPTY ARRAY LIST .. why dont we return parameters and not make it final?
-		return null;
-		//return new ArrayList<String>(parameters.size());
-	}
-
-	/**
-=======
->>>>>>> baaec5f2f4b944567132b69fb22bda42a6b34626
 	 * Returns the screen object's width, height, and bit depth.
 	 * 
 	 * @return an ArrayList object holding the screen's width, height, and bit

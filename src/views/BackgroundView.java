@@ -7,8 +7,6 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
-import kernel.FatalKernel;
-
 /**
  * Displays an image panel while threads handle loading of resources.
  * 
@@ -26,7 +24,7 @@ public class BackgroundView extends JPanel implements FatalView {
 	 * @param imgpath name of image in resources folder
 	 */
 	public BackgroundView(String imgpath) {
-		this.i = FatalKernel.getInstance().loadImage(imgpath);	
+		this.i = kernel.loadImage(imgpath);	
 	}
 	
 	/**

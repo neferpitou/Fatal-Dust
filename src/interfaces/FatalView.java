@@ -1,5 +1,7 @@
 package interfaces;
 
+import kernel.FatalKernel;
+
 /**
  * An interface that all views implement. It grants access to identifiers that
  * views can use to refer to other views and requires all views to be capable of
@@ -44,6 +46,11 @@ public interface FatalView {
 	 * Versus panel identifier
 	 */
 	public String VERSUS_VIEW = "VERSUS_VIEW";
+	
+	/**
+	 * The instance of the kernel 
+	 */
+	public FatalKernel kernel = FatalKernel.getInstance();
 	
 	/**
 	 *  Starts all threads of the associated view.

@@ -7,8 +7,6 @@ import java.awt.Image;
 
 import javax.swing.JPanel;
 
-import kernel.FatalKernel;
-
 /**
  * This is the actual game panel where rules, AI, collision detection,
  * and other necessary details for the fighting game to function will be.
@@ -21,7 +19,6 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 
 	private Image img;
 	private boolean isRunning;
-	private FatalKernel fk = FatalKernel.getInstance();
 
 	/**
 	 * Sets up the view for the players to fight
@@ -75,7 +72,7 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 	// Sets up the view and starts threads for the game to run
 	private void init() {
 		// TODO: Get a better background image
-    	img = fk.loadImage("stage background.gif");
+    	img = kernel.loadImage("stage background.gif");
     	startThreads();
 	}
 
