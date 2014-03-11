@@ -151,9 +151,6 @@ public class FatalKernel implements Runnable {
 	// The screen object which the game resides in
 	private final Screen screen = new Screen();
 
-	// An image panel to show a loading screen
-	private BackgroundView loadingScreen;
-
 	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
 
@@ -242,7 +239,6 @@ public class FatalKernel implements Runnable {
 	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
-		new Thread(new Runnable(){ public void run() { } }).start();
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
@@ -328,15 +324,13 @@ public class FatalKernel implements Runnable {
 		postGameLoop();
 	}
 	
+	/*
+	 * Logic to happen before the game loop starts
+	 */
 	private void preGameLoop(){	
-		views = new HashMap<String, FatalView>();	
-		
-		// Create the loading screen to show the user while the rest of the
-		// resources are being loaded
-		loadingScreen = new BackgroundView("game-loader.gif");
-		
+		views = new HashMap<String, FatalView>();			
 		views.put(VERSUS, new VersusView());
-		views.put(LOADING, loadingScreen);
+		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
 		
