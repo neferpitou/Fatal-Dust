@@ -15,16 +15,15 @@ import javax.swing.JPanel;
  *
  */
 @SuppressWarnings("serial")
-public class VersusView extends JPanel implements Runnable, FatalView {
+public class VersusView extends JPanel implements FatalView {
 
 	private Image img;
-	private boolean isRunning;
-
+	
 	/**
 	 * Sets up the view for the players to fight
 	 */
 	public VersusView(){
-		init();
+		startThreads();
 	}
 	
 	/**
@@ -38,42 +37,21 @@ public class VersusView extends JPanel implements Runnable, FatalView {
 	}
 
 	@Override
-	public void startThreads() {
-		
-	}
+	public void startThreads() { }
 
 	@Override
-	public void stopThreads() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		try {
-			init();
-			gameLoop();
-		} finally {
-			stopThreads();
-		}
-	}
+	public void stopThreads() { }
 
 	/*
-	 * The main loop of the video game
+	 * Logic that should happen before the game starts
 	 */
-	private void gameLoop() {
-		// TODO Auto-generated method stub
-		while (isRunning){
-			
-		}
-	}
-
-	// Sets up the view and starts threads for the game to run
-	private void init() {
+	public void setStageBackground() {
 		// TODO: Get a better background image
     	img = kernel.loadImage("stage background.gif");
-    	startThreads();
 	}
+
+	
+	
+	
 
 }

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import views.VersusView;
@@ -46,9 +47,9 @@ import views.BackgroundView;
 public class FatalKernel implements Runnable {
 
 	/*
-	 * Manages the view objects for the video game.
-	 * Since only the kernel should know about the screen and how to draw to it,
-	 * it is an inner class within the kernel.
+	 * Manages the view objects for the video game. Since only the kernel should
+	 * know about the screen and how to draw to it, it is an inner class within
+	 * the kernel.
 	 * 
 	 * @author Marcos Davila
 	 */
@@ -70,18 +71,17 @@ public class FatalKernel implements Runnable {
 		/*
 		 * A no-argument constructor which sets the default frame properties.
 		 */
-		public Screen() {			
-			this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		public Screen() {
+			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			this.setFullScreen(displayMode);
 		}
-
 
 		/*
 		 * Returns the bit depth, resolution width and resolution height of the
 		 * screen in an ArrayList.
 		 * 
 		 * @return info the information about the screen object. The list is
-		 *         		sorted by width, height, depth.
+		 * sorted by width, height, depth.
 		 */
 		public ArrayList<Integer> screenInfo() {
 			return new ArrayList<Integer>(Arrays.asList(RESOLUTION_WIDTH,
@@ -92,9 +92,7 @@ public class FatalKernel implements Runnable {
 		 * 
 		 * Enters full screen mode and changes the display mode
 		 * 
-		 * @param displayMode
-		 * 				a displayMode object to set as the screen
-		 * 
+		 * @param displayMode a displayMode object to set as the screen
 		 */
 		public void setFullScreen(final DisplayMode displayMode) {
 			this.setUndecorated(true);
@@ -113,13 +111,13 @@ public class FatalKernel implements Runnable {
 				}
 			}
 		}
-		
+
 		/*
 		 * Returns the full screen window object
 		 * 
 		 * @returns the fullscreen window object
 		 */
-		public Window getFullScreenWindow(){
+		public Window getFullScreenWindow() {
 			return device.getFullScreenWindow();
 		}
 
@@ -129,12 +127,12 @@ public class FatalKernel implements Runnable {
 	 * The kernel has a copy of these fields that are found in FatalView. The
 	 * kernel should not have to implement the interface if it doesn't need to.
 	 */
-	
+
 	/**
 	 * Identifier for the character selection menu
 	 */
 	public final String SELECT = "SELECT";
-	
+
 	/**
 	 * Identifier for the versus screen
 	 */
@@ -144,47 +142,54 @@ public class FatalKernel implements Runnable {
 	 * Identifier for the loading screen
 	 */
 	public final String LOADING = "LOADING";
-	
+
 	/**
 	 * Identifier for error screen in hashmap
 	 */
 	public final String ERROR = "ERROR";
-	
-	//The screen object which the game resides in
+
+	// The screen object which the game resides in
 	private final Screen screen = new Screen();
-	
-	//An image panel to show a loading screen
+
+	// An image panel to show a loading screen
 	private BackgroundView loadingScreen;
-	
-	//Private instance reference of the kernel
+
+	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
-	
-	// A hashmap that holds the views. The views are identified and retrieved by their identifiers.
+
+	// A hashmap that holds the views. The views are identified and retrieved by
+	// their identifiers.
 	private HashMap<String, FatalView> views;
 
-	//The game thread
+	// The game thread
 	private final Thread game_thread = new Thread(this);
+	
+	private boolean finished = false;
+	private boolean paused = false;
+	private long GAME_SPEED = 17;	// roughly 1/60 of a second
+	private VersusView stageView;
 
-	/**
-	 * Initializes an instance of the kernel
-	 * Private constructor that is only getting called once
+	/*
+	 * Initializes an instance of the kernel Private constructor that is only
+	 * getting called once
 	 */
-	private FatalKernel( ) {
+	private FatalKernel() {
 		// Start the kernel in it's own thread
 		game_thread.start();
 	}
-	
+
 	/**
-	 * Public getter of the only FatalKernel
+	 * Returns an instance of the kernel object
 	 * 
 	 * @return singleton instance of FatalKernel
-	 */	
+	 */
 	public static FatalKernel getInstance() {
 		return FATAL_KERNEL_INSTANCE;
 	}
 
 	/**
-	 * Exits the kernel. This method stops all currently active threads and disposes of the screen.
+	 * Exits the kernel. This method stops all currently active threads and
+	 * disposes of the screen.
 	 */
 	public void exit() {
 		try {
@@ -206,113 +211,145 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Returns a view from the hashmap that matches the name specified, or returns
-	 * an error screen if no such view was found.
+	 * Returns a view from the hashmap that matches the name specified, or
+	 * returns an error screen if no such view was found.
 	 * 
-	 * @param screen a string identifier of the object that should be retrieved
-	 *            	from the hashmap
+	 * @param screen
+	 *            a string identifier of the object that should be retrieved
+	 *            from the hashmap
 	 * 
 	 * @return the desired view from the hashmap
 	 */
 	public FatalView getView(final String screen) {
 		FatalView newView = views.get(screen);
-		
+
 		return ((newView != null) ? newView : views.get(ERROR));
 	}
-	
+
 	/**
 	 * Returns the Window object that represents the screen to the user
 	 * 
 	 */
-	public Window getFullScreenWindow(){
+	public Window getFullScreenWindow() {
 		return screen.getFullScreenWindow();
 	}
 
 	/**
 	 * Returns an image with the filename specified.
 	 * 
-	 * @param imgpath name of file on hard drive
+	 * @param imgpath
+	 *            name of file on hard drive
 	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
+		new Thread(new Runnable(){ public void run() { } }).start();
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
-		
-		/*Image i = null;
-		try {
-		i = Toolkit.getDefaultToolkit().createImage(
-				this.getClass().getClassLoader().getResource(imgpath));
-		} catch (NullPointerException e){
-			e.printStackTrace();
-		}*/
-		
+
 		BufferedImage i = null;
 		try {
-			i = ImageIO.read(this.getClass().getClassLoader().getResource(imgpath));
+			i = ImageIO.read(this.getClass().getClassLoader()
+					.getResource(imgpath));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		final ArrayList<Integer> info = this.getScreenInfo();
 		final int newWidth = info.get(0);
 		final int newHeight = info.get(1);
-		
-		// resize the image	
-		BufferedImage resized = new BufferedImage(newWidth, newHeight, i.getType());
-	    Graphics2D g = resized.createGraphics();
-	    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(), i.getHeight(), null);
-	    g.dispose();
+
+		// resize the image
+		BufferedImage resized = new BufferedImage(newWidth, newHeight,
+				i.getType());
+		Graphics2D g = resized.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(),
+				i.getHeight(), null);
+		g.dispose();
 
 		return resized;
-		
+
 	}
 
 	/**
 	 * Removes one view and replaces it with another view
 	 * 
-	 * @param remove desired view to remove
-	 * @param add desired view to add
+	 * @param remove
+	 *            desired view to remove
+	 * @param add
+	 *            desired view to add
 	 */
 	public void redrawScreen(final FatalView remove, final FatalView add) {
-		// TODO Auto-generated method stub
-		screen.remove((JPanel) remove);
-		remove.stopThreads();
+		// Needs to be run on the Event Dispatcher Thread
+		SwingUtilities.invokeLater(new Runnable() {
 
-		screen.add((JPanel) add);
-		add.startThreads();
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				screen.remove((JPanel) remove);
+				remove.stopThreads();
 
-		screen.revalidate();
-		screen.repaint();
+				screen.add((JPanel) add);
+				add.startThreads();
+
+				screen.revalidate();
+			}
+
+		});
 	}
 
 	/**
-	 * Starts the game thread
+	 * Starts the game thread from the kernel
 	 */
 	@Override
 	public void run() {
+		preGameLoop();
 
+		// Paint the background
+		stageView = (VersusView) getView (VERSUS);
+		stageView.setStageBackground();
+		
+		while (!finished) {
+			if (!paused)
+				inGameLoop();
+			
+			stageView.repaint();
+			
+			try {
+				Thread.sleep(GAME_SPEED);
+			} catch (InterruptedException e) {
+				// Ignore
+			}
+		}
+
+		postGameLoop();
+	}
+	
+	private void preGameLoop(){	
+		views = new HashMap<String, FatalView>();	
+		
 		// Create the loading screen to show the user while the rest of the
 		// resources are being loaded
 		loadingScreen = new BackgroundView("game-loader.gif");
-		screen.add(loadingScreen);
+		
+		views.put(VERSUS, new VersusView());
+		views.put(LOADING, loadingScreen);
+		views.put(ERROR, new BackgroundView()); // for now, error screen
+												// is blank panel
+		
+		redrawScreen(this.getView(ERROR), this.getView(LOADING));
 
-		// The loading screen is visible while this thread runs
 		final Thread t = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				views = new HashMap<String, FatalView>();
-
-				views.put(VERSUS, new VersusView());
-				views.put(LOADING, loadingScreen);
-				views.put(ERROR, new BackgroundView()); // for now, error screen is blank panel
+				// Insert loading of graphics into memory here
 			}
 
 		});
-
 		t.start();
 
 		try {
@@ -323,5 +360,29 @@ public class FatalKernel implements Runnable {
 			this.exit();
 			e.printStackTrace();
 		}
+		
 	}
+
+	/*
+	 * Logic that should happen in the game loop
+	 */
+	private void inGameLoop() {
+		//respondToInput();
+		//moveGameObjects();
+		//handleCollisions();
+	}
+	
+	/*
+	 * Logic that should happen when the match is over
+	 */
+	private void postGameLoop(){ 
+		stageView.stopThreads();
+	}
+	
+	//private void respondToInput() { }
+	
+	//private void moveGameObjects() { }
+	
+	//private void handleCollisions() { }
+	
 }
