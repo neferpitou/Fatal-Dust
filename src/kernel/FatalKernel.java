@@ -230,6 +230,15 @@ public class FatalKernel implements Runnable {
 	public Window getFullScreenWindow() {
 		return screen.getFullScreenWindow();
 	}
+	
+	/**
+	 * Returns an image to be used as the stage
+	 * @param imgpath path to image
+	 * @return resized version of stage to fit background properly
+	 */
+	public Image loadStageImage(String imgpath) {
+		return resize(load(imgpath), true);	
+	}
 
 	/**
 	 * Returns an image with the filename specified.
@@ -239,6 +248,44 @@ public class FatalKernel implements Runnable {
 	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
+		return resize(load(imgpath), false);	
+	}
+	
+	/*
+	 * Resizes an image to fit either the entire screen or
+	 * just a part of the screen if the image is a background
+	 */
+	private Image resize ( BufferedImage i, boolean isStage ){
+		int newWidth, newHeight;
+		final ArrayList<Integer> info = this.getScreenInfo();
+		BufferedImage resized;
+		
+		newHeight = info.get(1);
+		
+		if (!isStage) {	
+			newWidth = info.get(0);
+		} else {
+			float SCALE_HEIGHT = info.get(1) / i.getHeight();
+			newWidth = (int) (i.getWidth() * SCALE_HEIGHT);
+		}
+		
+		// resize the image
+		resized = new BufferedImage(newWidth, newHeight,
+				i.getType());
+		Graphics2D g = resized.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(),
+				i.getHeight(), null);
+		g.dispose();
+
+		return resized;
+	}
+	
+	/*
+	 * Loads and returns an image
+	 */
+	private BufferedImage load( String imgpath ){
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
@@ -251,23 +298,8 @@ public class FatalKernel implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		final ArrayList<Integer> info = this.getScreenInfo();
-		final int newWidth = info.get(0);
-		final int newHeight = info.get(1);
-
-		// resize the image
-		BufferedImage resized = new BufferedImage(newWidth, newHeight,
-				i.getType());
-		Graphics2D g = resized.createGraphics();
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(),
-				i.getHeight(), null);
-		g.dispose();
-
-		return resized;
-
+		
+		return i;
 	}
 
 	/**
