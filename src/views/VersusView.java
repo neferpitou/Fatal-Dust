@@ -47,7 +47,7 @@ public class VersusView extends JPanel implements FatalView {
 	 */
 	public void setStageBackground() {
 		// TODO: Get a better background image
-    	img = kernel.loadStageImage("sf2ww-blanka.gif");
+    	img = kernel.loadStageImage("ForestBackground.gif");
 	}
 
 	
