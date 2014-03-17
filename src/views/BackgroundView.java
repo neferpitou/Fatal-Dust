@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 /**
  * Displays an image panel while threads handle loading of resources.
  * 
- * @author Marcos Davila
+ * @author Marcos Davila, 
  */
 @SuppressWarnings("serial")
 public class BackgroundView extends JPanel implements FatalView {
