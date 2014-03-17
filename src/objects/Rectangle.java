@@ -28,7 +28,6 @@ public class Rectangle
 				(r.x + r.w >= x)   &&
 				(r.y + r.h >= y)   &&
 				( y + h    >= r.y)
-		
 			);
 		
 	}
@@ -74,11 +73,6 @@ public class Rectangle
 		h -= dh;
 	}
 	
-
-	/*public boolean contains(int mx, int my)
-	{
-		 return (my < y+h) && (my > y) && (mx > x) && (mx < x+w);
-	}*/
 	
 	public void draw(Graphics g)
 	{
