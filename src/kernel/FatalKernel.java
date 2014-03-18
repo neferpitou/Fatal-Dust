@@ -312,10 +312,7 @@ public class FatalKernel implements Runnable {
 	 */
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
+		SwingUtilities.invokeLater(() -> {
 				// TODO Auto-generated method stub
 				screen.remove((JPanel) remove);
 				remove.stopThreads();
@@ -324,9 +321,7 @@ public class FatalKernel implements Runnable {
 				add.startThreads();
 
 				screen.revalidate();
-			}
-
-		});
+			});
 	}
 
 	/**
@@ -367,13 +362,8 @@ public class FatalKernel implements Runnable {
 		
 		redrawScreen(this.getView(ERROR), this.getView(LOADING));
 
-		final Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// Insert loading of graphics into memory here
-			}
-
+		final Thread t = new Thread(() -> {
+			// Everything in here runs on it's own thread
 		});
 		t.start();
 

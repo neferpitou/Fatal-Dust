@@ -3,26 +3,21 @@ package objects;
 import java.awt.Graphics;
 import interfaces.Character;
 
-public abstract class VanillaCharacter implements Character
-{
+@Deprecated
+public abstract class VanillaCharacter implements Character {
 	private int health;
-	boolean isDucking;
-	boolean lookingRight;
-	boolean isBlocking;
-	boolean isHitting;
+	private boolean isOnLeft, isOnRight, isBlocking, isHitting, isDucking;
 	
-	Rectangle greenHitBox; //Box where character gets hit 
-	Rectangle redHitBox; //Box where character hits another 
-	Rectangle blueHitBox; //Box for defense; doesn't decrease health if hit
+	// Green is box where character gets hit
+	// Red is box where character hits another
+	// Blue is only when character is guarding
+	private Rectangle greenHitBox, redHitBox, blueHitBox;
 	
 	//PositionAnimation[] animations;
 	
-	
-
-	
-	public VanillaCharacter(boolean lookingRight, String imgPrefix)
-	{
-		this.lookingRight = lookingRight;
+	// TODO define imgPrefix
+	public VanillaCharacter(boolean lookingRight, String imgPrefix) {
+		this.isOnRight = lookingRight;
 		isDucking = false;
 		isBlocking = false;
 		isHitting = false; 
@@ -46,6 +41,18 @@ public abstract class VanillaCharacter implements Character
 	
 	public abstract void duck();
 	
+	public abstract void die();
+	
+	public abstract void walk();
+	
+	public abstract void idle();
+	
+	public abstract void block();
+	
+	public abstract void victory();
+	
+	public abstract void takeHit();
+	
 	public abstract void draw(Graphics g);
 	
 	public void decreaseHealthBy(int dHealth)
@@ -55,12 +62,12 @@ public abstract class VanillaCharacter implements Character
 	
 	public void lookLeft()
 	{
-		lookingRight = false;
+		isOnRight = false;
 	}
 	
 	public void lookRight()
 	{
-		lookingRight = true;
+		isOnRight = true;
 	}
 	
 	public int getHealth()

@@ -12,40 +12,12 @@ import kernel.FatalKernel;
 
 public interface FatalView {
 	
-	/**
-	 * Identifier for the character selection menu
+	/*
+	 * Identifies all the possible screens in the hashmap
 	 */
-	public String SELECT = "SELECT";
-	
-	/**
-	 * Identifier for versus menu.
-	 */
-	public String VERSUS = "VERSUS";
-	
-	/**
-	 * Identifier for loading screen.
-	 */
-	public String LOADING = "LOADING";
-	
-	/**
-	 * Identifier for error screen.
-	 */
-	public String ERROR = "ERROR";
-	
-	/**
-	 * Character panel identifier
-	 */
-	public String CHARACTER_VIEW = "CHARACTER_VIEW";
-	
-	/**
-	 * Background panel identifier
-	 */
-	public String BACKGROUND_VIEW = "BACKGROUND_VIEW";
-	
-	/**
-	 * Versus panel identifier
-	 */
-	public String VERSUS_VIEW = "VERSUS_VIEW";
+	public enum Identifier {
+		SELECT, VERSUS, LOADING, CHARACTER_VIEW, BACKGROUND_VIEW, VERSUS_VIEW, ERROR 
+	};
 	
 	/**
 	 * The instance of the kernel 
@@ -55,15 +27,15 @@ public interface FatalView {
 	/**
 	 *  Starts all threads of the associated view.
 	 */
-	public abstract void startThreads();
+	public void startThreads();
 	
 	/**
 	 * Stops all threads of the associated view.
 	 */
-	public abstract void stopThreads();
+	public void stopThreads();
 
 	/**
 	 * Panel should be able to identify itself
 	 */
-	public abstract String toString();
+	public String toString();
 }
