@@ -2,7 +2,7 @@ package interfaces;
 
 public interface Character 
 {
-	
+	//positions (18 of them)
 	final static int RIGHT_WALK = 0;
 	final static int LEFT_WALK = 1;
 	
@@ -29,6 +29,11 @@ public interface Character
 	
 	final static int RIGHT_ALT_PUNCH = 16;
 	final static int LEFT_ALT_PUNCH = 17;
+	
+	
+	//correspond to above positions
+	final static String[] POSITIONS = { "rtw" , "ltw" , "rtj" , "ltj", "rtjb" , "ltjb" , "rtd" , "ltd", "rtk" , "ltk", "rtkd", "ltkd",
+										"rtpd" , "ltpd" , "rtap", "ltap" };
 	
 	
 	public void punch();
