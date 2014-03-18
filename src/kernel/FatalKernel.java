@@ -338,7 +338,6 @@ public class FatalKernel implements Runnable {
 
 		// Paint the background
 		stageView = (VersusView) getView (VERSUS);
-		stageView.setStageBackground();
 		
 		while (!finished) {
 			if (!paused)

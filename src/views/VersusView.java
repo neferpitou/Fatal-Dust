@@ -32,12 +32,14 @@ public class VersusView extends JPanel implements FatalView {
 	 * @param g a Graphics object to do the rendering
 	 */
 	@Override
-	public void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, this);
 	}
 
 	@Override
-	public void startThreads() { }
+	public void startThreads() {
+		setStageBackground();
+	}
 
 	@Override
 	public void stopThreads() { }
@@ -45,13 +47,8 @@ public class VersusView extends JPanel implements FatalView {
 	/*
 	 * Logic that should happen before the game starts
 	 */
-	public void setStageBackground() {
+	private void setStageBackground() {
 		// TODO: Get a better background image
-    	img = kernel.loadStageImage("ForestBackground.gif");
+    	img = kernel.loadStageImage("ayako_stage.gif");
 	}
-
-	
-	
-	
-
 }

@@ -49,7 +49,7 @@ public class BackgroundView extends JPanel implements FatalView {
 	 * @param g a Graphics object to do the rendering
 	 */
 	@Override
-	public void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		g.drawImage(i, 0, 0, this);
 	}
 
