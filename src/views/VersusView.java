@@ -33,7 +33,7 @@ public class VersusView extends JPanel implements FatalView {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		g.drawImage(img, 0, 0, this);
+		g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
 	}
 
 	@Override
@@ -49,6 +49,6 @@ public class VersusView extends JPanel implements FatalView {
 	 */
 	private void setStageBackground() {
 		// TODO: Get a better background image
-    	img = kernel.loadStageImage("ayako_stage.gif");
+    	img = kernel.loadImage("ayako_stage.gif");
 	}
 }

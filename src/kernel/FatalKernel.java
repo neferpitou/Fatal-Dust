@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -230,15 +231,6 @@ public class FatalKernel implements Runnable {
 	public Window getFullScreenWindow() {
 		return screen.getFullScreenWindow();
 	}
-	
-	/**
-	 * Returns an image to be used as the stage
-	 * @param imgpath path to image
-	 * @return resized version of stage to fit background properly
-	 */
-	public Image loadStageImage(String imgpath) {
-		return resize(load(imgpath), true);	
-	}
 
 	/**
 	 * Returns an image with the filename specified.
@@ -248,58 +240,19 @@ public class FatalKernel implements Runnable {
 	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
-		return resize(load(imgpath), false);	
-	}
-	
-	/*
-	 * Resizes an image to fit either the entire screen or
-	 * just a part of the screen if the image is a background
-	 */
-	private Image resize ( BufferedImage i, boolean isStage ){
-		int newWidth, newHeight;
-		final ArrayList<Integer> info = this.getScreenInfo();
-		BufferedImage resized;
-		
-		newHeight = info.get(1);
-		
-		if (!isStage) {	
-			newWidth = info.get(0);
-		} else {
-			float SCALE_HEIGHT = info.get(1) / i.getHeight();
-			newWidth = (int) (i.getWidth() * SCALE_HEIGHT);
-		}
-		
-		// resize the image
-		resized = new BufferedImage(newWidth, newHeight,
-				i.getType());
-		Graphics2D g = resized.createGraphics();
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.drawImage(i, 0, 0, newWidth, newHeight, 0, 0, i.getWidth(),
-				i.getHeight(), null);
-		g.dispose();
-
-		return resized;
+		return load(imgpath);	
 	}
 	
 	/*
 	 * Loads and returns an image
 	 */
-	private BufferedImage load( String imgpath ){
+	private Image load( String imgpath ){
 		// Get the image and load it into memory. Resource path should be added
 		// to string here before finding the image
 		imgpath = "resources/" + imgpath;
 
-		BufferedImage i = null;
-		try {
-			i = ImageIO.read(this.getClass().getClassLoader()
-					.getResource(imgpath));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return i;
+		return (new ImageIcon(this.getClass().getClassLoader()
+					.getResource(imgpath))).getImage();
 	}
 
 	/**
@@ -313,7 +266,6 @@ public class FatalKernel implements Runnable {
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
 		SwingUtilities.invokeLater(() -> {
-				// TODO Auto-generated method stub
 				screen.remove((JPanel) remove);
 				remove.stopThreads();
 
@@ -354,17 +306,15 @@ public class FatalKernel implements Runnable {
 	 * Logic to happen before the game loop starts
 	 */
 	private void preGameLoop(){	
-		views = new HashMap<String, FatalView>();			
-		views.put(VERSUS, new VersusView());
+		views = new HashMap<String, FatalView>();
 		views.put(LOADING, new BackgroundView("game-loader.gif"));
+		views.put(VERSUS, new VersusView());
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
-		
 		redrawScreen(this.getView(ERROR), this.getView(LOADING));
-
-		final Thread t = new Thread(() -> {
-			// Everything in here runs on it's own thread
-		});
+		
+		// Everything in here runs on it's own thread
+		final Thread t = new Thread(() -> { });
 		t.start();
 
 		try {
