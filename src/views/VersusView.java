@@ -38,17 +38,22 @@ public class VersusView extends JPanel implements FatalView {
 
 	@Override
 	public void startThreads() {
-		setStageBackground();
+		setStageAttributes();
 	}
 
 	@Override
-	public void stopThreads() { }
+	public void stopThreads() { 
+		
+	}
 
 	/*
-	 * Logic that should happen before the game starts
+	 * Sets a random stage background from a selection of possible stage 
+	 * backgrounds
 	 */
-	private void setStageBackground() {
-		// TODO: Get a better background image
-    	img = kernel.loadImage("ayako_stage.gif");
+	private void setStageAttributes() {
+    	img = kernel.setStage();
+    	
+    	// TODO: Play back music depending on what stage was loaded
+	
 	}
 }

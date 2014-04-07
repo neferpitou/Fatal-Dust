@@ -1,5 +1,6 @@
 package kernel;
 
+import factory.FatalFactory;
 import interfaces.FatalView;
 
 import java.awt.Dimension;
@@ -274,6 +275,15 @@ public class FatalKernel implements Runnable {
 
 				screen.revalidate();
 			});
+	}
+	
+	/**
+	 * Sets a random stage background from a selection of possible stage 
+	 * backgrounds
+	 */
+	public Image setStage() {
+		int numStage = (int) (Math.random() * FatalFactory.TOTAL_NUM_STAGES);
+    	return FatalFactory.setStage(numStage);
 	}
 
 	/**
