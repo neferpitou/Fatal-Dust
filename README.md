@@ -9,7 +9,7 @@ If you want to download and run the game, it is suggested to use the Eclipse IDE
 
 Programmers:
 
-Marcos Davila
-Rafael Abbondanza
-Dana Smith
-Stu Kleinman
+* Marcos Davila
+* Rafael Abbondanza
+* Dana Smith
+* Stu Kleinman
