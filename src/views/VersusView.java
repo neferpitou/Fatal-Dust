@@ -39,11 +39,12 @@ public class VersusView extends JPanel implements FatalView {
 	@Override
 	public void startThreads() {
 		setStageAttributes();
+		kernel.playBGM("streets.wav", true);
 	}
 
 	@Override
 	public void stopThreads() { 
-		
+		kernel.stopBGM();
 	}
 
 	/*
@@ -53,7 +54,7 @@ public class VersusView extends JPanel implements FatalView {
 	private void setStageAttributes() {
     	img = kernel.setStage();
     	
-    	// TODO: Play back music depending on what stage was loaded
+    	// TODO: Play back sounds depending on what stage was loaded
 	
 	}
 }
