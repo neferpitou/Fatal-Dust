@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import views.BackgroundView;
+import views.SplashView;
 import views.VersusView;
 
 /**
@@ -154,9 +155,14 @@ public class FatalKernel implements Runnable {
 	 * Identifier for error screen in hashmap
 	 */
 	public final String ERROR = "ERROR";
+	
+	/**
+	 * Identifier for splash screen 
+	 */
+	public final String SPLASH = "SPLASH";
 
 	// The screen object which the game resides in
-	private final Screen screen = new Screen();
+	private Screen screen = new Screen();
 
 	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
@@ -167,7 +173,7 @@ public class FatalKernel implements Runnable {
 
 	// The game thread
 	private final Thread game_thread = new Thread(this);
-	private Runnable bgm_thread;
+	private BGMRunnable bgm_thread;
 	
 	private boolean finished = false;
 	private boolean paused = false;
@@ -271,13 +277,13 @@ public class FatalKernel implements Runnable {
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
 		SwingUtilities.invokeLater(() -> {
-			screen.remove((JPanel) remove);
 			remove.stopThreads();
-
-			screen.add((JPanel) add);
+			
+			screen.setContentPane((JPanel) add);		
 			add.startThreads();
-
+			
 			screen.revalidate();
+			screen.repaint();
 		});
 	}
 
@@ -336,45 +342,8 @@ public class FatalKernel implements Runnable {
 	 * Plays the specified file as looping background music in it's own thread.
 	 * @param filename name of the file to be played sitting in resources folder.
 	 */
-	public void playBGM(String filename, boolean loop) {
-		bgm_thread = new Runnable() {
-
-			@Override
-			public void run() {
-				int BUFFER_SIZE = 524288;
-				
-				do {
-					try {
-						AudioInputStream audio = AudioSystem
-								.getAudioInputStream(loadResourceAsStream(filename));
-						AudioFormat format = audio.getFormat();
-						DataLine.Info info = new DataLine.Info(
-								SourceDataLine.class, format);
-						SourceDataLine auline = (SourceDataLine) AudioSystem
-								.getLine(info);
-						auline.open(format);
-						auline.start();
-
-						int nBytesRead = 0;
-						byte[] abData = new byte[BUFFER_SIZE];
-						while (nBytesRead != -1) {
-							nBytesRead = audio.read(abData, 0, abData.length);
-							if (nBytesRead >= 0) {
-								auline.write(abData, 0, nBytesRead);
-							}
-						}					
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-					
-					if (!loop || Thread.currentThread().isInterrupted()){
-						break;
-					}
-					
-				} while (true);
-			}
-		};
-
+	public void playBGM(String filename) {
+		bgm_thread = new BGMRunnable(filename);
 		thread_pool.runTask(bgm_thread);
 	}
 	
@@ -386,13 +355,10 @@ public class FatalKernel implements Runnable {
 	 * Every class that plays background music should stop the BGM before moving to the next 
 	 * screen.
 	 */
-	public void stopBGM( ){
-		if (bgm_thread != null){
-			thread_pool.removeTask(bgm_thread);
-			bgm_thread = null;
-		} else {
-			System.err.println("No bgm task to remove!");
-		}
+	public boolean stopBGM() {
+		bgm_thread.halt();
+		thread_pool.removeTask(bgm_thread);
+		return true;	// signals that the bgm thread has been halted
 	}
 
 	/*
@@ -402,18 +368,20 @@ public class FatalKernel implements Runnable {
 		views = new HashMap<String, FatalView>();
 		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(VERSUS, new VersusView());
+		views.put(SPLASH, new SplashView());
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
 		redrawScreen(this.getView(ERROR), this.getView(LOADING));
 
 		// Everything in here runs on it's own thread
 		final Thread t = new Thread(() -> {
+			
 		});
 		t.start();
 
 		try {
 			t.join(); // Wait on the thread loading materials to finish
-			this.redrawScreen(this.getView(LOADING), this.getView(VERSUS));
+			this.redrawScreen(this.getView(LOADING), this.getView(SPLASH));
 		} catch (final InterruptedException e) {
 			// If all of the materials cannot be loaded, the kernel should exit
 			this.exit();

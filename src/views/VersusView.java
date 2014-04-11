@@ -20,13 +20,6 @@ public class VersusView extends JPanel implements FatalView {
 	private Image img;
 	
 	/**
-	 * Sets up the view for the players to fight
-	 */
-	public VersusView(){
-		startThreads();
-	}
-	
-	/**
 	 * Paints the stage background.
 	 * 
 	 * @param g a Graphics object to do the rendering
@@ -37,14 +30,16 @@ public class VersusView extends JPanel implements FatalView {
 	}
 
 	@Override
-	public void startThreads() {
+	public boolean startThreads() {
 		setStageAttributes();
-		kernel.playBGM("streets.wav", true);
+		kernel.playBGM("streets.wav");
+		return true;
 	}
 
 	@Override
-	public void stopThreads() { 
+	public boolean stopThreads() { 
 		kernel.stopBGM();
+		return true;
 	}
 
 	/*
