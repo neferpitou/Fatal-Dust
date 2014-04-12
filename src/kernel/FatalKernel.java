@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -175,7 +176,7 @@ public class FatalKernel implements Runnable {
 	private final Thread game_thread = new Thread(this);
 	private BGMRunnable bgm_thread;
 	
-	private boolean finished = false;
+	private volatile boolean finished = false;
 	private boolean paused = false;
 	private long GAME_SPEED = 17; // roughly 1/60 of a second
 	private VersusView stageView;
@@ -190,6 +191,12 @@ public class FatalKernel implements Runnable {
 	private FatalKernel() {
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
 		thread_pool.runTask(game_thread);
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		        finished = true;
+		        thread_pool.close();
+		    }
+		});
 	}
 
 	/**
@@ -202,16 +209,10 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Exits the kernel. This method stops all currently active threads and
-	 * disposes of the screen.
+	 * Run shutdown hooks and exits.
 	 */
 	public void exit() {
-		try {
-			game_thread.join();
-		} catch (final InterruptedException e) {
-			// Nothing needs to be done since the game is exiting anyway.
-		}
-		screen.dispose();
+		System.exit(0);
 	}
 
 	/**

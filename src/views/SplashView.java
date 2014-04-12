@@ -4,18 +4,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
-import objects.BlinkLabel;
 import interfaces.FatalView;
 
 import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import javax.swing.JButton;
+import java.awt.Insets;
 
 /**
  * A screen to display when the game first loads up. It is a very simple screen, used only to
@@ -29,56 +28,51 @@ public class SplashView extends JPanel implements FatalView {
 
 	private Image menu_background = kernel.loadImage("main_menu_image.jpg");
 	
+	
 	/**
 	 * Set up the layout, listen for key events to redraw the screen, draw
 	 * and place two JLabels for the title and the prompt to continue
 	 */
 	public SplashView() {
-		// Set up a callback to listen for any type of input from the keyboard
-		addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				keyPressed(e);
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				// Redraw screen to fighting screen
-				if (e.getKeyCode() == KeyEvent.VK_SPACE
-						|| e.getKeyCode() == KeyEvent.VK_ENTER) {
-					System.out.println("pressed!");
-					kernel.redrawScreen(kernel.getView("SPLASH"),
-							kernel.getView("LOADING"));
-					kernel.redrawScreen(kernel.getView("LOADING"),
-							kernel.getView("VERSUS"));
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+		// Place the buttons somewhere around the center of the screen on the right side
+		final int centerYLocation = (int) (kernel.getScreenInfo().get(1) * .4);
+		setLayout(new BorderLayout(0, 0));
+		JLabel title = new JLabel("Fatal Dust");
+		title.setForeground(Color.WHITE);
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		title.setFont(new Font("Segoe Script", Font.BOLD, 72));
+		add(title, BorderLayout.NORTH);
 		
-		SwingUtilities.invokeLater(() -> {
-			setLayout(new BorderLayout());
-			setOpaque(false);
-			JLabel title = new JLabel("Fatal Dust");
-			title.setForeground(Color.WHITE);
-			title.setHorizontalAlignment(SwingConstants.CENTER);
-			title.setFont(new Font("Segoe Script", Font.BOLD, 72));
-			add(title, BorderLayout.NORTH);
-
-			BlinkLabel continueLabel = new BlinkLabel("PRESS ENTER");
-			continueLabel.setForeground(Color.WHITE);
-			continueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			continueLabel.setFont(new Font("Serif", Font.BOLD, 18));
-			add(continueLabel, BorderLayout.SOUTH);
+		JPanel panel = new JPanel();
+		add(panel, BorderLayout.EAST);
+		panel.setOpaque(false);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{65, 0};
+		gbl_panel.rowHeights = new int[]{centerYLocation, 23, 23, 0};
+		gbl_panel.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JButton btnNewButton = new JButton("Versus");
+		btnNewButton.addActionListener((e) -> {
+			kernel.redrawScreen(kernel.getView("SPLASH"), kernel.getView("VERSUS"));
 		});
-
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.anchor = GridBagConstraints.WEST;
+		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton.gridx = 0;
+		gbc_btnNewButton.gridy = 1;
+		panel.add(btnNewButton, gbc_btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("Quit");
+		btnNewButton_1.addActionListener((e)->{
+			kernel.exit();
+		});
+		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
+		gbc_btnNewButton_1.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnNewButton_1.gridx = 0;
+		gbc_btnNewButton_1.gridy = 2;
+		panel.add(btnNewButton_1, gbc_btnNewButton_1);		
 	}
 	
 	/**
@@ -86,8 +80,6 @@ public class SplashView extends JPanel implements FatalView {
 	 */
 	@Override
 	public boolean startThreads() {
-		// So the JPanel can listen for key presses
-		requestFocusInWindow();
 		// Start menu music
 		kernel.playBGM("01 menu.wav");
 		return true;
