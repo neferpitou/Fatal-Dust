@@ -4,13 +4,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import objects.BlinkLabel;
 import interfaces.FatalView;
@@ -34,30 +34,51 @@ public class SplashView extends JPanel implements FatalView {
 	 * and place two JLabels for the title and the prompt to continue
 	 */
 	public SplashView() {
-		setLayout(new BorderLayout(0, 0));
 		// Set up a callback to listen for any type of input from the keyboard
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
-		      @Override
-		      public boolean dispatchKeyEvent(KeyEvent e) {
-		        // TODO Redraw screen to fighting screen   
-		    	kernel.redrawScreen(kernel.getView("SPLASH"), kernel.getView("LOADING"));
-		    	kernel.redrawScreen(kernel.getView("LOADING"), kernel.getView("VERSUS"));
-		    	KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this);
-		        return false;
-		      }
+		addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				keyPressed(e);
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// Redraw screen to fighting screen
+				if (e.getKeyCode() == KeyEvent.VK_SPACE
+						|| e.getKeyCode() == KeyEvent.VK_ENTER) {
+					System.out.println("pressed!");
+					kernel.redrawScreen(kernel.getView("SPLASH"),
+							kernel.getView("LOADING"));
+					kernel.redrawScreen(kernel.getView("LOADING"),
+							kernel.getView("VERSUS"));
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		});
 		
-		JLabel title = new JLabel("Fatal Dust");
-		title.setForeground(Color.WHITE);
-		title.setHorizontalAlignment(SwingConstants.CENTER);
-		title.setFont( new Font("Segoe Script", Font.BOLD, 72) );
-		add(title, BorderLayout.NORTH);
-		
-		BlinkLabel continueLabel = new BlinkLabel("Press any button to continue");
-		continueLabel.setForeground(Color.WHITE);
-		continueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		continueLabel.setFont( new Font("Serif", Font.BOLD, 18) );
-		add(continueLabel, BorderLayout.SOUTH);
+		SwingUtilities.invokeLater(() -> {
+			setLayout(new BorderLayout());
+			setOpaque(false);
+			JLabel title = new JLabel("Fatal Dust");
+			title.setForeground(Color.WHITE);
+			title.setHorizontalAlignment(SwingConstants.CENTER);
+			title.setFont(new Font("Segoe Script", Font.BOLD, 72));
+			add(title, BorderLayout.NORTH);
+
+			BlinkLabel continueLabel = new BlinkLabel("PRESS ENTER");
+			continueLabel.setForeground(Color.WHITE);
+			continueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			continueLabel.setFont(new Font("Serif", Font.BOLD, 18));
+			add(continueLabel, BorderLayout.SOUTH);
+		});
+
 	}
 	
 	/**
@@ -65,8 +86,10 @@ public class SplashView extends JPanel implements FatalView {
 	 */
 	@Override
 	public boolean startThreads() {
-		// TODO Start BGM
-		kernel.playBGM("streets.wav");
+		// So the JPanel can listen for key presses
+		requestFocusInWindow();
+		// Start menu music
+		kernel.playBGM("01 menu.wav");
 		return true;
 	}
 

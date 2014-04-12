@@ -1,8 +1,15 @@
 package kernel;
 
-
 import java.util.LinkedList;
 
+/**
+ * The ThreadPool class is used to manage threads within the program. Incoming
+ * Runnable objects are assigned to currently available Threads, which then 
+ * execute the Runnable.
+ * 
+ * @author Marcos Davila
+ *
+ */
 public class ThreadPool extends ThreadGroup {
 
 	private boolean isAlive;

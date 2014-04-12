@@ -286,6 +286,13 @@ public class FatalKernel implements Runnable {
 			screen.repaint();
 		});
 	}
+	
+	/**
+	 * Adds a task to the thread pool for execution
+	 */
+	public void execute(Runnable task){
+		thread_pool.runTask(task);
+	}
 
 	/**
 	 * Sets a random stage background from a selection of possible stage
@@ -371,23 +378,8 @@ public class FatalKernel implements Runnable {
 		views.put(SPLASH, new SplashView());
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
-		redrawScreen(this.getView(ERROR), this.getView(LOADING));
-
-		// Everything in here runs on it's own thread
-		final Thread t = new Thread(() -> {
-			
-		});
-		t.start();
-
-		try {
-			t.join(); // Wait on the thread loading materials to finish
-			this.redrawScreen(this.getView(LOADING), this.getView(SPLASH));
-		} catch (final InterruptedException e) {
-			// If all of the materials cannot be loaded, the kernel should exit
-			this.exit();
-			e.printStackTrace();
-		}
-
+		
+		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
 	}
 
 	/*
