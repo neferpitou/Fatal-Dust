@@ -9,21 +9,15 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Window;
-import java.io.File;
-import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.List;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -221,8 +215,8 @@ public class FatalKernel implements Runnable {
 	 * @return an ArrayList object holding the screen's width, height, and bit
 	 *         depth in that order
 	 */
-	public ArrayList<Integer> getScreenInfo() {
-		return screen.screenInfo();
+	public List<Integer> getScreenInfo() {
+		return Collections.unmodifiableList(screen.screenInfo());
 	}
 
 	/**
@@ -334,7 +328,7 @@ public class FatalKernel implements Runnable {
 	 * Returns the desired file from the resources folder.
 	 */
 	public URL loadResource(String location){
-		return getClass().getClassLoader().getResource("resources/" + location);
+		return ClassLoader.getSystemResource("resources/" + location);
 	}
 	
 	/**
@@ -342,8 +336,8 @@ public class FatalKernel implements Runnable {
 	 * @param location location to stream from
 	 * @return an Input stream of the resource
 	 */
-	public InputStream loadResourceAsStream(String location){
-		return getClass().getClassLoader().getResourceAsStream("resources/" + location);
+	public BufferedInputStream loadResourceAsStream(String location){
+		return new BufferedInputStream(ClassLoader.getSystemResourceAsStream("resources/" + location));
 	}
 
 	/**

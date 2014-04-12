@@ -1,6 +1,9 @@
 package kernel;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The ThreadPool class is used to manage threads within the program. Incoming
@@ -65,10 +68,8 @@ public class ThreadPool extends ThreadGroup {
 	 * @param task the task to be removed from the thread pool
 	 */
 	protected synchronized void removeTask( Runnable task ){
-		for (int i = 0; i < taskQueue.size(); i++){
-			if (taskQueue.get(i) == task){
-				taskQueue.remove(i);
-			}
+		for (Runnable v : taskQueue.stream().filter(t -> t == task).collect(Collectors.toList())){
+			taskQueue.remove(v);
 		}
 	}
 
@@ -110,13 +111,15 @@ public class ThreadPool extends ThreadGroup {
 		}
 
 		// wait for all threads to finish
+		
 		Thread[] threads = new Thread[activeCount()];
-		int count = enumerate(threads);
-		for (int i = 0; i < count; i++) {
+		enumerate(threads);
+		
+		for (Thread t : threads) {
 			try {
-				threads[i].join();
-			} catch (InterruptedException ex) {
-			}
+				t.join();
+			} 
+			catch (InterruptedException ex) { }
 		}
 	}
 
@@ -136,12 +139,14 @@ public class ThreadPool extends ThreadGroup {
 				try {
 					task = getTask();
 				} catch (InterruptedException ex) {
-				}
 
-				// if getTask() returned null or was interrupted,
-				// close this thread by returning
-				if (task == null) {
-					return;
+				} finally {
+
+					// if getTask() returned null or was interrupted,
+					// close this thread by returning
+					if (task == null) {
+						return;
+					}
 				}
 
 				// run the task, and eat any exceptions it throws

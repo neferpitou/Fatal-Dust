@@ -1,6 +1,8 @@
 package kernel;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
