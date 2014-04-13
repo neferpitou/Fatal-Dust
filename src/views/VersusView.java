@@ -32,7 +32,7 @@ public class VersusView extends JPanel implements FatalView {
 	@Override
 	public boolean startThreads() {
 		setStageAttributes();
-		kernel.playBGM("streets.wav");
+		kernel.playBGM("27 Sneakman (Toronto Mix).mp3");
 		return true;
 	}
 

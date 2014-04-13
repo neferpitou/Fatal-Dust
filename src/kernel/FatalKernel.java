@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import views.BackgroundView;
-import views.SplashView;
+import views.MainMenuView;
 import views.VersusView;
 
 /**
@@ -180,9 +180,12 @@ public class FatalKernel implements Runnable {
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
-	 * getting called once
+	 * getting called once. Kernel also insures that the game can run on the
+	 * provided JVM. If it is not up to date, it prints a message and then exits.
 	 */
 	private FatalKernel() {
+		checkJVM();
+				
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
 		thread_pool.runTask(game_thread);
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -191,6 +194,18 @@ public class FatalKernel implements Runnable {
 		        thread_pool.close();
 		    }
 		});
+	}
+
+	/*
+	 * Makes sure there's a compatible JVM to run the game on.
+	 */
+	private void checkJVM() {
+		double jvmVersion = Double.parseDouble(System.getProperty("java.specification.version"));
+
+		if (jvmVersion < 1.8){
+			System.err.println("Sorry, Fatal Dust is not supported by your version of Java. Please update to Java 8.");
+			exit();
+		}
 	}
 
 	/**
@@ -370,7 +385,7 @@ public class FatalKernel implements Runnable {
 		views = new HashMap<String, FatalView>();
 		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(VERSUS, new VersusView());
-		views.put(SPLASH, new SplashView());
+		views.put(SPLASH, new MainMenuView());
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
 		
