@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 public class VersusView extends JPanel implements FatalView {
 
 	private Image img;
+	private final double SCALE = 1.3;
 	
 	/**
 	 * Paints the stage background.
@@ -26,7 +27,9 @@ public class VersusView extends JPanel implements FatalView {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+		// Start the image with the left quarter of the image off the left edge of the screen
+		// Also scale the width of this image to 1.3 times the original ratio
+		g.drawImage(img, getWidth() / -4, 0, (int)(getWidth() * SCALE), getHeight(), this);
 	}
 
 	@Override
