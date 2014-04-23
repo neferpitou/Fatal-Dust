@@ -7,7 +7,6 @@ import kernel.FatalKernel;
  * 
  * @author Robert Abbondanza
  * @author Marcos Davila
- * @author Stuart Kleinman
  * @author Dana Smith
  */
 public class FatalDriver {

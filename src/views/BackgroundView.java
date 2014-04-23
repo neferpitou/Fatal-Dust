@@ -52,17 +52,4 @@ public class BackgroundView extends JPanel implements FatalView {
 	protected void paintComponent(Graphics g) {
 		g.drawImage(i, 0, 0, this);
 	}
-
-	@Override
-	public void startThreads() {
-		// Do nothing
-		
-	}
-
-	@Override
-	public void stopThreads() {
-		// Do nothing
-		
-	}
-	
 }

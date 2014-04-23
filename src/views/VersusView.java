@@ -18,13 +18,7 @@ import javax.swing.JPanel;
 public class VersusView extends JPanel implements FatalView {
 
 	private Image img;
-	
-	/**
-	 * Sets up the view for the players to fight
-	 */
-	public VersusView(){
-		startThreads();
-	}
+	private final double SCALE = 1.3;
 	
 	/**
 	 * Paints the stage background.
@@ -33,22 +27,32 @@ public class VersusView extends JPanel implements FatalView {
 	 */
 	@Override
 	protected void paintComponent(Graphics g) {
-		g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+		// Start the image with the left quarter of the image off the left edge of the screen
+		// Also scale the width of this image to 1.3 times the original ratio
+		g.drawImage(img, getWidth() / -4, 0, (int)(getWidth() * SCALE), getHeight(), this);
 	}
 
 	@Override
-	public void startThreads() {
-		setStageBackground();
+	public boolean startThreads() {
+		setStageAttributes();
+		kernel.playBGM("27 Sneakman (Toronto Mix).mp3");
+		return true;
 	}
 
 	@Override
-	public void stopThreads() { }
+	public boolean stopThreads() { 
+		kernel.stopBGM();
+		return true;
+	}
 
 	/*
-	 * Logic that should happen before the game starts
+	 * Sets a random stage background from a selection of possible stage 
+	 * backgrounds
 	 */
-	private void setStageBackground() {
-		// TODO: Get a better background image
-    	img = kernel.loadImage("ayako_stage.gif");
+	private void setStageAttributes() {
+    	img = kernel.setStage();
+    	
+    	// TODO: Play back sounds depending on what stage was loaded
+	
 	}
 }

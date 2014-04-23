@@ -1,20 +1,24 @@
 package kernel;
 
+import factory.FatalFactory;
 import interfaces.FatalView;
 
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -23,8 +27,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import views.VersusView;
 import views.BackgroundView;
+import views.MainMenuView;
+import views.VersusView;
 
 /**
  * The kernel of the video game, where the bulk of the logic will be. It houses
@@ -34,7 +39,7 @@ import views.BackgroundView;
  * The kernel is also responsible for managing many of the most important
  * threads in the game. It also provides the game with services for loading
  * images, drawing to the screen, asynchronous input, collision detection, and
- * background music.
+ * background sounds.
  * 
  * In order for classes to be able to utilize the methods within the kernel, an
  * instance of the kernel is be passed as a parameter to any constructor of that
@@ -46,7 +51,7 @@ import views.BackgroundView;
  */
 @SuppressWarnings("serial")
 public class FatalKernel implements Runnable {
-
+	
 	/*
 	 * Manages the view objects for the video game. Since only the kernel should
 	 * know about the screen and how to draw to it, it is an inner class within
@@ -148,9 +153,14 @@ public class FatalKernel implements Runnable {
 	 * Identifier for error screen in hashmap
 	 */
 	public final String ERROR = "ERROR";
+	
+	/**
+	 * Identifier for splash screen 
+	 */
+	public final String SPLASH = "SPLASH";
 
 	// The screen object which the game resides in
-	private final Screen screen = new Screen();
+	private Screen screen = new Screen();
 
 	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
@@ -161,19 +171,44 @@ public class FatalKernel implements Runnable {
 
 	// The game thread
 	private final Thread game_thread = new Thread(this);
+	private BGMRunnable bgm_thread;
 	
-	private boolean finished = false;
+	private volatile boolean finished = false;
 	private boolean paused = false;
-	private long GAME_SPEED = 17;	// roughly 1/60 of a second
+	private long GAME_SPEED = 17; // roughly 1/60 of a second
 	private VersusView stageView;
+	private ThreadPool thread_pool;
+	private final int MAX_NUM_THREADS = 5;
+	
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
-	 * getting called once
+	 * getting called once. Kernel also insures that the game can run on the
+	 * provided JVM. If it is not up to date, it prints a message and then exits.
 	 */
 	private FatalKernel() {
-		// Start the kernel in it's own thread
-		game_thread.start();
+		checkJVM();
+				
+		thread_pool = new ThreadPool(MAX_NUM_THREADS);
+		thread_pool.runTask(game_thread);
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		        finished = true;
+		        thread_pool.close();
+		    }
+		});
+	}
+
+	/*
+	 * Makes sure there's a compatible JVM to run the game on.
+	 */
+	private void checkJVM() {
+		double jvmVersion = Double.parseDouble(System.getProperty("java.specification.version"));
+
+		if (jvmVersion < 1.8){
+			System.err.println("Sorry, Fatal Dust is not supported by your version of Java. Please update to Java 8.");
+			exit();
+		}
 	}
 
 	/**
@@ -186,16 +221,10 @@ public class FatalKernel implements Runnable {
 	}
 
 	/**
-	 * Exits the kernel. This method stops all currently active threads and
-	 * disposes of the screen.
+	 * Run shutdown hooks and exits.
 	 */
 	public void exit() {
-		try {
-			game_thread.join();
-		} catch (final InterruptedException e) {
-			// Nothing needs to be done since the game is exiting anyway.
-		}
-		screen.dispose();
+		System.exit(0);
 	}
 
 	/**
@@ -204,8 +233,8 @@ public class FatalKernel implements Runnable {
 	 * @return an ArrayList object holding the screen's width, height, and bit
 	 *         depth in that order
 	 */
-	public ArrayList<Integer> getScreenInfo() {
-		return screen.screenInfo();
+	public List<Integer> getScreenInfo() {
+		return Collections.unmodifiableList(screen.screenInfo());
 	}
 
 	/**
@@ -240,19 +269,14 @@ public class FatalKernel implements Runnable {
 	 * @return an Image object that contains the image specified
 	 */
 	public Image loadImage(String imgpath) {
-		return load(imgpath);	
+		return load(imgpath);
 	}
-	
+
 	/*
 	 * Loads and returns an image
 	 */
-	private Image load( String imgpath ){
-		// Get the image and load it into memory. Resource path should be added
-		// to string here before finding the image
-		imgpath = "resources/" + imgpath;
-
-		return (new ImageIcon(this.getClass().getClassLoader()
-					.getResource(imgpath))).getImage();
+	private Image load(String imgpath) {
+		return new ImageIcon(loadResource(imgpath)).getImage();
 	}
 
 	/**
@@ -266,14 +290,30 @@ public class FatalKernel implements Runnable {
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
 		SwingUtilities.invokeLater(() -> {
-				screen.remove((JPanel) remove);
-				remove.stopThreads();
+			remove.stopThreads();
+			
+			screen.setContentPane((JPanel) add);		
+			add.startThreads();
+			
+			screen.revalidate();
+			screen.repaint();
+		});
+	}
+	
+	/**
+	 * Adds a task to the thread pool for execution
+	 */
+	public void execute(Runnable task){
+		thread_pool.runTask(task);
+	}
 
-				screen.add((JPanel) add);
-				add.startThreads();
-
-				screen.revalidate();
-			});
+	/**
+	 * Sets a random stage background from a selection of possible stage
+	 * backgrounds
+	 */
+	public Image setStage() {
+		int numStage = (int) (Math.random() * FatalFactory.TOTAL_NUM_STAGES);
+		return FatalFactory.setStage(numStage);
 	}
 
 	/**
@@ -284,14 +324,14 @@ public class FatalKernel implements Runnable {
 		preGameLoop();
 
 		// Paint the background
-		stageView = (VersusView) getView (VERSUS);
-		
+		stageView = (VersusView) getView(VERSUS);
+
 		while (!finished) {
 			if (!paused)
 				inGameLoop();
-			
+
 			stageView.repaint();
-			
+
 			try {
 				Thread.sleep(GAME_SPEED);
 			} catch (InterruptedException e) {
@@ -302,52 +342,79 @@ public class FatalKernel implements Runnable {
 		postGameLoop();
 	}
 	
+	/**
+	 * Returns the desired file from the resources folder.
+	 */
+	public URL loadResource(String location){
+		return ClassLoader.getSystemResource("resources/" + location);
+	}
+	
+	/**
+	 * Streams the desired resource from the resources folder
+	 * @param location location to stream from
+	 * @return an Input stream of the resource
+	 */
+	public BufferedInputStream loadResourceAsStream(String location){
+		return new BufferedInputStream(ClassLoader.getSystemResourceAsStream("resources/" + location));
+	}
+
+	/**
+	 * Plays the specified file as looping background music in it's own thread.
+	 * @param filename name of the file to be played sitting in resources folder.
+	 */
+	public void playBGM(String filename) {
+		bgm_thread = new BGMRunnable(filename);
+		thread_pool.runTask(bgm_thread);
+	}
+	
+	/**
+	 * Stops the background music from playing
+	 */
+	/*
+	 * Only stops the background music if there is a non-null Runnable instance in the kernel.
+	 * Every class that plays background music should stop the BGM before moving to the next 
+	 * screen.
+	 */
+	public boolean stopBGM() {
+		bgm_thread.halt();
+		thread_pool.removeTask(bgm_thread);
+		return true;	// signals that the bgm thread has been halted
+	}
+
 	/*
 	 * Logic to happen before the game loop starts
 	 */
-	private void preGameLoop(){	
+	private void preGameLoop() {
 		views = new HashMap<String, FatalView>();
 		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(VERSUS, new VersusView());
+		views.put(SPLASH, new MainMenuView());
 		views.put(ERROR, new BackgroundView()); // for now, error screen
 												// is blank panel
-		redrawScreen(this.getView(ERROR), this.getView(LOADING));
 		
-		// Everything in here runs on it's own thread
-		final Thread t = new Thread(() -> { });
-		t.start();
-
-		try {
-			t.join(); // Wait on the thread loading materials to finish
-			this.redrawScreen(this.getView(LOADING), this.getView(VERSUS));
-		} catch (final InterruptedException e) {
-			// If all of the materials cannot be loaded, the kernel should exit
-			this.exit();
-			e.printStackTrace();
-		}
-		
+		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
 	}
 
 	/*
 	 * Logic that should happen in the game loop
 	 */
 	private void inGameLoop() {
-		//respondToInput();
-		//moveGameObjects();
-		//handleCollisions();
+		// respondToInput();
+		// moveGameObjects();
+		// handleCollisions();
 	}
-	
+
 	/*
 	 * Logic that should happen when the match is over
 	 */
-	private void postGameLoop(){ 
+	private void postGameLoop() {
 		stageView.stopThreads();
 	}
-	
-	//private void respondToInput() { }
-	
-	//private void moveGameObjects() { }
-	
-	//private void handleCollisions() { }
-	
+
+	// private void respondToInput() { }
+
+	// private void moveGameObjects() { }
+
+	// private void handleCollisions() { }
+
 }

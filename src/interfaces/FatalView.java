@@ -26,13 +26,18 @@ public interface FatalView {
 	
 	/**
 	 *  Starts all threads of the associated view.
+	 * @return 
 	 */
-	public void startThreads();
+	default boolean startThreads(){
+		return true;
+	}
 	
 	/**
 	 * Stops all threads of the associated view.
 	 */
-	public void stopThreads();
+	default boolean stopThreads(){
+		return true;
+	}
 
 	/**
 	 * Panel should be able to identify itself
