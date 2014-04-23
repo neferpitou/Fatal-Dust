@@ -411,6 +411,14 @@ public class FatalKernel implements Runnable {
 		stageView.stopThreads();
 	}
 
+	public int getScreenWidth() {
+		return screen.RESOLUTION_WIDTH;
+	}
+	
+	public int getScreenHeight(){
+		return screen.RESOLUTION_HEIGHT;
+	}
+
 	// private void respondToInput() { }
 
 	// private void moveGameObjects() { }
