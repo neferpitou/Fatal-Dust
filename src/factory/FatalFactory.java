@@ -2,8 +2,9 @@ package factory;
 
 import java.awt.Image;
 
+import characters.AyakoTurner;
+import characters.VanillaCharacter;
 import kernel.FatalKernel;
-import objects.VanillaCharacter;
 
 /**
  * A factory class that makes creating instances of characters and stages
@@ -18,15 +19,15 @@ public class FatalFactory {
 	private static FatalKernel kernel = FatalKernel.getInstance();
 	
 	// Creates a new character of the desired character type
-	public static VanillaCharacter spawnCharacter(CharacterType c, boolean isPlayerOne, int x, int y){
+	public static VanillaCharacter spawnCharacter(CharacterType c, boolean isPlayerOne){
 		VanillaCharacter character = null;
 
 		switch (c) {
 		case AyakoTurner:
-			character = new VanillaCharacter(isPlayerOne, CharacterType.AyakoTurner, x, y);
+			character = new AyakoTurner(isPlayerOne);
 			break;
 		case MalMartinez:
-			character = new VanillaCharacter(isPlayerOne, CharacterType.MalMartinez, x, y);
+			//character = new VanillaCharacter(isPlayerOne, CharacterType.MalMartinez, x, y);
 			break;
 		default:
 			// TODO: throw some exception

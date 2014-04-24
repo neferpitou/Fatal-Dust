@@ -1,15 +1,30 @@
-package objects;
+package characters;
 
+
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class Rectangle 
 {
 
-	int x;
-	int y;
+	public int x;
+	public int y;
 	
-	int w;
-	int h;
+	public int w;
+	public int h;
+	
+	public Color color;
+	
+	public Rectangle(int x, int y, int w, int h, Color color)
+	{
+		this.x = x;
+		this.y = y;
+		
+		this.w = w;
+		this.h = h;
+		
+		this.color = color;
+	}
 	
 	public Rectangle(int x, int y, int w, int h)
 	{
@@ -18,6 +33,7 @@ public class Rectangle
 		
 		this.w = w;
 		this.h = h;
+		
 	}
 	
 	public boolean hasCollidedWith(Rectangle r)
@@ -73,10 +89,32 @@ public class Rectangle
 		h -= dh;
 	}
 	
+	public void setHeight(int h)
+	{
+		this.h = h;
+	}
+	
+	public void setWidth(int w)
+	{
+		this.w = w;
+	}
+	
+	public void setYPosition(int y)
+	{
+		this.y = y;
+	}
+	
+	public void setXPosition(int x)
+	{
+		this.x = x;
+	}
+	
 	
 	public void draw(Graphics g)
 	{
+		g.setColor(color);
 		g.drawRect(x,y,w,h);
+		
 	}
 
 

@@ -271,6 +271,10 @@ public class FatalKernel implements Runnable {
 	public Image loadImage(String imgpath) {
 		return load(imgpath);
 	}
+	
+	public Image loadCharacters(String location){
+		return new ImageIcon(FatalKernel.class.getResource(location)).getImage();
+	}
 
 	/*
 	 * Loads and returns an image
