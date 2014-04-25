@@ -271,6 +271,10 @@ public class FatalKernel implements Runnable {
 	public Image loadImage(String imgpath) {
 		return load(imgpath);
 	}
+	
+	public Image loadCharacters(String location){
+		return new ImageIcon(FatalKernel.class.getResource(location)).getImage();
+	}
 
 	/*
 	 * Loads and returns an image
@@ -409,6 +413,14 @@ public class FatalKernel implements Runnable {
 	 */
 	private void postGameLoop() {
 		stageView.stopThreads();
+	}
+
+	public int getScreenWidth() {
+		return screen.RESOLUTION_WIDTH;
+	}
+	
+	public int getScreenHeight(){
+		return screen.RESOLUTION_HEIGHT;
 	}
 
 	// private void respondToInput() { }

@@ -1,4 +1,4 @@
-package objects;
+package characters;
 
 
 import java.awt.Color;
