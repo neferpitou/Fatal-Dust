@@ -178,8 +178,8 @@ public class FatalKernel implements Runnable {
 	private BGMRunnable bgm_thread;
 	
 	private volatile boolean finished = false;
-	private boolean paused = false;
-	private long GAME_SPEED = 17; // roughly 1/60 of a second
+	public static boolean PAUSED = false;
+	public static final long GAME_SPEED = 17; // Yields 30 FPS
 	private VersusView stageView;
 	private ThreadPool thread_pool;
 	private final int MAX_NUM_THREADS = 5;
@@ -348,8 +348,16 @@ public class FatalKernel implements Runnable {
 		stageView = (VersusView) getView(VERSUS);
 
 		while (!finished) {
-			if (!paused)
-				stageView = inGameLoop(stageView);
+			// Determines the user input and moves the character
+			if (!PAUSED) {
+				stageView.respondToInput();
+
+				// Handles collisions as a result of input
+				stageView.handleCollisions();
+
+				// Moves the game objects and refreshes the screen
+				stageView.updatePositions();
+			}
 
 			executeEDT(()->{
 				stageView.repaint();
@@ -432,22 +440,6 @@ public class FatalKernel implements Runnable {
 			views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
 					ayakoTurnerplayerTwo));
 		}
-	}
-
-	/*
-	 * Logic that should happen in the game loop
-	 */
-	private VersusView inGameLoop(VersusView stageView) {
-		// Determines the user input and moves the character
-		stageView.respondToInput();
-		
-		// Handles collisions as a result of input
-		stageView.handleCollisions();
-		
-		// Moves the game objects and refreshes the screen
-		stageView.updatePositions();
-		
-		return stageView;
 	}
 
 	/*

@@ -2,14 +2,18 @@ package views;
 
 import interfaces.FatalView;
 
+import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import kernel.FatalKernel;
+import characters.HealthBar;
 import characters.VanillaCharacter;
 
 /**
@@ -26,6 +30,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	private int right_img_bounds;
 	private final VanillaCharacter playerOne, playerTwo;
 	boolean[] isPressed = new boolean[256];
+	private HealthBar healthBarLeft = new HealthBar(20, 40, 300, 300, 30, "AYAKO");
 
 	public VersusView(final VanillaCharacter playerOne,
 			final VanillaCharacter playerTwo) {
@@ -38,7 +43,6 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 				isPressed[i] = false;
 			}
 		});
-
 	}
 
 	/*
@@ -53,6 +57,10 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	@Override
 	public void keyPressed(final KeyEvent e) {
 		isPressed[e.getKeyCode()] = true;
+		
+		if (isPressed[KeyEvent.VK_P]) {
+			FatalKernel.PAUSED = !FatalKernel.PAUSED;
+		}
 	}
 
 	@Override
@@ -75,11 +83,16 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	 */
 	@Override
 	protected void paintComponent(final Graphics g) {
-		// Start the image with the left quarter of the image off the left edge
-		// of the screen
-		// Also scale the width of this image to 1.3 times the original ratio
-		g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
-		playerOne.draw(g);
+		if (!FatalKernel.PAUSED) {
+			// Start the image with the left quarter of the image off the left
+			// edge
+			// of the screen
+			// Also scale the width of this image to 1.3 times the original
+			// ratio
+			g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
+			playerOne.draw(g);
+			healthBarLeft.draw(g);
+		}
 	}
 
 	/**
@@ -90,7 +103,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	public void respondToInput() {
 		// Must request focus to listen for KeyEvents
 		requestFocus();
-		
+
 		if (isPressed[KeyEvent.VK_UP]) {
 			playerOne.jump();
 		} else if (isPressed[KeyEvent.VK_DOWN]) {
@@ -110,7 +123,8 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			}
 			if (isPressed[KeyEvent.VK_LEFT]) {
 				playerOne.moveBackward(playerOne.getMovement());
-				// if(isPressed[KeyEvent.VK_D]) playerOne.setDirection(false);
+				// if(isPressed[KeyEvent.VK_D])
+				// playerOne.setDirection(false);
 			}
 		} else {
 
@@ -122,11 +136,10 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			}
 			if (isPressed[KeyEvent.VK_RIGHT]) {
 				playerOne.moveBackward(playerOne.getMovement());
-				// if(isPressed[KeyEvent.VK_D]) playerOne.setDirection(true);
+				// if(isPressed[KeyEvent.VK_D])
+				// playerOne.setDirection(true);
 			}
 		}
-		
-		repaint();
 	}
 
 	/*
@@ -158,7 +171,6 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	 * etc. The kernel calls this in the game loop to refresh the screen.
 	 */
 	public void updatePositions() {
-
 		if (playerOne.getCenterX() > playerTwo.getCenterX()) {
 			if (!playerOne.isJumping()) {
 				playerOne.setLookingRight(false);
@@ -170,10 +182,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			if (!playerOne.isJumping()) {
 				playerOne.setLookingRight(true);
 				playerTwo.setLookingRight(false);
-
 			}
 		}
-
-		repaint();
 	}
 }
