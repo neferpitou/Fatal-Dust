@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.SwingUtilities;
+
 /**
  * The ThreadPool class is used to manage threads within the program. Incoming
  * Runnable objects are assigned to currently available Threads, which then 
@@ -158,5 +160,12 @@ public class ThreadPool extends ThreadGroup {
 
 			}
 		}
+	}
+
+	/**
+	 * Adds a task to the Swing Event thread
+	 */
+	public void runEDTTask(Runnable task) {
+		SwingUtilities.invokeLater(task);
 	}
 }

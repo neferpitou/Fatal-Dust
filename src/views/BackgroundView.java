@@ -2,6 +2,7 @@ package views;
 
 import interfaces.FatalView;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -31,7 +32,7 @@ public class BackgroundView extends JPanel implements FatalView {
 	 * Creates a blank image panel which signifies an error with the view
 	 */
 	public BackgroundView() {
-		
+		setBackground(Color.black);
 	}
 
 	/**

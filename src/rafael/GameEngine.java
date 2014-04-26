@@ -21,9 +21,9 @@ public class GameEngine extends Applet implements MouseListener, KeyListener, Ru
 	 */
 	private static final long serialVersionUID = 1L;
 
-	boolean[] isPressed = new boolean[256]; 
 	
-	final int MOVEMENT = 13;
+	
+	
 	
 	final int LEFT_PLAYER_X  = 400;
 	final int RIGHT_PLAYER_X = 800;
@@ -54,10 +54,6 @@ public class GameEngine extends Applet implements MouseListener, KeyListener, Ru
 		setLayout(null);
 		
 		
-		for(int i = 0; i < isPressed.length ; i++)
-		{
-			isPressed[i] = false;
-		}
 		
 
 		requestFocus();

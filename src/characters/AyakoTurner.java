@@ -48,7 +48,7 @@ public class AyakoTurner extends VanillaCharacter {
 
 	public void punch() {
 		// Punch iff not ducking or jumping
-		if (!isDucking && !isJumping) {
+		if (!isDucking && !isJumping()) {
 			isPunching = true;
 
 			a.setWidth(PUNCH_W);
@@ -63,7 +63,7 @@ public class AyakoTurner extends VanillaCharacter {
 	}
 
 	public void block() {
-		if (!isDucking && !isPunching && !isJumping) {
+		if (!isDucking && !isPunching && !isJumping()) {
 			isBlocking = true;
 
 			a.setWidth(BLOCK_W);
@@ -76,7 +76,7 @@ public class AyakoTurner extends VanillaCharacter {
 
 	public void kick() {
 
-		if (!isDucking && !isJumping) {
+		if (!isDucking && !isJumping()) {
 
 			isKicking = true;
 
@@ -90,8 +90,8 @@ public class AyakoTurner extends VanillaCharacter {
 	}
 
 	public void jump() {
-		if (!isJumping && !isDucking) {
-			isJumping = true;
+		if (!isJumping() && !isDucking) {
+			setJumping(true);
 
 			// Initial Jump Velocity
 			vy = INIT_JUMP_V;
@@ -105,7 +105,7 @@ public class AyakoTurner extends VanillaCharacter {
 	}
 
 	public void duck() {
-		if (!isJumping && !isKicking) {
+		if (!isJumping() && !isKicking) {
 			isDucking = true;
 
 			a.setYPosition(DUCK_Y);
@@ -118,7 +118,7 @@ public class AyakoTurner extends VanillaCharacter {
 
 	public void draw(Graphics g) {
 
-		if (isJumping)// Jumping
+		if (isJumping())// Jumping
 		{
 
 			a.moveUpBy(vy);
@@ -127,7 +127,7 @@ public class AyakoTurner extends VanillaCharacter {
 			vy -= GRAVITY;
 
 			if (a.y >= HEIGHT_Y) {
-				isJumping = false;
+				setJumping(false);
 			}
 
 		}
@@ -149,10 +149,10 @@ public class AyakoTurner extends VanillaCharacter {
 
 	public void moveForward(int dx) {
 
-		if (lookingRight) {
+		if (isLookingRight()) {
 			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
 
-				centerX += dx;
+				setCenterX(getCenterX() + dx);
 				greenHitBox.moveRightBy(dx);
 				// redHitBox.moveRightBy(dx);
 
@@ -160,7 +160,7 @@ public class AyakoTurner extends VanillaCharacter {
 				a_lt.moveRightBy(dx);
 
 				a.setHeight(WALK_H);
-				if (!isJumping)
+				if (!isJumping())
 					a.setYPosition(WALK_Y);
 
 				isWalking = true;
@@ -170,7 +170,7 @@ public class AyakoTurner extends VanillaCharacter {
 		} else {
 			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
 
-				centerX -= dx;
+				setCenterX(getCenterX() - dx);
 				greenHitBox.moveLeftBy(dx);
 				// redHitBox.moveLeftBy(dx);
 
@@ -178,7 +178,7 @@ public class AyakoTurner extends VanillaCharacter {
 				a_rt.moveLeftBy(dx);
 
 				a.setHeight(WALK_H);
-				if (!isJumping)
+				if (!isJumping())
 					a.setYPosition(WALK_Y);
 
 				isWalking = true;
@@ -191,9 +191,9 @@ public class AyakoTurner extends VanillaCharacter {
 
 	public void moveBackward(int dx) {
 
-		if (lookingRight) {
+		if (isLookingRight()) {
 			if (!isDucking && !isPunching && !isKicking) {
-				centerX -= dx;
+				setCenterX(getCenterX() - dx);
 				greenHitBox.moveLeftBy(dx);
 				// redHitBox.moveLeftBy(dx);
 
@@ -201,7 +201,7 @@ public class AyakoTurner extends VanillaCharacter {
 				a_lt.moveLeftBy(dx);
 
 				a.setHeight(WALK_H);
-				if (!isJumping)
+				if (!isJumping())
 					a.setYPosition(WALK_Y);
 
 				isWalking = true;
@@ -210,7 +210,7 @@ public class AyakoTurner extends VanillaCharacter {
 		} else {
 
 			if (!isDucking && !isPunching && !isKicking) {
-				centerX += dx;
+				setCenterX(getCenterX() + dx);
 
 				greenHitBox.moveRightBy(dx);
 				// redHitBox.moveRightBy(dx);
@@ -219,7 +219,7 @@ public class AyakoTurner extends VanillaCharacter {
 				a_rt.moveRightBy(dx);
 
 				a.setHeight(WALK_H);
-				if (!isJumping)
+				if (!isJumping())
 					a.setYPosition(WALK_Y);
 
 				isWalking = true;
@@ -235,7 +235,7 @@ public class AyakoTurner extends VanillaCharacter {
 	}
 
 	public void setDirection(boolean lookingRight) {
-		this.lookingRight = lookingRight;
+		this.setLookingRight(lookingRight);
 
 		if (lookingRight) {
 			a = a_rt;
@@ -263,7 +263,7 @@ public class AyakoTurner extends VanillaCharacter {
 		a.setWidth(characterWidth);
 		a.setHeight(characterHeight);
 
-		if (!isJumping)
+		if (!isJumping())
 			a.setYPosition(HEIGHT_Y);
 
 		a.setPos(0);
