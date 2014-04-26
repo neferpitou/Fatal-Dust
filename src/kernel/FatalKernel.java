@@ -280,6 +280,12 @@ public class FatalKernel implements Runnable {
 		return load(imgpath);
 	}
 	
+	/**
+	 * Loads character sprites from a specified resource location
+	 * 
+	 * @param location absolute resource location on disc
+	 * @return an image of frame a particular character in a specified pose
+	 */
 	public Image loadCharacters(String location){
 		return new ImageIcon(FatalKernel.class.getResource(location)).getImage();
 	}
@@ -420,7 +426,7 @@ public class FatalKernel implements Runnable {
 			ayakoTurnerplayerOne = (AyakoTurner) FatalFactory.spawnCharacter(
 					CharacterType.AyakoTurner, true);
 			ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
-					CharacterType.AyakoTurner, true);
+					CharacterType.AyakoTurner, false);
 
 			views = new HashMap<String, FatalView>();
 			views.put(LOADING, new BackgroundView("game-loader.gif"));
@@ -449,10 +455,19 @@ public class FatalKernel implements Runnable {
 		stageView.stopThreads();
 	}
 
+	/**
+	 * Returns the width of the screen
+	 * @return the resolution of the width in pixels
+	 */
 	public int getScreenWidth() {
 		return screen.RESOLUTION_WIDTH;
 	}
 	
+	/**
+	 * Returns the height of the screen
+	 * 
+	 * @return the resolution of the height in pixels
+	 */
 	public int getScreenHeight(){
 		return screen.RESOLUTION_HEIGHT;
 	}
