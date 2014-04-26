@@ -112,31 +112,91 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 		/*
 		 * Check input for player one.
 		 */
-		if (isPressed[KeyEvent.VK_UP]) {
-			playerOne.jump();
-		} else if (isPressed[KeyEvent.VK_DOWN]) {
-			playerOne.duck();
-		} else if (isPressed[KeyEvent.VK_W]) {
-			playerOne.punch();
-		} else if (isPressed[KeyEvent.VK_A]) {
-			playerOne.kick();
+		
+		
+		if(isPressed[KeyEvent.VK_UP])          playerOne.jump();
+		else if(isPressed[KeyEvent.VK_DOWN])   playerOne.duck();
+		else if(isPressed[KeyEvent.VK_W])      playerOne.punch();
+		else if(isPressed[KeyEvent.VK_A])      playerOne.kick();
+		
+		   
+		if(playerOne.lookingRight)
+		{
+			if(isPressed[KeyEvent.VK_B])   playerOne.block(); 
+			
+			if(!playerOne.hitBox.hasCollidedWith(playerTwo.hitBox))
+			{
+				if(isPressed[KeyEvent.VK_RIGHT])  playerOne.moveForward(playerOne.getMovement());
+			
+			}
+			
+			if(isPressed[KeyEvent.VK_LEFT])      playerOne.moveBackward(playerOne.getMovement());
+		
+		}
+		else
+		{
+			
+			if(isPressed[KeyEvent.VK_B])   playerOne.block();
+			
+			if(!playerOne.hitBox.hasCollidedWith(playerTwo.hitBox))
+			{
+				if(isPressed[KeyEvent.VK_LEFT])   playerOne.moveForward(playerOne.getMovement());
+				
+			}
+			//if(isPressed[KeyEvent.VK_D])      ayako.setDirection(true);
+			if(isPressed[KeyEvent.VK_RIGHT])      playerOne.moveBackward(playerOne.getMovement());
 		}
 
-		if (isPressed[KeyEvent.VK_B]) {
-			playerOne.block();
-		}
-		if (isPressed[KeyEvent.VK_RIGHT]) {
-			playerOne.moveForward(playerOne.getMovement());
-		}
-		if (isPressed[KeyEvent.VK_LEFT]) {
-			playerOne.moveBackward(playerOne.getMovement());
-			// if(isPressed[KeyEvent.VK_D])
-			// playerOne.setDirection(false);
-		}
+		
+		//Uncomment for unbeatable character.. 
+		//if(Math.abs(ayako2.centerX - ayako.centerX) < 100) ayako2.defendAgainst(ayako);
+		
+		if ( playerOne.getCenterX() > playerTwo.getCenterX())
+		{
+			if ( !playerOne.isJumping() )
+			{
+				playerOne.setLookingRight(false);
+				playerTwo.setLookingRight(true);
+				
+			}
+			
 
+				
+		}
+		
+		else
+		{
+			if ( !playerOne.isJumping() )
+			{
+				playerOne.setLookingRight(true);
+				playerTwo.setLookingRight(false);
+				
+			}
+			
+			
+		}
+		
+		if(playerOne.strikeBox.hasCollidedWith(playerTwo.hitBox))
+		{
+			playerTwo.takeHit();
+		}
+		
+		if(playerTwo.getHealth() <= 0)
+		{
+			playerTwo.die();
+		}
+		
+		
 		/*
 		 * Check player two
 		 */
+		
+		/*
+		 * PLAYER TWO will only defend for now.. 
+		 * 
+		 */
+		
+		/*
 		if (isPressed[KeyEvent.VK_UP]) {
 			playerTwo.jump();
 		} else if (isPressed[KeyEvent.VK_DOWN]) {
@@ -158,7 +218,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			// if(isPressed[KeyEvent.VK_D])
 			// playerOne.setDirection(false);
 		}
-
+	*/
 	}
 
 	/*
