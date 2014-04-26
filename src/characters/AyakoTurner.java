@@ -40,32 +40,32 @@ public class AyakoTurner extends VanillaCharacter {
 				"right", IMG_PREFIX);
 		a_rt = new SpriteAnimated(x, y, characterWidth, characterHeight,
 				"left", IMG_PREFIX);
-		
+
 		a = lookingRight ? a_rt : a_lt;
 	}
 
 	public void punch() {
 		//Punch iff not ducking or jumping
-				if (!isDucking && !isJumping)
-				{
-					isPunching = true;
-					
-					
-					a.setWidth(PUNCH_W);
-					a.setHeight(PUNCH_H);
-					a.setYPosition(PUNCH_Y);
-					
-					strikeBox.setYPosition(a.y + 20);
+		if (!isDucking && !isJumping)
+		{
+			isPunching = true;
 
-					strikeBox.setHeight(60);
-					strikeBox.setWidth(75);
-					
-					if(lookingRight) strikeBox.setXPosition(centerX + 15);
-					else             strikeBox.setXPosition(centerX - 90);
-					
-					a.setPos(2);
-					
-				}
+
+			a.setWidth(PUNCH_W);
+			a.setHeight(PUNCH_H);
+			a.setYPosition(PUNCH_Y);
+
+			strikeBox.setYPosition(a.y + 20);
+
+			strikeBox.setHeight(60);
+			strikeBox.setWidth(75);
+
+			if(lookingRight) strikeBox.setXPosition(centerX + 15);
+			else             strikeBox.setXPosition(centerX - 90);
+
+			a.setPos(2);
+
+		}
 
 	}
 
@@ -73,16 +73,16 @@ public class AyakoTurner extends VanillaCharacter {
 		if(!isDucking && !isPunching && !isJumping)
 		{
 			isBlocking = true;
-			
+
 			a.setWidth(BLOCK_W);
 			a.setYPosition(BLOCK_Y);
-	
+
 			if(lookingRight) strikeBox.setXPosition(a.x);
 			else             strikeBox.setXPosition(a.x + characterHeight);
-			
+
 			guardBox.setHeight(hitBox.h + 30);
 			guardBox.setWidth(hitBox.w);
-		
+
 			a.setPos(4);
 		}
 
@@ -92,23 +92,23 @@ public class AyakoTurner extends VanillaCharacter {
 
 		if(!isDucking && !isJumping)
 		{
-			
+
 			isKicking = true;
-		
+
 			a.setWidth(KICK_W);
 			a.setHeight(KICK_H);
 			a.setYPosition(KICK_Y);
-			
+
 			strikeBox.setHeight(40);
 			strikeBox.setWidth(100);
 			strikeBox.setYPosition(a.y + 60);
-			
+
 			if(lookingRight)
 				strikeBox.setXPosition(centerX + 15);
 			else
 				strikeBox.setXPosition(centerX - 115);
 
-		
+
 			a.setPos(5);
 
 		}
@@ -134,12 +134,12 @@ public class AyakoTurner extends VanillaCharacter {
 		if(!isJumping && !isKicking)
 		{
 			isDucking = true;
-			
+
 			hitBox.setWidth(DUCK_W - 75);
-					
+
 			a.setYPosition(DUCK_Y);
 			a.setWidth(DUCK_W);
-			
+
 			hitBox.setYPosition(DUCK_Y+50);
 
 			a.setPos(1);
@@ -151,53 +151,53 @@ public class AyakoTurner extends VanillaCharacter {
 
 
 		if(isJumping)//Jumping
-			{
-				
-				a.moveUpBy( vy );
+		{
 
-				strikeBox.moveUpBy(vy);
-				hitBox.moveUpBy(vy);
-				guardBox.moveUpBy(vy);
-				
-				vy -= GRAVITY;
-				
-				
-				
-				if(isDead)
+			a.moveUpBy( vy );
+
+			strikeBox.moveUpBy(vy);
+			hitBox.moveUpBy(vy);
+			guardBox.moveUpBy(vy);
+
+			vy -= GRAVITY;
+
+
+
+			if(isDead)
+			{
+				if (a.y  >= HEIGHT_Y + characterWidth)
 				{
-					if (a.y  >= HEIGHT_Y + characterWidth)
-					{
-						isJumping = false;
-					}
-					
+					isJumping = false;
 				}
-				else
-				{
-					if (a.y  >= HEIGHT_Y)
-					{
-						isJumping = false;
-					}
-				}
-				
-				
+
 			}
-		
-			
-		
+			else
+			{
+				if (a.y  >= HEIGHT_Y)
+				{
+					isJumping = false;
+				}
+			}
+
+
+		}
+
+
+
 		a.draw(g);
-		
+
 		resetDefaults();
-		
-		
+
+
 		if(DEBUG_MODE_ON)
 		{
 			strikeBox.draw(g);
 			hitBox.draw(g);
 			guardBox.draw(g);
-			
+
 			g.setColor(Color.black);
 		}
-		
+
 
 	}
 
@@ -207,11 +207,11 @@ public class AyakoTurner extends VanillaCharacter {
 			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
 
 				setCenterX(getCenterX() + dx);
-				
+
 				strikeBox.moveRightBy(dx);
 				hitBox.moveRightBy(dx);
 				guardBox.moveRightBy(dx);
-			
+
 
 				a.moveRightBy(dx);
 				a_lt.moveRightBy(dx);
@@ -228,7 +228,7 @@ public class AyakoTurner extends VanillaCharacter {
 			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
 
 				setCenterX(getCenterX() - dx);
-				
+
 				strikeBox.moveLeftBy(dx);
 				hitBox.moveLeftBy(dx);
 				guardBox.moveLeftBy(dx);
@@ -253,7 +253,7 @@ public class AyakoTurner extends VanillaCharacter {
 		if (isLookingRight()) {
 			if (!isDucking && !isPunching && !isKicking) {
 				setCenterX(getCenterX() - dx);
-				
+
 				strikeBox.moveLeftBy(dx);
 				hitBox.moveLeftBy(dx);
 				guardBox.moveLeftBy(dx);
@@ -346,7 +346,7 @@ public class AyakoTurner extends VanillaCharacter {
 		{
 			duck();
 		}
-		
+
 	}
 
 
