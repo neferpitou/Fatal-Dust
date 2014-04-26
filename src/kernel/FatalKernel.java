@@ -1,8 +1,10 @@
 package kernel;
 
+import factory.CharacterType;
 import factory.FatalFactory;
 import interfaces.FatalView;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
@@ -27,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import characters.AyakoTurner;
 import views.BackgroundView;
 import views.MainMenuView;
 import views.VersusView;
@@ -80,6 +83,7 @@ public class FatalKernel implements Runnable {
 		public Screen() {
 			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			this.setFullScreen(displayMode);
+			setBackground(Color.black);
 		}
 
 		/*
@@ -180,6 +184,8 @@ public class FatalKernel implements Runnable {
 	private ThreadPool thread_pool;
 	private final int MAX_NUM_THREADS = 5;
 	
+	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
+	//private MalMartinez malMartinez;
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
@@ -188,15 +194,17 @@ public class FatalKernel implements Runnable {
 	 */
 	private FatalKernel() {
 		checkJVM();
-				
+
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
 		thread_pool.runTask(game_thread);
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-		    public void run() {
-		        finished = true;
-		        thread_pool.close();
-		    }
-		});
+		
+		// Instantiate two instances of each character (in case both players
+		// want to use the same character) in a worker thread
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			finished = true;
+			thread_pool.close();
+		}));
 	}
 
 	/*
@@ -293,22 +301,31 @@ public class FatalKernel implements Runnable {
 	 */
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
-		SwingUtilities.invokeLater(() -> {
+		executeEDT(() -> {
 			remove.stopThreads();
 			
 			screen.setContentPane((JPanel) add);		
 			add.startThreads();
-			
-			screen.revalidate();
-			screen.repaint();
+			screen.revalidate();		
 		});
 	}
 	
 	/**
-	 * Adds a task to the thread pool for execution
+	 * Adds a task to the thread pool for execution. Returns true
+	 * to signify that the task has been started.
 	 */
-	public void execute(Runnable task){
+	public boolean execute(Runnable task){
 		thread_pool.runTask(task);
+		return true;
+	}
+	
+	/**
+	 * Adds a task to the Swing Event thread. Returns true to signify
+	 * that the task has been started.
+	 */
+	public boolean executeEDT(Runnable task){
+		thread_pool.runEDTTask(task);
+		return true;
 	}
 
 	/**
@@ -332,10 +349,12 @@ public class FatalKernel implements Runnable {
 
 		while (!finished) {
 			if (!paused)
-				inGameLoop();
+				stageView = inGameLoop(stageView);
 
-			stageView.repaint();
-
+			executeEDT(()->{
+				stageView.repaint();
+			});
+			
 			try {
 				Thread.sleep(GAME_SPEED);
 			} catch (InterruptedException e) {
@@ -389,23 +408,46 @@ public class FatalKernel implements Runnable {
 	 * Logic to happen before the game loop starts
 	 */
 	private void preGameLoop() {
-		views = new HashMap<String, FatalView>();
-		views.put(LOADING, new BackgroundView("game-loader.gif"));
-		views.put(VERSUS, new VersusView());
-		views.put(SPLASH, new MainMenuView());
-		views.put(ERROR, new BackgroundView()); // for now, error screen
-												// is blank panel
-		
-		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
+		Thread t = new Thread(() -> {
+			ayakoTurnerplayerOne = (AyakoTurner) FatalFactory.spawnCharacter(
+					CharacterType.AyakoTurner, true);
+			ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
+					CharacterType.AyakoTurner, true);
+
+			views = new HashMap<String, FatalView>();
+			views.put(LOADING, new BackgroundView("game-loader.gif"));
+			views.put(SPLASH, new MainMenuView());
+			views.put(ERROR, new BackgroundView()); // error screen is blank
+													// panel
+			redrawScreen(this.getView(ERROR), this.getView(SPLASH));
+			});
+
+		t.start();
+
+		try {
+			t.join();
+		} catch (Exception e) {
+			;
+		} finally {
+			views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
+					ayakoTurnerplayerTwo));
+		}
 	}
 
 	/*
 	 * Logic that should happen in the game loop
 	 */
-	private void inGameLoop() {
-		// respondToInput();
-		// moveGameObjects();
-		// handleCollisions();
+	private VersusView inGameLoop(VersusView stageView) {
+		// Determines the user input and moves the character
+		stageView.respondToInput();
+		
+		// Handles collisions as a result of input
+		stageView.handleCollisions();
+		
+		// Moves the game objects and refreshes the screen
+		stageView.updatePositions();
+		
+		return stageView;
 	}
 
 	/*
@@ -422,11 +464,4 @@ public class FatalKernel implements Runnable {
 	public int getScreenHeight(){
 		return screen.RESOLUTION_HEIGHT;
 	}
-
-	// private void respondToInput() { }
-
-	// private void moveGameObjects() { }
-
-	// private void handleCollisions() { }
-
 }

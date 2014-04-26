@@ -42,7 +42,7 @@ public class MainMenuView extends JPanel implements FatalView {
 		final int centerYLocation = (int) (kernel.getScreenInfo().get(1) * .4);
 		setLayout(new BorderLayout(0, 0));
 
-		SwingUtilities.invokeLater(() -> {
+		kernel.executeEDT(() -> {
 			JLabel title = new JLabel("Fatal Dust");
 			title.setForeground(Color.WHITE);
 			title.setHorizontalAlignment(SwingConstants.CENTER);

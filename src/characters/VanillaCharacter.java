@@ -11,12 +11,8 @@ public abstract class VanillaCharacter {
 	int centerY;
 
 	boolean lookingRight;
-	boolean isPunching;
-	boolean isJumping;
-	boolean reachedJumpApex;
-	boolean isKicking;
-	
-	boolean isWalking;
+	boolean isDead;
+	boolean perfection;
 	
 	final int FLOOR_Y = 600;
 	final int GRAVITY = 2;
@@ -33,7 +29,7 @@ public abstract class VanillaCharacter {
 	protected int health;
 
 	// Characters need boolean values to know what state it is currently in
-	protected boolean isOnLeft, isBlocking, isHitting, isDucking;
+	protected boolean isOnLeft, isBlocking, isHitting, isDucking, isJumping, isKicking, isPunching, isWalking;
 
 	// Characters need hitboxes to know when they've been struck by another
 	// player
@@ -58,6 +54,7 @@ public abstract class VanillaCharacter {
 	
 	final int LEFT_PLAYER_X  = 400;
 	final int RIGHT_PLAYER_X = 800;
+	final int MOVEMENT = 13;
 	
 	/**
 	 * Defines and instantiates all attributes characters need to have
@@ -68,10 +65,10 @@ public abstract class VanillaCharacter {
 	public VanillaCharacter(boolean playerOne, CharacterType character) {
 		if (playerOne){
 			isOnLeft = false;
-			centerX = LEFT_PLAYER_X;
+			setCenterX(LEFT_PLAYER_X);
 		} else {
 			isOnLeft = true;
-			centerX = RIGHT_PLAYER_X;
+			setCenterX(RIGHT_PLAYER_X);
 		}
 		
 		isOnLeft = (playerOne) ? false : true;
@@ -81,15 +78,17 @@ public abstract class VanillaCharacter {
 		isPunching = false; 
 		isJumping = false;
 		isKicking = false;
-		this.centerX = centerX;
+		perfection = true;
+		
+		this.setCenterX(centerX);
 		this.character = character;
-		x = centerX - (characterWidth/2);
+		x = getCenterX() - (characterWidth/2);
 		y = HEIGHT_Y; 
 		
-		if(lookingRight){
-			greenHitBox = new Rectangle( centerX - 45, y+50, 60, 150, Color.GREEN);
+		if(isLookingRight()){
+			greenHitBox = new Rectangle( getCenterX() - 45, y+50, 60, 150, Color.GREEN);
 		} else {
-			greenHitBox = new Rectangle( centerX - 15, y+50, 60, 150, Color.GREEN);
+			greenHitBox = new Rectangle( getCenterX() - 15, y+50, 60, 150, Color.GREEN);
 		}
 	}
 
@@ -128,12 +127,33 @@ public abstract class VanillaCharacter {
 		return health;
 	}
 	
-	private void setHitBoxCoords( )
-	{
-		if (lookingRight)
-		{
-			
-			
-		}
+	public abstract void duck();
+
+	public boolean isLookingRight() {
+		return lookingRight;
+	}
+
+	public void setLookingRight(boolean lookingRight) {
+		this.lookingRight = lookingRight;
+	}
+	
+	public int getMovement(){
+		return MOVEMENT;
+	}
+
+	public boolean isJumping() {
+		return isJumping;
+	}
+
+	public void setJumping(boolean isJumping) {
+		this.isJumping = isJumping;
+	}
+
+	public int getCenterX() {
+		return centerX;
+	}
+
+	public void setCenterX(int centerX) {
+		this.centerX = centerX;
 	}
 }
