@@ -178,8 +178,8 @@ public class FatalKernel implements Runnable {
 	private BGMRunnable bgm_thread;
 	
 	private volatile boolean finished = false;
-	private boolean paused = false;
-	private long GAME_SPEED = 17; // roughly 1/60 of a second
+	public static boolean PAUSED = false;
+	public static final long GAME_SPEED = 17; // Yields 30 FPS
 	private VersusView stageView;
 	private ThreadPool thread_pool;
 	private final int MAX_NUM_THREADS = 5;
@@ -280,6 +280,12 @@ public class FatalKernel implements Runnable {
 		return load(imgpath);
 	}
 	
+	/**
+	 * Loads character sprites from a specified resource location
+	 * 
+	 * @param location absolute resource location on disc
+	 * @return an image of frame a particular character in a specified pose
+	 */
 	public Image loadCharacters(String location){
 		return new ImageIcon(FatalKernel.class.getResource(location)).getImage();
 	}
@@ -348,8 +354,16 @@ public class FatalKernel implements Runnable {
 		stageView = (VersusView) getView(VERSUS);
 
 		while (!finished) {
-			if (!paused)
-				stageView = inGameLoop(stageView);
+			// Determines the user input and moves the character
+			if (!PAUSED) {
+				stageView.respondToInput();
+
+				// Handles collisions as a result of input
+				stageView.handleCollisions();
+
+				// Moves the game objects and refreshes the screen
+				stageView.updatePositions();
+			}
 
 			executeEDT(()->{
 				stageView.repaint();
@@ -412,7 +426,7 @@ public class FatalKernel implements Runnable {
 			ayakoTurnerplayerOne = (AyakoTurner) FatalFactory.spawnCharacter(
 					CharacterType.AyakoTurner, true);
 			ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
-					CharacterType.AyakoTurner, true);
+					CharacterType.AyakoTurner, false);
 
 			views = new HashMap<String, FatalView>();
 			views.put(LOADING, new BackgroundView("game-loader.gif"));
@@ -435,32 +449,25 @@ public class FatalKernel implements Runnable {
 	}
 
 	/*
-	 * Logic that should happen in the game loop
-	 */
-	private VersusView inGameLoop(VersusView stageView) {
-		// Determines the user input and moves the character
-		stageView.respondToInput();
-		
-		// Handles collisions as a result of input
-		stageView.handleCollisions();
-		
-		// Moves the game objects and refreshes the screen
-		stageView.updatePositions();
-		
-		return stageView;
-	}
-
-	/*
 	 * Logic that should happen when the match is over
 	 */
 	private void postGameLoop() {
 		stageView.stopThreads();
 	}
 
+	/**
+	 * Returns the width of the screen
+	 * @return the resolution of the width in pixels
+	 */
 	public int getScreenWidth() {
 		return screen.RESOLUTION_WIDTH;
 	}
 	
+	/**
+	 * Returns the height of the screen
+	 * 
+	 * @return the resolution of the height in pixels
+	 */
 	public int getScreenHeight(){
 		return screen.RESOLUTION_HEIGHT;
 	}
