@@ -113,7 +113,6 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 		 * Check input for player one.
 		 */
 		
-		
 		if(isPressed[KeyEvent.VK_UP])          playerOne.jump();
 		else if(isPressed[KeyEvent.VK_DOWN])   playerOne.duck();
 		else if(isPressed[KeyEvent.VK_W])      playerOne.punch();

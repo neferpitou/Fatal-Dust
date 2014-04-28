@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -169,9 +170,8 @@ public class FatalKernel implements Runnable {
 	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
 
-	// A hashmap that holds the views. The views are identified and retrieved by
-	// their identifiers.
-	private HashMap<String, FatalView> views;
+	// The views are identified and retrieved by their identifiers.
+	private WeakHashMap<String, FatalView> views = new WeakHashMap<String, FatalView>();
 
 	// The game thread
 	private final Thread game_thread = new Thread(this);
@@ -187,35 +187,30 @@ public class FatalKernel implements Runnable {
 	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
 	//private MalMartinez malMartinez;
 
+	private boolean DEBUG_MODE_ON = true;
+
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
 	 * getting called once. Kernel also insures that the game can run on the
 	 * provided JVM. If it is not up to date, it prints a message and then exits.
 	 */
 	private FatalKernel() {
-		checkJVM();
+		long t1 = System.currentTimeMillis();
 
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
-		thread_pool.runTask(game_thread);
 		
 		// Instantiate two instances of each character (in case both players
 		// want to use the same character) in a worker thread
-
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			finished = true;
 			thread_pool.close();
 		}));
-	}
-
-	/*
-	 * Makes sure there's a compatible JVM to run the game on.
-	 */
-	private void checkJVM() {
-		double jvmVersion = Double.parseDouble(System.getProperty("java.specification.version"));
-
-		if (jvmVersion < 1.8){
-			System.err.println("Sorry, Fatal Dust is not supported by your version of Java. Please update to Java 8.");
-			exit();
+		
+		thread_pool.runTask(game_thread);
+		
+		if (DEBUG_MODE_ON){
+			long t2 = System.currentTimeMillis();
+			System.err.println("Time to execute kernel constructor: " + (t2 - t1) + "ms");
 		}
 	}
 
@@ -232,6 +227,8 @@ public class FatalKernel implements Runnable {
 	 * Run shutdown hooks and exits.
 	 */
 	public void exit() {
+		finished = true;
+		thread_pool.close();
 		System.exit(0);
 	}
 
@@ -307,6 +304,8 @@ public class FatalKernel implements Runnable {
 	 */
 	public void redrawScreen(final FatalView remove, final FatalView add) {
 		// Needs to be run on the Event Dispatcher Thread
+		long t1 = System.currentTimeMillis();
+		
 		executeEDT(() -> {
 			remove.stopThreads();
 			
@@ -314,6 +313,12 @@ public class FatalKernel implements Runnable {
 			add.startThreads();
 			screen.revalidate();		
 		});
+		
+		if (DEBUG_MODE_ON){
+			long t2 = System.currentTimeMillis();
+			System.err.println("Time to execute redrawScreen: " + (t2 - t1) + "ms");
+		}
+			
 	}
 	
 	/**
@@ -356,6 +361,7 @@ public class FatalKernel implements Runnable {
 		while (!finished) {
 			// Determines the user input and moves the character
 			if (!PAUSED) {
+				try {
 				stageView.respondToInput();
 
 				// Handles collisions as a result of input
@@ -363,6 +369,9 @@ public class FatalKernel implements Runnable {
 
 				// Moves the game objects and refreshes the screen
 				stageView.updatePositions();
+				} catch (NullPointerException e){
+					;
+				}
 			}
 
 			executeEDT(()->{
@@ -400,9 +409,16 @@ public class FatalKernel implements Runnable {
 	 * @param filename name of the file to be played sitting in resources folder.
 	 */
 	public void playBGM(String filename) {
+		long t1 = System.currentTimeMillis();
 		bgm_thread = new BGMRunnable(filename);
 		thread_pool.runTask(bgm_thread);
+		
+		if (DEBUG_MODE_ON){
+			long t2 = System.currentTimeMillis();
+			System.err.println("Time to execute playBGM: " + (t2 - t1) + "ms");
+		}
 	}
+		
 	
 	/**
 	 * Stops the background music from playing
@@ -422,29 +438,26 @@ public class FatalKernel implements Runnable {
 	 * Logic to happen before the game loop starts
 	 */
 	private void preGameLoop() {
-		Thread t = new Thread(() -> {
-			ayakoTurnerplayerOne = (AyakoTurner) FatalFactory.spawnCharacter(
-					CharacterType.AyakoTurner, true);
-			ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
-					CharacterType.AyakoTurner, false);
+		long t1 = System.currentTimeMillis();
+		
+		ayakoTurnerplayerOne = (AyakoTurner) FatalFactory.spawnCharacter(
+				CharacterType.AyakoTurner, true);
+		ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
+				CharacterType.AyakoTurner, false);
 
-			views = new HashMap<String, FatalView>();
-			views.put(LOADING, new BackgroundView("game-loader.gif"));
-			views.put(SPLASH, new MainMenuView());
-			views.put(ERROR, new BackgroundView()); // error screen is blank
-													// panel
-			redrawScreen(this.getView(ERROR), this.getView(SPLASH));
-			});
+		views.put(LOADING, new BackgroundView("game-loader.gif"));
+		views.put(SPLASH, new MainMenuView());
+		views.put(ERROR, new BackgroundView()); // error screen is blank
+												// panel
+		views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
+				ayakoTurnerplayerTwo));
 
-		t.start();
+		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
 
-		try {
-			t.join();
-		} catch (Exception e) {
-			;
-		} finally {
-			views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
-					ayakoTurnerplayerTwo));
+		if (DEBUG_MODE_ON) {
+			long t2 = System.currentTimeMillis();
+			System.err.println("Time to execute preGameLoop: " + (t2 - t1)
+					+ "ms");
 		}
 	}
 
