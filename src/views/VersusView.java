@@ -1,5 +1,6 @@
 package views;
 
+import interfaces.CollisionHandler;
 import interfaces.FatalView;
 
 import java.awt.BorderLayout;
@@ -24,7 +25,7 @@ import characters.VanillaCharacter;
  *
  */
 @SuppressWarnings("serial")
-public class VersusView extends JPanel implements FatalView, KeyListener {
+public class VersusView extends JPanel implements FatalView, KeyListener, CollisionHandler {
 
 	private Image img;
 	private int right_img_bounds;
@@ -175,15 +176,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			
 		}
 		
-		if(playerOne.strikeBox.hasCollidedWith(playerTwo.hitBox))
-		{
-			playerTwo.takeHit();
-		}
-		
-		if(playerTwo.getHealth() <= 0)
-		{
-			playerTwo.die();
-		}
+		handleCollisionBetween( playerOne, playerTwo);
 		
 		
 		/*
@@ -262,5 +255,25 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 				playerTwo.setLookingRight(false);
 			}
 		}
+		
+	}
+	
+	
+public void handleCollisionBetween(VanillaCharacter c1, VanillaCharacter c2) {
+		
+		
+		// c1 hits c2
+		if( c1.strikeBox.hasCollidedWith(c2.hitBox))
+		{
+			c2.takeHit();
+		}
+		
+		// c2 hit c1
+		if( c1.hitBox.hasCollidedWith(c2.strikeBox)  )
+		{
+			c1.takeHit();
+		}
+		
+		
 	}
 }
