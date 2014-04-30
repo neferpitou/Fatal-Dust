@@ -187,7 +187,7 @@ public class FatalKernel implements Runnable {
 	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
 	//private MalMartinez malMartinez;
 
-	private boolean DEBUG_MODE_ON = true;
+	public static final boolean DEBUG_MODE_ON = true;
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
@@ -196,7 +196,6 @@ public class FatalKernel implements Runnable {
 	 */
 	private FatalKernel() {
 		long t1 = System.currentTimeMillis();
-
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
 		
 		// Instantiate two instances of each character (in case both players

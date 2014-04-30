@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import kernel.FatalKernel;
 import characters.HealthBar;
@@ -107,6 +108,8 @@ public class VersusView extends JPanel implements FatalView, KeyListener, Collis
 	 * function.
 	 */
 	public void respondToInput() {
+		long t1 = System.currentTimeMillis();
+		
 		// Must request focus to listen for KeyEvents
 		requestFocus();
 
@@ -211,6 +214,17 @@ public class VersusView extends JPanel implements FatalView, KeyListener, Collis
 			// playerOne.setDirection(false);
 		}
 	*/
+		
+		// If it takes longer than five seconds to register
+		// an input as pressed, display it on the console
+		// only if debug mode is on
+		if (FatalKernel.DEBUG_MODE_ON){
+			int ABNORMAL_DELAY = 5;	
+			long t2 = System.currentTimeMillis();
+			
+			if (t2 - t1 > ABNORMAL_DELAY)
+				System.err.println("Time to read input: " + (t2 - t1) + "ms");
+		}
 	}
 
 	/*
