@@ -3,6 +3,7 @@ package factory;
 import java.awt.Image;
 
 import characters.AyakoTurner;
+import characters.MalMartinez;
 import characters.VanillaCharacter;
 import kernel.FatalKernel;
 
@@ -27,7 +28,7 @@ public class FatalFactory {
 			character = new AyakoTurner(isPlayerOne);
 			break;
 		case MalMartinez:
-			//character = new VanillaCharacter(isPlayerOne, CharacterType.MalMartinez, x, y);
+			character = new MalMartinez(isPlayerOne);
 			break;
 		default:
 			// TODO: throw some exception

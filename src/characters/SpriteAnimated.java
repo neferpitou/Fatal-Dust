@@ -4,11 +4,10 @@ import java.awt.*;
 
 public class SpriteAnimated extends Rectangle
 {
-   Animation[] animation;
-
-   int pos;
+   private Animation[] animation;
+   private int currentAnimation;
+   private long startTime = System.currentTimeMillis();
    
-
    public SpriteAnimated(int x, int y, int w, int h, String direction, String fighterName, String[] positions, int[] count )
    {
 	  
@@ -22,33 +21,23 @@ public class SpriteAnimated extends Rectangle
 
        animation = new Animation[positions.length];
        
-       pos = 0;
+       currentAnimation = 0;
       
        for(int i = 0; i < animation.length; i++)
-          animation[i] = new Animation(fighterName, positions[i], direction , count[i]);
-       
-       
-       
-
+          animation[i] = new Animation(fighterName, positions[i], direction, count[i]);
    }
    
-   public void setPos( int pos )
-   {
-	   this.pos = pos; 
+   public void setCurrentAnimation(int newAnimation){
+	   currentAnimation = newAnimation;
    }
 
-   public void draw(Graphics g)
-   {
-   
-	   
+   public void draw(Graphics g){   
 	  // img, x, y, w, h, observer
-      g.drawImage(animation[pos].currentImage(), x, y, w, h, null);
-
+	  long elapsedTime = System.currentTimeMillis() - startTime;
+	  startTime = System.currentTimeMillis();
+	  System.err.println("Elapsed time: " + elapsedTime);
+	  animation[currentAnimation].update(elapsedTime);
+	  g.drawImage(animation[currentAnimation].getImage(), x, y, w, h, null);
       super.draw(g);
-      
-
    }
-
-
-
 }

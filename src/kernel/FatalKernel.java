@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import characters.AyakoTurner;
+import characters.MalMartinez;
 import views.BackgroundView;
 import views.MainMenuView;
 import views.VersusView;
@@ -179,13 +180,13 @@ public class FatalKernel implements Runnable {
 	
 	private volatile boolean finished = false;
 	public static boolean PAUSED = false;
-	public static final long GAME_SPEED = 17; // Yields 30 FPS
+	public static final long CLOCK_SPEED = 17; // Yields 30 FPS
 	private VersusView stageView;
 	private ThreadPool thread_pool;
 	private final int MAX_NUM_THREADS = 5;
 	
 	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
-	//private MalMartinez malMartinez;
+	private MalMartinez malMartinezplayerOne, malMartinezplayerTwo;
 
 	public static final boolean DEBUG_MODE_ON = true;
 
@@ -378,7 +379,7 @@ public class FatalKernel implements Runnable {
 			});
 			
 			try {
-				Thread.sleep(GAME_SPEED);
+				Thread.sleep(CLOCK_SPEED);
 			} catch (InterruptedException e) {
 				// Ignore
 			}
@@ -443,13 +444,18 @@ public class FatalKernel implements Runnable {
 				CharacterType.AyakoTurner, true);
 		ayakoTurnerplayerTwo = (AyakoTurner) FatalFactory.spawnCharacter(
 				CharacterType.AyakoTurner, false);
+		
+		malMartinezplayerOne = (MalMartinez) FatalFactory.spawnCharacter(
+				CharacterType.MalMartinez, true);
+		malMartinezplayerTwo = (MalMartinez) FatalFactory.spawnCharacter(
+				CharacterType.MalMartinez, false);
 
 		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(SPLASH, new MainMenuView());
 		views.put(ERROR, new BackgroundView()); // error screen is blank
 												// panel
 		views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
-				ayakoTurnerplayerTwo));
+				malMartinezplayerTwo));
 
 		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
 

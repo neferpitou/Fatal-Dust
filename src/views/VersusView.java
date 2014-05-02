@@ -3,16 +3,13 @@ package views;
 import interfaces.CollisionHandler;
 import interfaces.FatalView;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import kernel.FatalKernel;
 import characters.HealthBar;
@@ -26,28 +23,45 @@ import characters.VanillaCharacter;
  *
  */
 @SuppressWarnings("serial")
-public class VersusView extends JPanel implements FatalView, KeyListener, CollisionHandler {
+public class VersusView extends JPanel implements FatalView, KeyListener,
+		CollisionHandler {
 
 	private Image img;
 	private int right_img_bounds;
 	private final VanillaCharacter playerOne, playerTwo;
 	boolean[] isPressed = new boolean[256];
-	private HealthBar healthBarLeft = new HealthBar(20, 40, 300, 300, 30,
+	private final HealthBar healthBarLeft = new HealthBar(20, 40, 300, 300, 30,
 			"AYAKO");
-	private HealthBar healthBarRight = new HealthBar(1000, 40, 300, 300, 30,
-			"AYAKO");
+	private final HealthBar healthBarRight = new HealthBar(1000, 40, 300, 300,
+			30, "AYAKO");
 
 	public VersusView(final VanillaCharacter playerOne,
 			final VanillaCharacter playerTwo) {
 		this.playerOne = playerOne;
 		this.playerTwo = playerTwo;
-		addKeyListener(this);
+		this.addKeyListener(this);
 
 		kernel.execute(() -> {
 			for (int i = 0; i < isPressed.length; i++) {
 				isPressed[i] = false;
 			}
 		});
+	}
+
+	@Override
+	public void handleCollisionBetween(final VanillaCharacter c1,
+			final VanillaCharacter c2) {
+
+		// c1 hits c2
+		if (c1.strikeBox.hasCollidedWith(c2.hitBox)) {
+			c2.takeHit();
+		}
+
+		// c2 hit c1
+		if (c1.hitBox.hasCollidedWith(c2.strikeBox)) {
+			c1.takeHit();
+		}
+
 	}
 
 	/*
@@ -108,122 +122,77 @@ public class VersusView extends JPanel implements FatalView, KeyListener, Collis
 	 * function.
 	 */
 	public void respondToInput() {
-		long t1 = System.currentTimeMillis();
-		
+		final long t1 = System.currentTimeMillis();
+
 		// Must request focus to listen for KeyEvents
-		requestFocus();
+		this.requestFocus();
+
+		int left, right;
 
 		/*
 		 * Check input for player one.
 		 */
-		
-		if(isPressed[KeyEvent.VK_UP])          playerOne.jump();
-		else if(isPressed[KeyEvent.VK_DOWN])   playerOne.duck();
-		else if(isPressed[KeyEvent.VK_W])      playerOne.punch();
-		else if(isPressed[KeyEvent.VK_A])      playerOne.kick();
-		
-		   
-		if(playerOne.lookingRight)
-		{
-			if(isPressed[KeyEvent.VK_B])   playerOne.block(); 
-			
-			if(!playerOne.hitBox.hasCollidedWith(playerTwo.hitBox))
-			{
-				if(isPressed[KeyEvent.VK_RIGHT])  playerOne.moveForward(playerOne.getMovement());
-			
-			}
-			
-			if(isPressed[KeyEvent.VK_LEFT])      playerOne.moveBackward(playerOne.getMovement());
-		
-		}
-		else
-		{
-			
-			if(isPressed[KeyEvent.VK_B])   playerOne.block();
-			
-			if(!playerOne.hitBox.hasCollidedWith(playerTwo.hitBox))
-			{
-				if(isPressed[KeyEvent.VK_LEFT])   playerOne.moveForward(playerOne.getMovement());
-				
-			}
-			//if(isPressed[KeyEvent.VK_D])      ayako.setDirection(true);
-			if(isPressed[KeyEvent.VK_RIGHT])      playerOne.moveBackward(playerOne.getMovement());
+		// Maps the proper keys to the direction that should be
+		// moved in relative to the current position of the character
+		if (playerOne.lookingRight) {
+			right = KeyEvent.VK_RIGHT;
+			left = KeyEvent.VK_LEFT;
+		} else {
+			right = KeyEvent.VK_LEFT;
+			left = KeyEvent.VK_RIGHT;
 		}
 
-		
-		//Uncomment for unbeatable character.. 
-		//if(Math.abs(ayako2.centerX - ayako.centerX) < 100) ayako2.defendAgainst(ayako);
-		
-		if ( playerOne.getCenterX() > playerTwo.getCenterX())
-		{
-			if ( !playerOne.isJumping() )
-			{
-				playerOne.setLookingRight(false);
-				playerTwo.setLookingRight(true);
-				
-			}
-			
+		if (isPressed[right]) {
+			playerOne.moveForward(playerOne.getMovement());
+		} else if (isPressed[left]) {
+			playerOne.moveBackward(playerOne.getMovement());
+		} else if (isPressed[KeyEvent.VK_UP]) {
+			playerOne.jump();
+		} else if (isPressed[KeyEvent.VK_DOWN]) {
+			playerOne.duck();
+		} else if (isPressed[KeyEvent.VK_W]) {
+			playerOne.punch();
+		} else if (isPressed[KeyEvent.VK_A]) {
+			playerOne.kick();
+		} else if (isPressed[KeyEvent.VK_B]) {
+			playerOne.block();
+		} else {
+			playerOne.idle();
+		}
 
-				
-		}
-		
-		else
-		{
-			if ( !playerOne.isJumping() )
-			{
-				playerOne.setLookingRight(true);
-				playerTwo.setLookingRight(false);
-				
-			}
-			
-			
-		}
-		
-		handleCollisionBetween( playerOne, playerTwo);
-		
-		
 		/*
 		 * Check player two
 		 */
-		
-		/*
-		 * PLAYER TWO will only defend for now.. 
-		 * 
-		 */
-		
-		/*
-		if (isPressed[KeyEvent.VK_UP]) {
-			playerTwo.jump();
-		} else if (isPressed[KeyEvent.VK_DOWN]) {
-			playerTwo.duck();
-		} else if (isPressed[KeyEvent.VK_W]) {
-			playerTwo.punch();
-		} else if (isPressed[KeyEvent.VK_A]) {
-			playerTwo.kick();
-		}
 
-		if (isPressed[KeyEvent.VK_B]) {
-			playerTwo.block();
-		}
-		if (isPressed[KeyEvent.VK_RIGHT]) {
-			playerTwo.moveForward(playerOne.getMovement());
-		}
-		if (isPressed[KeyEvent.VK_LEFT]) {
-			playerTwo.moveBackward(playerOne.getMovement());
-			// if(isPressed[KeyEvent.VK_D])
-			// playerOne.setDirection(false);
-		}
-	*/
-		
+		/*
+		 * PLAYER TWO will only defend for now..
+		 */
+
+		/*
+		 * if (isPressed[KeyEvent.VK_UP]) { playerTwo.jump(); } else if
+		 * (isPressed[KeyEvent.VK_DOWN]) { playerTwo.duck(); } else if
+		 * (isPressed[KeyEvent.VK_W]) { playerTwo.punch(); } else if
+		 * (isPressed[KeyEvent.VK_A]) { playerTwo.kick(); }
+		 * 
+		 * if (isPressed[KeyEvent.VK_B]) { playerTwo.block(); } if
+		 * (isPressed[KeyEvent.VK_RIGHT]) {
+		 * playerTwo.moveForward(playerOne.getMovement()); } if
+		 * (isPressed[KeyEvent.VK_LEFT]) {
+		 * playerTwo.moveBackward(playerOne.getMovement()); //
+		 * if(isPressed[KeyEvent.VK_D]) // playerOne.setDirection(false); }
+		 */
+
 		// If it takes longer than five seconds to register
 		// an input as pressed, display it on the console
 		// only if debug mode is on
-		if (FatalKernel.DEBUG_MODE_ON){
-			int ABNORMAL_DELAY = 5;	
-			long t2 = System.currentTimeMillis();
-			
-			if (t2 - t1 > ABNORMAL_DELAY)
+
+		if (FatalKernel.DEBUG_MODE_ON) {
+			final int ABNORMAL_DELAY = 5;
+			final long t2 = System.currentTimeMillis();
+
+			if (t2 - t1 > ABNORMAL_DELAY) {
 				System.err.println("Time to read input: " + (t2 - t1) + "ms");
+			}
 		}
 	}
 
@@ -269,25 +238,6 @@ public class VersusView extends JPanel implements FatalView, KeyListener, Collis
 				playerTwo.setLookingRight(false);
 			}
 		}
-		
-	}
-	
-	
-public void handleCollisionBetween(VanillaCharacter c1, VanillaCharacter c2) {
-		
-		
-		// c1 hits c2
-		if( c1.strikeBox.hasCollidedWith(c2.hitBox))
-		{
-			c2.takeHit();
-		}
-		
-		// c2 hit c1
-		if( c1.hitBox.hasCollidedWith(c2.strikeBox)  )
-		{
-			c1.takeHit();
-		}
-		
-		
+
 	}
 }
