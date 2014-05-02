@@ -186,7 +186,7 @@ public abstract class VanillaCharacter {
 		a.setHeight(characterHeight);
 
 		if(!isJumping ) a.setYPosition(HEIGHT_Y);
-
+		
 		a.setCurrentAnimation(IDLE);
 	}
 

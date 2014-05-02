@@ -29,7 +29,7 @@ public class MalMartinez extends VanillaCharacter
 	final int WALK_Y = HEIGHT_Y + 25;
 	
 	String[] a_position = {"idle", "crouch", "light_punch", "walking", "block", "light_kick", "die", "hit"};
-	int[]    a_count    = { 3 , 2 , 2 , 4 , 2 , 2 , 4, 3} ; 
+	int[]    a_count    = { 3 , 2 , 2 , 4 , 2 , 2 , 4, 3} ;
 
 	final boolean DEBUG_MODE_ON = true;
 
@@ -46,11 +46,7 @@ public class MalMartinez extends VanillaCharacter
 				"left", IMG_PREFIX, a_position, a_count);
 
 		a = lookingRight ? a_rt : a_lt;
-
-
-
 	}
-
 
 	@Override
 	public void punch() {
@@ -98,14 +94,10 @@ public class MalMartinez extends VanillaCharacter
 			else
 				strikeBox.setXPosition(centerX - 105);
 				a.setXPosition(a.x - KICK_W);
-
-
+				
 			a.setCurrentAnimation(KICK);
-
 		}
-
 	}
-
 
 	@Override
 	public void block() {
@@ -282,12 +274,9 @@ public class MalMartinez extends VanillaCharacter
 			}
 
 		}
-
-
-
+		
 		a.draw(g);
-
-
+		
 		if(DEBUG_MODE_ON)
 		{
 			strikeBox.draw(g);
@@ -296,10 +285,6 @@ public class MalMartinez extends VanillaCharacter
 
 			g.setColor(Color.black);
 		}
-
-
-
-
 	}
 
 
@@ -316,7 +301,6 @@ public class MalMartinez extends VanillaCharacter
 			a.setWidth(DUCK_W);
 
 			hitBox.setYPosition(DUCK_Y+50);
-
 			a.setCurrentAnimation(DUCK);
 		}
 

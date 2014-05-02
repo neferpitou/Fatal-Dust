@@ -67,7 +67,6 @@ public class AyakoTurner extends VanillaCharacter {
 				strikeBox.setXPosition(centerX - 90);
 
 			a.setCurrentAnimation(PUNCH);
-
 		}
 
 	}
@@ -93,7 +92,6 @@ public class AyakoTurner extends VanillaCharacter {
 	}
 
 	public void kick() {
-
 		if (!isDucking && !isJumping) {
 
 			isKicking = true;
@@ -112,12 +110,10 @@ public class AyakoTurner extends VanillaCharacter {
 				strikeBox.setXPosition(centerX - 115);
 
 			a.setCurrentAnimation(KICK);
-
 		}
 	}
 
 	public void duck() {
-
 		if (!isJumping && !isKicking) {
 			isDucking = true;
 
@@ -146,6 +142,7 @@ public class AyakoTurner extends VanillaCharacter {
 
 			vy -= GRAVITY;
 
+<<<<<<< HEAD
 			if (isDead) {
 				if (a.y >= HEIGHT_Y + characterWidth) {
 					isJumping = false;
@@ -156,12 +153,9 @@ public class AyakoTurner extends VanillaCharacter {
 					isJumping = false;
 				}
 			}
-
 		}
 
 		a.draw(g);
-
-		//resetDefaults();
 
 		if (DEBUG_MODE_ON) {
 			strikeBox.draw(g);
@@ -170,7 +164,6 @@ public class AyakoTurner extends VanillaCharacter {
 
 			g.setColor(Color.black);
 		}
-
 	}
 
 	public void moveForward(int dx) {
@@ -277,19 +270,18 @@ public class AyakoTurner extends VanillaCharacter {
 		else {
 			a = a_lt;
 		}
-
 	}
 
 	public int getHealth() {
 		return health;
 	}
-
+	
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	public void victory() {
 		// TODO Auto-generated method stub
@@ -304,5 +296,4 @@ public class AyakoTurner extends VanillaCharacter {
 		}
 
 	}
-
 }
