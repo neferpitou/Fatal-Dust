@@ -142,7 +142,6 @@ public class AyakoTurner extends VanillaCharacter {
 
 			vy -= GRAVITY;
 
-<<<<<<< HEAD
 			if (isDead) {
 				if (a.y >= HEIGHT_Y + characterWidth) {
 					isJumping = false;
