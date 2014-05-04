@@ -43,11 +43,11 @@ public abstract class VanillaCharacter {
 	protected int y;
 
 	final int characterHeight = 300;
-	final int characterWidth = 150;
+	final int characterWidth = 200;
 
 	final int HEIGHT_Y = FLOOR_Y - characterWidth;
 	int vy;
-	final int INIT_JUMP_V = 40;
+	final int INIT_JUMP_V = 30;
 
 	final int LEFT_PLAYER_X  = 400;
 	final int RIGHT_PLAYER_X = 800;
@@ -67,6 +67,7 @@ public abstract class VanillaCharacter {
 	protected final int KICK = 5;
 	protected final int DIE = 6;
 	protected final int TAKE_HIT = 7;
+	protected final int JUMP = 8;
 
 	/**
 	 * Defines and instantiates all attributes characters need to have
@@ -129,10 +130,8 @@ public abstract class VanillaCharacter {
 			// Initial Jump Velocity
 			vy = INIT_JUMP_V;
 
-			// a.setPos(4);
+			a.setCurrentAnimation(JUMP);
 			// greenHitBox.setYPosition( JUMP_Y );
-
-			System.out.println("JUMP");
 		}
 	}
 	
@@ -141,7 +140,7 @@ public abstract class VanillaCharacter {
 		isJumping = true;
 		moveBackward(10);
 		vy = 6 ;
-		a.setCurrentAnimation(7);
+		a.setCurrentAnimation(TAKE_HIT);
 		if(!isBlocking) decreaseHealthBy(1);
 		perfection  = false;
 	}
@@ -180,7 +179,6 @@ public abstract class VanillaCharacter {
 		isWalking = false;
 		isPunching = false;
 		isKicking = false;
-
 
 		a.setWidth(characterWidth);
 		a.setHeight(characterHeight);

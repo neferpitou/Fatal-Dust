@@ -30,8 +30,8 @@ public class AyakoTurner extends VanillaCharacter {
 	final int WALK_Y = HEIGHT_Y + 25;
 
 	String[] a_position = { "idle", "crouch", "light_punch", "walking",
-			"block", "light_kick", "die", "hit" };
-	int[] a_count = { 3, 2, 3, 8, 2, 4, 4, 2 };
+			"block", "light_kick", "die", "hit", "jump" };
+	int[] a_count = { 3, 2, 3, 8, 2, 4, 4, 2, 3 };
 
 	final boolean DEBUG_MODE_ON = true;
 
@@ -142,7 +142,6 @@ public class AyakoTurner extends VanillaCharacter {
 
 			vy -= GRAVITY;
 
-<<<<<<< HEAD
 			if (isDead) {
 				if (a.y >= HEIGHT_Y + characterWidth) {
 					isJumping = false;
