@@ -19,7 +19,7 @@ import characters.VanillaCharacter;
  * This is the actual game panel where rules, AI, collision detection, and other
  * necessary details for the fighting game to function will be.
  *
- * @author Marcos Davila
+ * @author Marcos Davila, Rafael Abbodanza, Dana Smith
  *
  */
 @SuppressWarnings("serial")
@@ -30,13 +30,15 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 	private int right_img_bounds;
 	private final VanillaCharacter playerOne, playerTwo;
 	boolean[] isPressed = new boolean[256];
+	
+	
 	private final HealthBar healthBarLeft = new HealthBar(20, 40, 300, 300, 30,
 			"AYAKO");
 	private final HealthBar healthBarRight = new HealthBar(1000, 40, 300, 300,
-			30, "AYAKO");
+			30, "MAL MARTINEZ");
+	
 
-	public VersusView(final VanillaCharacter playerOne,
-			final VanillaCharacter playerTwo) {
+	public VersusView(final VanillaCharacter playerOne,	final VanillaCharacter playerTwo) {
 		this.playerOne = playerOne;
 		this.playerTwo = playerTwo;
 		this.addKeyListener(this);
@@ -48,18 +50,36 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 		});
 	}
 
+		
 	@Override
 	public void handleCollisionBetween(final VanillaCharacter c1,
 			final VanillaCharacter c2) {
 
-		// c1 hits c2
+		// c1 hits c2 - playerOne hits playerTwo
 		if (c1.strikeBox.hasCollidedWith(c2.hitBox)) {
 			c2.takeHit();
+			healthBarRight.diminishBy(-3);
+						
+		}
+		
+		//Prevent characters from crossing in front of one another when playerOne is on right.
+		if(c1.hitBox.hasCollidedWith(c2.hitBox) && playerOne.lookingRight == false)
+		{
+			c1.moveBackward((( (c1.a.x - 10) - c1.a.w) - (c2.a.x - c2.a.w))+20);
+		}
+		
+		//Prevent characters from crossing in front of one another when playerOne is on left.
+		if(c1.hitBox.hasCollidedWith(c2.hitBox) && playerOne.lookingRight == true)
+		{
+			c1.moveBackward((( c1.a.w - (c1.a.x-10)) - (c2.a.w - c2.a.x))+20);
+			
 		}
 
-		// c2 hit c1
+					
+		// c2 hit c1 - playerTwo hits playerOne
 		if (c1.hitBox.hasCollidedWith(c2.strikeBox)) {
 			c1.takeHit();
+			healthBarLeft.diminishBy(-2);
 		}
 
 	}
@@ -108,6 +128,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 			// of the screen
 			// Also scale the width of this image to 1.3 times the original
 			// ratio
+			handleCollisionBetween(playerOne, playerTwo);
 			g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
 			playerOne.draw(g);
 			playerTwo.draw(g);

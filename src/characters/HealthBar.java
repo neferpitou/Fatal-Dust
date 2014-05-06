@@ -29,12 +29,15 @@ public class HealthBar
 	
 	private int y;
 	private int x;
+
+//	private int playerNamex;
+//	private int playerNamey;
 	
 	int currentHealth;
 	
 	/*HIT TYPES - may need to be changed*/
 	private int headHit = -10;
-	private int bodyHit = -5;
+	private int c = -5;
 	private int limbHit = -3;
 	
 	private String playerName;
@@ -91,9 +94,8 @@ public class HealthBar
 		
 		public void diminishBy(int hitType)
 		{
-			currentHealth = healthBarWGreen+ hitType; 
+			currentHealth = healthBarWGreen + hitType; 
 		
-			
 			if(currentHealth > 1)
 			{
 				healthBarWGreen += hitType;

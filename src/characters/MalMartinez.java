@@ -28,7 +28,9 @@ public class MalMartinez extends VanillaCharacter
 	final int WALK_H = characterHeight - 25;
 	final int WALK_Y = HEIGHT_Y + 25;
 	
-	String[] a_position = {"idle", "crouch", "light_punch", "walking", "block", "light_kick", "die", "hit"};
+	String[] a_position = {"idle", "crouch", "light_punch", "walking", "block", 
+			"light_kick", "die", "hit"};
+	
 	int[]    a_count    = { 3 , 2 , 2 , 4 , 2 , 2 , 4, 3} ;
 
 	final boolean DEBUG_MODE_ON = true;

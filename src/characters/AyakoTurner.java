@@ -67,6 +67,7 @@ public class AyakoTurner extends VanillaCharacter {
 				strikeBox.setXPosition(centerX - 90);
 
 			a.setCurrentAnimation(PUNCH);
+			
 		}
 
 	}

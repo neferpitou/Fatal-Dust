@@ -11,8 +11,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Window;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -70,9 +68,11 @@ public class FatalKernel implements Runnable {
 
 		private final GraphicsDevice device = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		private final int RESOLUTION_WIDTH = device
+		private final int RESOLUTION_WIDTH = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDisplayMode().getWidth();
-		private final int RESOLUTION_HEIGHT = device
+		private final int RESOLUTION_HEIGHT = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDisplayMode().getHeight();
 		private final int BIT_DEPTH = 24;
 		private final DisplayMode displayMode = new DisplayMode(
@@ -85,6 +85,7 @@ public class FatalKernel implements Runnable {
 		public Screen() {
 			this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			this.setFullScreen(displayMode);
+			setBackground(Color.black);
 		}
 
 		/*
@@ -107,29 +108,19 @@ public class FatalKernel implements Runnable {
 		 */
 		public void setFullScreen(final DisplayMode displayMode) {
 			this.setUndecorated(true);
-			setSize(java.awt.Toolkit.getDefaultToolkit().getScreenSize());
-		    setResizable(false);
-			setExtendedState(getExtendedState() | java.awt.Frame.MAXIMIZED_BOTH);
-			setLocationRelativeTo(null);
+			this.setResizable(false);
+			device.setFullScreenWindow(this);
 
-			if (device.isFullScreenSupported()) {
-			    setUndecorated(true);
-			    setResizable(false);
-			    addFocusListener(new FocusListener() {
-
-			        @Override
-			        public void focusGained(FocusEvent arg0) {
-			            setAlwaysOnTop(true);
-			        }
-
-			        @Override
-			        public void focusLost(FocusEvent arg0) {
-			            setAlwaysOnTop(false);
-			        }
-			    });
-			    device.setFullScreenWindow(this);
-			} else {
-			    setVisible(true);
+			if (displayMode != null && device.isDisplayChangeSupported()) {
+				try {
+					device.setDisplayMode(displayMode);
+				} catch (final IllegalArgumentException ex) {
+					// ignore -- illegal display
+				} catch (final Exception e) {
+					// Simulate full-screen with RESOLUTION variables
+					this.setPreferredSize(new Dimension(RESOLUTION_WIDTH,
+							RESOLUTION_HEIGHT));
+				}
 			}
 		}
 
@@ -175,7 +166,7 @@ public class FatalKernel implements Runnable {
 	public final String SPLASH = "SPLASH";
 
 	// The screen object which the game resides in
-	private Screen screen;
+	private Screen screen = new Screen();
 
 	// Private instance reference of the kernel
 	private static final FatalKernel FATAL_KERNEL_INSTANCE = new FatalKernel();
@@ -197,7 +188,7 @@ public class FatalKernel implements Runnable {
 	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
 	private MalMartinez malMartinezplayerOne, malMartinezplayerTwo;
 
-	public static final boolean DEBUG_MODE_ON = false;
+	public static final boolean DEBUG_MODE_ON = true;
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
@@ -207,10 +198,6 @@ public class FatalKernel implements Runnable {
 	private FatalKernel() {
 		long t1 = System.currentTimeMillis();
 		thread_pool = new ThreadPool(MAX_NUM_THREADS);
-		
-		executeEDT(()->{
-			 screen = new Screen();
-		});
 		
 		// Instantiate two instances of each character (in case both players
 		// want to use the same character) in a worker thread

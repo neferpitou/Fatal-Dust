@@ -2,12 +2,12 @@ package characters;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
+import java.awt.Image;
 
 import factory.CharacterType;
 
-public abstract class VanillaCharacter {
-
+public abstract class VanillaCharacter 
+{
 	int centerX;
 	int centerY;
 
@@ -18,7 +18,7 @@ public abstract class VanillaCharacter {
 	final int FLOOR_Y = 600;
 	final int GRAVITY = 2;
 
-	SpriteAnimated a; 
+	public SpriteAnimated a; 
 	SpriteAnimated a_lt;
 	SpriteAnimated a_rt;
 
@@ -52,7 +52,9 @@ public abstract class VanillaCharacter {
 	final int LEFT_PLAYER_X  = 400;
 	final int RIGHT_PLAYER_X = 800;
 	final int MOVEMENT = 13;
-	final int HEALTH_INIT = 100;
+	
+	//set health = 300 because of how code is written. Will eventually change it to 100.
+	final int HEALTH_INIT = 300;
 	
 	
 	//Defines player positions
@@ -85,6 +87,7 @@ public abstract class VanillaCharacter {
 		}
 
 		isOnLeft = (playerOne) ? false : true;
+		
 		isDucking = false;
 		isBlocking = false;
 		isHitting = false;
@@ -143,8 +146,8 @@ public abstract class VanillaCharacter {
 		a.setCurrentAnimation(TAKE_HIT);
 		if(!isBlocking) decreaseHealthBy(1);
 		perfection  = false;
+		//need to add code to finish the animation. Because now, when player gets hit, it keeps cycling through the array and doesnt stop the hit animation.
 	}
-	
 	
 	public abstract void block();
 	public abstract void die();

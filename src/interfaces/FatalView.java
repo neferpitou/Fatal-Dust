@@ -8,7 +8,6 @@ import kernel.FatalKernel;
  * starting and stopping their threads.
  * 
  * @author Marcos Davila
- * 
  */
 
 public interface FatalView {
