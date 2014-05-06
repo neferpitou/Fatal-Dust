@@ -35,7 +35,6 @@ public class SpriteAnimated extends Rectangle
 	  // img, x, y, w, h, observer
 	  long elapsedTime = System.currentTimeMillis() - startTime;
 	  startTime = System.currentTimeMillis();
-	  System.err.println("Elapsed time: " + elapsedTime);
 	  animation[currentAnimation].update(elapsedTime);
 	  g.drawImage(animation[currentAnimation].getImage(), x, y, w, h, null);
       super.draw(g);
