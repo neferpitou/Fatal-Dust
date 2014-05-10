@@ -296,4 +296,16 @@ public class AyakoTurner extends VanillaCharacter {
 		}
 
 	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return IMG_PREFIX;
+	}
+
+	@Override
+	public String getHealthBarDisplayName() {
+		// TODO Auto-generated method stub
+		return "AYAKO TURNER";
+	}
 }

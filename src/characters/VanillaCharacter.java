@@ -53,9 +53,7 @@ public abstract class VanillaCharacter
 	final int RIGHT_PLAYER_X = 800;
 	final int MOVEMENT = 13;
 	
-	//set health = 300 because of how code is written. Will eventually change it to 100.
-	final int HEALTH_INIT = 300;
-	
+	final int HEALTH_INIT = 100;
 	
 	//Defines player positions
 	
@@ -144,7 +142,7 @@ public abstract class VanillaCharacter
 		moveBackward(10);
 		vy = 6 ;
 		a.setCurrentAnimation(TAKE_HIT);
-		if(!isBlocking) decreaseHealthBy(1);
+		if(!isBlocking) updateHealth(1);
 		perfection  = false;
 		//need to add code to finish the animation. Because now, when player gets hit, it keeps cycling through the array and doesnt stop the hit animation.
 	}
@@ -200,7 +198,7 @@ public abstract class VanillaCharacter
 	 * @param dHealth
 	 *            amount to decrease health by
 	 */
-	public void decreaseHealthBy(int dHealth) {
+	public void updateHealth(int dHealth) {
 		health -= dHealth;
 	}
 
@@ -210,7 +208,7 @@ public abstract class VanillaCharacter
 	public int getHealth() {
 		return health;
 	}
-
+	
 	public abstract void duck();
 
 	public boolean isLookingRight() {
@@ -258,4 +256,7 @@ public abstract class VanillaCharacter
 	public void setCenterX(int centerX) {
 		this.centerX = centerX;
 	}
+	
+	public abstract String getName();
+	public abstract String getHealthBarDisplayName();
 }

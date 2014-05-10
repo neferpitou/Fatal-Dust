@@ -32,15 +32,16 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 	boolean[] isPressed = new boolean[256];
 	
 	
-	private final HealthBar healthBarLeft = new HealthBar(20, 40, 300, 300, 30,
-			"AYAKO");
-	private final HealthBar healthBarRight = new HealthBar(1000, 40, 300, 300,
-			30, "MAL MARTINEZ");
+	private final HealthBar healthBarLeft;
+	private final HealthBar healthBarRight;
 	
-
 	public VersusView(final VanillaCharacter playerOne,	final VanillaCharacter playerTwo) {
 		this.playerOne = playerOne;
 		this.playerTwo = playerTwo;
+		
+		healthBarLeft = new HealthBar(this.playerOne, true);
+		healthBarRight = new HealthBar(this.playerTwo, false);
+		
 		this.addKeyListener(this);
 
 		kernel.execute(() -> {
@@ -58,7 +59,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 		// c1 hits c2 - playerOne hits playerTwo
 		if (c1.strikeBox.hasCollidedWith(c2.hitBox)) {
 			c2.takeHit();
-			healthBarRight.diminishBy(-3);
+			c2.updateHealth(3);
 						
 		}
 		
@@ -79,7 +80,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 		// c2 hit c1 - playerTwo hits playerOne
 		if (c1.hitBox.hasCollidedWith(c2.strikeBox)) {
 			c1.takeHit();
-			healthBarLeft.diminishBy(-2);
+			c1.updateHealth(3);
 		}
 
 	}
