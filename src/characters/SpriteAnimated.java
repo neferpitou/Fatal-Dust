@@ -31,8 +31,6 @@ public class SpriteAnimated extends Rectangle {
 		currentAnimation = newAnimation;
 	}
 
-	
-	
 	public void draw(Graphics g) {
 		// img, x, y, w, h, observer
 		long elapsedTime = System.currentTimeMillis() - startTime;

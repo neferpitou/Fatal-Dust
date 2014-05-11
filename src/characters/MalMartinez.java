@@ -140,7 +140,7 @@ public class MalMartinez extends VanillaCharacter
 	@Override
 	public void moveForward(int dx) {
 		if (isLookingRight()) {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
 
 				setCenterX(getCenterX() + dx);
 
@@ -161,7 +161,7 @@ public class MalMartinez extends VanillaCharacter
 
 			}
 		} else {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
 
 				setCenterX(getCenterX() - dx);
 
@@ -188,7 +188,7 @@ public class MalMartinez extends VanillaCharacter
 	@Override
 	public void moveBackward(int dx) {
 		if (isLookingRight()) {
-			if (!isDucking && !isPunching && !isKicking) {
+			if (!isDucking && !isPunching && !isKicking && backwardCapable) {
 				setCenterX(getCenterX() - dx);
 
 				strikeBox.moveLeftBy(dx);
@@ -207,7 +207,7 @@ public class MalMartinez extends VanillaCharacter
 			}
 		} else {
 
-			if (!isDucking && !isPunching && !isKicking) {
+			if (!isDucking && !isPunching && !isKicking && backwardCapable) {
 				setCenterX(getCenterX() + dx);
 
 				strikeBox.moveRightBy(dx);

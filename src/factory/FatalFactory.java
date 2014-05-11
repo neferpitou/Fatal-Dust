@@ -16,7 +16,7 @@ import kernel.FatalKernel;
  */
 public class FatalFactory {
 
-	public static final int TOTAL_NUM_STAGES = 8;
+	public static final int TOTAL_NUM_STAGES = 7;
 	private static FatalKernel kernel = FatalKernel.getInstance();
 	
 	// Creates a new character of the desired character type
@@ -53,21 +53,18 @@ public class FatalFactory {
 			imgName = "BlueWaterfallBackground.gif";
 			break;
 		case 3:
-			imgName = "DogsBackground.gif";
-			break;
-		case 4:
 			imgName = "DragonBackground.gif";
 			break;
-		case 5:
+		case 4:
 			imgName = "FireBackground.gif";
 			break;
-		case 6:
+		case 5:
 			imgName = "mal_stage.gif";
 			break;
-		case 7:
+		case 6:
 			imgName = "outsideStoneHouseBackground.gif";
 			break;
-		case 8:
+		case 7:
 			imgName = "PalaceBackground.gif";
 			break;
 		default:

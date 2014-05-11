@@ -1,8 +1,10 @@
 package views;
 
 import interfaces.CollisionHandler;
+import characters.Rectangle;
 import interfaces.FatalView;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
@@ -13,6 +15,7 @@ import javax.swing.JPanel;
 
 import kernel.FatalKernel;
 import characters.HealthBar;
+import characters.Rectangle;
 import characters.VanillaCharacter;
 
 /**
@@ -23,25 +26,32 @@ import characters.VanillaCharacter;
  *
  */
 @SuppressWarnings("serial")
-public class VersusView extends JPanel implements FatalView, KeyListener,
-		CollisionHandler {
+public class VersusView extends JPanel implements FatalView, KeyListener {
 
 	private Image img;
 	private int right_img_bounds;
 	private final VanillaCharacter playerOne, playerTwo;
 	boolean[] isPressed = new boolean[256];
-	
-	
+
+	private final int LEFT_SCREEN_BOUNDARY = 0;
+	private final int RIGHT_SCREEN_BOUNDARY = kernel.getScreenWidth();
+
+	// Screen Boundaries that prevent characters from going off-screen
+	// Rectangle rightScreenBoundary = new Rectangle(kernel.getScreenWidth(), 0,
+	// 0, 768);
+	// Rectangle leftScreenBoundary = new Rectangle(0, 0, 0, 768);
+
 	private final HealthBar healthBarLeft;
 	private final HealthBar healthBarRight;
-	
-	public VersusView(final VanillaCharacter playerOne,	final VanillaCharacter playerTwo) {
+
+	public VersusView(final VanillaCharacter playerOne,
+			final VanillaCharacter playerTwo) {
 		this.playerOne = playerOne;
 		this.playerTwo = playerTwo;
-		
+
 		healthBarLeft = new HealthBar(this.playerOne, true);
 		healthBarRight = new HealthBar(this.playerTwo, false);
-		
+
 		this.addKeyListener(this);
 
 		kernel.execute(() -> {
@@ -51,46 +61,40 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 		});
 	}
 
-		
-	@Override
-	public void handleCollisionBetween(final VanillaCharacter c1,
+	public void handleCollisions() {
+		handleCollisionsBetween(playerOne, playerTwo);
+	}
+
+	private void handleCollisionsBetween(final VanillaCharacter c1,
 			final VanillaCharacter c2) {
+
+		if (!insideBoundaries(c1)) {
+			c1.setBackwardCapable(false);
+		}
+
+		if (!insideBoundaries(c2)) {
+			c2.setBackwardCapable(false);
+		}
 
 		// c1 hits c2 - playerOne hits playerTwo
 		if (c1.strikeBox.hasCollidedWith(c2.hitBox)) {
 			c2.takeHit();
-			c2.updateHealth(3);
-						
-		}
-		
-		//Prevent characters from crossing in front of one another when playerOne is on right.
-		if(c1.hitBox.hasCollidedWith(c2.hitBox) && playerOne.lookingRight == false)
-		{
-			c1.moveBackward((( (c1.a.x - 10) - c1.a.w) - (c2.a.x - c2.a.w))+20);
-		}
-		
-		//Prevent characters from crossing in front of one another when playerOne is on left.
-		if(c1.hitBox.hasCollidedWith(c2.hitBox) && playerOne.lookingRight == true)
-		{
-			c1.moveBackward((( c1.a.w - (c1.a.x-10)) - (c2.a.w - c2.a.x))+20);
-			
+
 		}
 
-					
+		if (c1.hitBox.hasCollidedWith(c2.hitBox)) {
+			c1.setForwardCapable(false);
+			c2.setForwardCapable(false);
+		} else {
+			c1.setForwardCapable(true);
+			c2.setForwardCapable(true);
+		}
+
 		// c2 hit c1 - playerTwo hits playerOne
 		if (c1.hitBox.hasCollidedWith(c2.strikeBox)) {
 			c1.takeHit();
-			c1.updateHealth(3);
+
 		}
-
-	}
-
-	/*
-	 * TODO This method should detect if there are any collisions triggered
-	 * after updatePositions was called, redraw the characters in their proper
-	 * poses, change the healthbar, etc.
-	 */
-	public void handleCollisions() {
 
 	}
 
@@ -125,16 +129,25 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 	protected void paintComponent(final Graphics g) {
 		if (!FatalKernel.PAUSED) {
 			// Start the image with the left quarter of the image off the left
-			// edge
-			// of the screen
-			// Also scale the width of this image to 1.3 times the original
+			// edge of the screen. Also scale the width of this image to 1.3
+			// times the original
 			// ratio
-			handleCollisionBetween(playerOne, playerTwo);
 			g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
 			playerOne.draw(g);
 			playerTwo.draw(g);
 			healthBarLeft.draw(g);
 			healthBarRight.draw(g);
+
+			// x,y coordinates of two lines that are on left and right of screen
+			// so players do not
+			// pass them and cannot go off-screen. There are 4 x points and 4 y
+			// points (one in each corner).
+			// screen resolution: 1280 x 800
+			g.setColor(Color.black);
+			// leftScreenBoundary.draw(g);
+			// // rightScreenBoundary.draw(g);
+			//
+			// handleCollisionsWithWall(playerOne, playerTwo);
 		}
 	}
 
@@ -165,9 +178,11 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 		}
 
 		if (isPressed[right]) {
-			playerOne.moveForward(playerOne.getMovement());
+			if (playerOne.getForwardCapable())
+				playerOne.moveForward(playerOne.getMovement());
 		} else if (isPressed[left]) {
-			playerOne.moveBackward(playerOne.getMovement());
+			if (playerOne.getBackwardCapable())
+				playerOne.moveBackward(playerOne.getMovement());
 		} else if (isPressed[KeyEvent.VK_UP]) {
 			playerOne.jump();
 		} else if (isPressed[KeyEvent.VK_DOWN]) {
@@ -216,6 +231,16 @@ public class VersusView extends JPanel implements FatalView, KeyListener,
 				System.err.println("Time to read input: " + (t2 - t1) + "ms");
 			}
 		}
+	}
+
+	private boolean insideBoundaries(VanillaCharacter player) {
+		int leftCharacterEdge = player.getLeftEdge();
+		int rightCharacterEdge = player.getRightEdge();
+
+		boolean toLeftOfBoundary = leftCharacterEdge >= LEFT_SCREEN_BOUNDARY;
+		boolean toRightOfBoundary = rightCharacterEdge <= RIGHT_SCREEN_BOUNDARY;
+
+		return toLeftOfBoundary && toRightOfBoundary;
 	}
 
 	/*

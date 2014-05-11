@@ -36,16 +36,9 @@ public class Rectangle
 		
 	}
 	
-	public boolean hasCollidedWith(Rectangle r)
-	{
-		return 
-			(
-				(x + w     >= r.x) &&
-				(r.x + r.w >= x)   &&
-				(r.y + r.h >= y)   &&
-				( y + h    >= r.y)
-			);
-		
+	public boolean hasCollidedWith(Rectangle r) {
+		return ((x + w >= r.x) && (r.x + r.w >= x) && (r.y + r.h >= y) && (y
+				+ h >= r.y));
 	}
 	
 

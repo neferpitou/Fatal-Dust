@@ -6,19 +6,20 @@ import java.awt.Image;
 
 import factory.CharacterType;
 
-public abstract class VanillaCharacter 
-{
+public abstract class VanillaCharacter {
 	int centerX;
 	int centerY;
 
+	private final int MOVE_BACK_BY = 15;
+	
 	public boolean lookingRight;
 	boolean isDead;
 	boolean perfection;
 
 	final int FLOOR_Y = 600;
-	final int GRAVITY = 2;
+	final int GRAVITY = 3;
 
-	public SpriteAnimated a; 
+	public SpriteAnimated a;
 	SpriteAnimated a_lt;
 	SpriteAnimated a_rt;
 
@@ -26,7 +27,8 @@ public abstract class VanillaCharacter
 	protected int health;
 
 	// Characters need boolean values to know what state it is currently in
-	protected boolean isOnLeft, isBlocking, isHitting, isDucking, isJumping, isKicking, isPunching, isWalking;
+	protected boolean isOnLeft, isBlocking, isHitting, isDucking, isJumping,
+			isKicking, isPunching, isWalking;
 
 	// Characters need hitboxes to know when they've been struck by another
 	// player
@@ -47,18 +49,19 @@ public abstract class VanillaCharacter
 
 	final int HEIGHT_Y = FLOOR_Y - characterWidth;
 	int vy;
-	final int INIT_JUMP_V = 30;
+	final int INIT_JUMP_V = 40;
 
-	final int LEFT_PLAYER_X  = 400;
+	final int LEFT_PLAYER_X = 400;
 	final int RIGHT_PLAYER_X = 800;
 	final int MOVEMENT = 13;
-	
+
 	final int HEALTH_INIT = 100;
-	
-	//Defines player positions
-	
-	//String[] a_position = {"idle", "duck", "punch", "walking", "block", "kick", "die", "takeHit"};
-	
+
+	// Defines player positions
+
+	// String[] a_position = {"idle", "duck", "punch", "walking", "block",
+	// "kick", "die", "takeHit"};
+
 	protected final int IDLE = 0;
 	protected final int DUCK = 1;
 	protected final int PUNCH = 2;
@@ -68,6 +71,8 @@ public abstract class VanillaCharacter
 	protected final int DIE = 6;
 	protected final int TAKE_HIT = 7;
 	protected final int JUMP = 8;
+	protected boolean forwardCapable = true;
+	protected boolean backwardCapable = true;
 
 	/**
 	 * Defines and instantiates all attributes characters need to have
@@ -76,7 +81,7 @@ public abstract class VanillaCharacter
 	 *            if true, player faces right. if false, player faces left
 	 */
 	public VanillaCharacter(boolean playerOne, CharacterType character) {
-		if (playerOne){
+		if (playerOne) {
 			isOnLeft = false;
 			setCenterX(LEFT_PLAYER_X);
 		} else {
@@ -85,46 +90,43 @@ public abstract class VanillaCharacter
 		}
 
 		isOnLeft = (playerOne) ? false : true;
-		
+
 		isDucking = false;
 		isBlocking = false;
 		isHitting = false;
-		isPunching = false; 
+		isPunching = false;
 		isJumping = false;
 		isKicking = false;
 		perfection = true;
-		
+
 		health = HEALTH_INIT;
 
 		this.setCenterX(centerX);
 		this.character = character;
-		x = getCenterX() - (characterWidth/2);
-		y = HEIGHT_Y; 
+		x = getCenterX() - (characterWidth / 2);
+		y = HEIGHT_Y;
 
+		// TODO: fix these numbers
 
-		//TODO: fix these numbers
-
-
-		if(lookingRight)
-		{
-			hitBox   = new Rectangle( centerX - 45, y+50, 60, 150, Color.GREEN);
-			strikeBox   = new Rectangle( 0, 0 , 0, 0, Color.RED );
-			guardBox  = new Rectangle( centerX - 45, y+50, 20, 60, Color.BLUE );
+		if (lookingRight) {
+			hitBox = new Rectangle(centerX - 45, y + 50, 60, 150, Color.GREEN);
+			strikeBox = new Rectangle(0, 0, 0, 0, Color.RED);
+			guardBox = new Rectangle(centerX - 45, y + 50, 20, 60, Color.BLUE);
 
 		}
 
-		else
-		{
-			hitBox  = new Rectangle( centerX - 15, y+50, 60, 150, Color.GREEN);
-			strikeBox   = new Rectangle( 0, 0, 0, 0, Color.RED );
-			guardBox   = new Rectangle( centerX + 25, y+50, 40, 60, Color.BLUE );
+		else {
+			hitBox = new Rectangle(centerX - 15, y + 50, 60, 150, Color.GREEN);
+			strikeBox = new Rectangle(0, 0, 0, 0, Color.RED);
+			guardBox = new Rectangle(centerX + 25, y + 50, 40, 60, Color.BLUE);
 		}
 	}
 
 	public abstract void punch();
+
 	public abstract void kick();
-	public void jump()
-	{
+
+	public void jump() {
 		if (!isJumping() && !isDucking) {
 			setJumping(true);
 
@@ -135,45 +137,51 @@ public abstract class VanillaCharacter
 			// greenHitBox.setYPosition( JUMP_Y );
 		}
 	}
-	
-	public void takeHit()
-	{
+
+	public void takeHit() {
 		isJumping = true;
-		moveBackward(10);
-		vy = 6 ;
+		moveBackward(MOVE_BACK_BY);
+		vy = 6;
 		a.setCurrentAnimation(TAKE_HIT);
-		if(!isBlocking) updateHealth(1);
-		perfection  = false;
-		//need to add code to finish the animation. Because now, when player gets hit, it keeps cycling through the array and doesnt stop the hit animation.
+		
+		if (!isBlocking)
+			updateHealth(1);
+		
+		perfection = false;
+		// need to add code to finish the animation. Because now, when player
+		// gets hit, it keeps cycling through the array and doesnt stop the hit
+		// animation.
 	}
-	
+
 	public abstract void block();
+
 	public abstract void die();
+
 	public abstract void victory();
 
 	public abstract void moveForward(int dx);
+
 	public abstract void moveBackward(int dx);
-	public abstract void fightAgainst(VanillaCharacter other); //For future AI implementions
 
-	public void idle()
-	{
+	public abstract void fightAgainst(VanillaCharacter other); // For future AI
+																// implementions
 
-		if(!isPunching && !isKicking)
-		{
+	public void idle() {
+
+		if (!isPunching && !isKicking) {
 			strikeBox.setWidth(0);
 			strikeBox.setHeight(0);
 		}
 
-		if(!isBlocking) 
-		{
+		if (!isBlocking) {
 			guardBox.setWidth(0);
 			guardBox.setHeight(0);
 		}
 
 		hitBox.setYPosition(a.y + 50);
 
-		if(!isDucking) hitBox.setWidth(60);
-
+		if (!isDucking)
+			hitBox.setWidth(60);
 
 		isBlocking = false;
 		isDucking = false;
@@ -184,8 +192,9 @@ public abstract class VanillaCharacter
 		a.setWidth(characterWidth);
 		a.setHeight(characterHeight);
 
-		if(!isJumping ) a.setYPosition(HEIGHT_Y);
-		
+		if (!isJumping)
+			a.setYPosition(HEIGHT_Y);
+
 		a.setCurrentAnimation(IDLE);
 	}
 
@@ -208,36 +217,31 @@ public abstract class VanillaCharacter
 	public int getHealth() {
 		return health;
 	}
-	
+
 	public abstract void duck();
 
 	public boolean isLookingRight() {
 		return lookingRight;
 	}
 
-	public void setLookingRight( boolean lookingRight )
-	{
+	public void setLookingRight(boolean lookingRight) {
 		this.lookingRight = lookingRight;
 
-
-		if(lookingRight)
-		{
+		if (lookingRight) {
 			a = a_rt;
-			hitBox.setXPosition(centerX - 45 );
+			hitBox.setXPosition(centerX - 45);
 		}
 
-		else
-		{
+		else {
 			a = a_lt;
-			hitBox.setXPosition(centerX - 15 );
+			hitBox.setXPosition(centerX - 15);
 		}
 
-		//invertHitBoxes(greenHitBox);
+		// invertHitBoxes(greenHitBox);
 
 	}
 
-
-	public int getMovement(){
+	public int getMovement() {
 		return MOVEMENT;
 	}
 
@@ -256,7 +260,32 @@ public abstract class VanillaCharacter
 	public void setCenterX(int centerX) {
 		this.centerX = centerX;
 	}
-	
+
 	public abstract String getName();
+
 	public abstract String getHealthBarDisplayName();
+
+	public int getLeftEdge() {
+		return centerX - characterWidth / 2;
+	}
+
+	public int getRightEdge() {
+		return centerX + characterWidth / 2;
+	}
+
+	public void setForwardCapable(boolean b) {
+		forwardCapable  = b;
+	}
+
+	public boolean getForwardCapable() {
+		return forwardCapable;
+	}
+
+	public void setBackwardCapable(boolean b) {
+		backwardCapable  = b;
+	}
+	
+	public boolean getBackwardCapable(){
+		return backwardCapable;
+	}
 }
