@@ -168,6 +168,8 @@ public abstract class VanillaCharacter {
 
 	public void idle() {
 
+		forwardCapable = backwardCapable = true;
+		
 		if (!isPunching && !isKicking) {
 			strikeBox.setWidth(0);
 			strikeBox.setHeight(0);

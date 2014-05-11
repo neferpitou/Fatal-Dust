@@ -7,6 +7,12 @@ import java.awt.Graphics;
 
 import factory.CharacterType;
 
+/**
+ * Dedicated subclass for character Ayako Turner.
+ * 
+ * @author Marcos Davila, Rafael Abbondanza
+ *
+ */
 public class AyakoTurner extends VanillaCharacter {
 
 	final String IMG_PREFIX = CharacterType.AyakoTurner + "";
@@ -35,6 +41,14 @@ public class AyakoTurner extends VanillaCharacter {
 
 	final boolean DEBUG_MODE_ON = true;
 
+	/**
+	 * Instantiates an object to represent this character.
+	 * All sprites for facing both left and right are 
+	 * created.
+	 * 
+	 * @param lookingRight - determines if the character
+	 * is player one or player two
+	 */
 	public AyakoTurner(boolean lookingRight) {
 		super(lookingRight, CharacterType.AyakoTurner);
 		vy = 0;
@@ -47,6 +61,9 @@ public class AyakoTurner extends VanillaCharacter {
 		a = lookingRight ? a_rt : a_lt;
 	}
 
+	/**
+	 * Punching animation for Ayako Turner.
+	 */
 	public void punch() {
 		// Punch iff not ducking or jumping
 		if (!isDucking && !isJumping) {
@@ -72,6 +89,9 @@ public class AyakoTurner extends VanillaCharacter {
 
 	}
 
+	/**
+	 * Blocking animation for Ayako Turner
+	 */
 	public void block() {
 		if (!isDucking && !isPunching && !isJumping) {
 			isBlocking = true;
@@ -89,7 +109,6 @@ public class AyakoTurner extends VanillaCharacter {
 
 			a.setCurrentAnimation(BLOCK);
 		}
-
 	}
 
 	public void kick() {
