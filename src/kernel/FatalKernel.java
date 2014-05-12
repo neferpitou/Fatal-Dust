@@ -33,6 +33,7 @@ import javax.swing.WindowConstants;
 import characters.AyakoTurner;
 import characters.MalMartinez;
 import views.BackgroundView;
+import views.CharacterSelectMenu;
 import views.MainMenuView;
 import views.VersusView;
 
@@ -188,7 +189,7 @@ public class FatalKernel implements Runnable {
 	private AyakoTurner ayakoTurnerplayerOne, ayakoTurnerplayerTwo;
 	private MalMartinez malMartinezplayerOne, malMartinezplayerTwo;
 
-	public static final boolean DEBUG_MODE_ON = true;
+	public static final boolean DEBUG_MODE_ON = false;
 
 	/*
 	 * Initializes an instance of the kernel Private constructor that is only
@@ -361,7 +362,6 @@ public class FatalKernel implements Runnable {
 		while (!finished) {
 			// Determines the user input and moves the character
 			if (!PAUSED) {
-				try {
 				stageView.respondToInput();
 
 				// Handles collisions as a result of input
@@ -369,9 +369,6 @@ public class FatalKernel implements Runnable {
 
 				// Moves the game objects and refreshes the screen
 				stageView.updatePositions();
-				} catch (NullPointerException e){
-					;
-				}
 			}
 
 			executeEDT(()->{
@@ -450,13 +447,11 @@ public class FatalKernel implements Runnable {
 		malMartinezplayerTwo = (MalMartinez) FatalFactory.spawnCharacter(
 				CharacterType.MalMartinez, false);
 
-		views.put(LOADING, new BackgroundView("game-loader.gif"));
 		views.put(SPLASH, new MainMenuView());
 		views.put(ERROR, new BackgroundView()); // error screen is blank
 												// panel
-		views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
-				malMartinezplayerTwo));
-
+		views.put(VERSUS, new VersusView(ayakoTurnerplayerOne, malMartinezplayerTwo));
+		views.put(SELECT, new CharacterSelectMenu());
 		redrawScreen(this.getView(ERROR), this.getView(SPLASH));
 
 		if (DEBUG_MODE_ON) {
@@ -466,6 +461,26 @@ public class FatalKernel implements Runnable {
 		}
 	}
 
+	/*
+	 * A hack to send the appropriate character data to the view 
+	 */
+	public void addVersusView(final int playerOne, final int playerTwo){
+		// Zero is Ayako, One Mal
+		if (playerOne == 0 && playerTwo == 0){
+			views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
+				ayakoTurnerplayerTwo));
+		} else if (playerOne == 0 && playerTwo == 1){
+			views.put(VERSUS, new VersusView(ayakoTurnerplayerOne,
+					malMartinezplayerTwo));
+		} else if (playerOne == 1 && playerTwo == 0){
+			views.put(VERSUS, new VersusView(malMartinezplayerOne,
+					ayakoTurnerplayerTwo));
+		} else {
+			views.put(VERSUS, new VersusView(malMartinezplayerOne,
+					malMartinezplayerTwo));
+		}	
+	}
+	
 	/*
 	 * Logic that should happen when the match is over
 	 */

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import kernel.FatalKernel;
 import factory.CharacterType;
 
 public abstract class VanillaCharacter {
@@ -107,15 +108,11 @@ public abstract class VanillaCharacter {
 		y = HEIGHT_Y;
 
 		// TODO: fix these numbers
-
 		if (lookingRight) {
 			hitBox = new Rectangle(centerX - 45, y + 50, 60, 150, Color.GREEN);
 			strikeBox = new Rectangle(0, 0, 0, 0, Color.RED);
 			guardBox = new Rectangle(centerX - 45, y + 50, 20, 60, Color.BLUE);
-
-		}
-
-		else {
+		} else {
 			hitBox = new Rectangle(centerX - 15, y + 50, 60, 150, Color.GREEN);
 			strikeBox = new Rectangle(0, 0, 0, 0, Color.RED);
 			guardBox = new Rectangle(centerX + 25, y + 50, 40, 60, Color.BLUE);
@@ -200,8 +197,29 @@ public abstract class VanillaCharacter {
 		a.setCurrentAnimation(IDLE);
 	}
 
-	// Draw the character on the screen
-	public abstract void draw(Graphics g);
+	/**
+	 * Parent class draw method which draws the character on 
+	 * the screen. If the debug mode is on, it also draws the
+	 * hitboxes. This method should be called from each child
+	 * that extends this class.
+	 * 
+	 * @param g graphics context
+	 */
+	public void draw(Graphics g){
+		a.draw(g);
+
+		strikeBox.moveUpBy(vy);
+		hitBox.moveUpBy(vy);
+		guardBox.moveUpBy(vy);
+		
+		if (FatalKernel.DEBUG_MODE_ON) {
+			strikeBox.draw(g);
+			hitBox.draw(g);
+			guardBox.draw(g);
+
+			g.setColor(Color.black);
+		}
+	}
 
 	/**
 	 * Decreases health when hit

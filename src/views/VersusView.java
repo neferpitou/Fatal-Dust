@@ -159,22 +159,31 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 	public void respondToInput() {
 		final long t1 = System.currentTimeMillis();
 
+		kernel.executeEDT(()->{
+			requestFocusInWindow();
+		});
+		
+		
 		// Must request focus to listen for KeyEvents
-		this.requestFocus();
+		if(!hasFocus()) {
+		    // ensure requestFocus is enabled
+		    if(!isRequestFocusEnabled()) { 
+		    	setRequestFocusEnabled(true); 
+		    }
+		    requestFocus();
+		}
 
 		int left, right;
 
 		/*
 		 * Check input for player one.
 		 */
-		// Maps the proper keys to the direction that should be
-		// moved in relative to the current position of the character
 		if (playerOne.lookingRight) {
-			right = KeyEvent.VK_RIGHT;
-			left = KeyEvent.VK_LEFT;
+			right = KeyEvent.VK_D;
+			left = KeyEvent.VK_A;
 		} else {
-			right = KeyEvent.VK_LEFT;
-			left = KeyEvent.VK_RIGHT;
+			right = KeyEvent.VK_A;
+			left = KeyEvent.VK_D;
 		}
 
 		if (isPressed[right]) {
@@ -183,41 +192,49 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 		} else if (isPressed[left]) {
 			if (playerOne.getBackwardCapable())
 				playerOne.moveBackward(playerOne.getMovement());
-		} else if (isPressed[KeyEvent.VK_UP]) {
-			playerOne.jump();
-		} else if (isPressed[KeyEvent.VK_DOWN]) {
-			playerOne.duck();
 		} else if (isPressed[KeyEvent.VK_W]) {
+			playerOne.jump();
+		} else if (isPressed[KeyEvent.VK_S]) {
+			playerOne.duck();
+		} else if (isPressed[KeyEvent.VK_Q]) {
 			playerOne.punch();
-		} else if (isPressed[KeyEvent.VK_A]) {
+		} else if (isPressed[KeyEvent.VK_E]) {
 			playerOne.kick();
-		} else if (isPressed[KeyEvent.VK_B]) {
+		} else if (isPressed[KeyEvent.VK_Z]) {
 			playerOne.block();
 		} else {
 			playerOne.idle();
 		}
 
-		/*
-		 * Check player two
-		 */
+		// Maps the proper keys to the direction that should be
+		// moved in relative to the current position of the character
+		if (playerTwo.lookingRight) {
+			right = KeyEvent.VK_RIGHT;
+			left = KeyEvent.VK_LEFT;
+		} else {
+			right = KeyEvent.VK_LEFT;
+			left = KeyEvent.VK_RIGHT;
+		}
 
-		/*
-		 * PLAYER TWO will only defend for now..
-		 */
-
-		/*
-		 * if (isPressed[KeyEvent.VK_UP]) { playerTwo.jump(); } else if
-		 * (isPressed[KeyEvent.VK_DOWN]) { playerTwo.duck(); } else if
-		 * (isPressed[KeyEvent.VK_W]) { playerTwo.punch(); } else if
-		 * (isPressed[KeyEvent.VK_A]) { playerTwo.kick(); }
-		 * 
-		 * if (isPressed[KeyEvent.VK_B]) { playerTwo.block(); } if
-		 * (isPressed[KeyEvent.VK_RIGHT]) {
-		 * playerTwo.moveForward(playerOne.getMovement()); } if
-		 * (isPressed[KeyEvent.VK_LEFT]) {
-		 * playerTwo.moveBackward(playerOne.getMovement()); //
-		 * if(isPressed[KeyEvent.VK_D]) // playerOne.setDirection(false); }
-		 */
+		if (isPressed[right]) {
+			if (playerTwo.getForwardCapable())
+				playerTwo.moveForward(playerTwo.getMovement());
+		} else if (isPressed[left]) {
+			if (playerTwo.getBackwardCapable())
+				playerTwo.moveBackward(playerTwo.getMovement());
+		} else if (isPressed[KeyEvent.VK_UP]) {
+			playerTwo.jump();
+		} else if (isPressed[KeyEvent.VK_DOWN]) {
+			playerTwo.duck();
+		} else if (isPressed[KeyEvent.VK_SHIFT]) {
+			playerTwo.punch();
+		} else if (isPressed[KeyEvent.VK_ENTER]) {
+			playerTwo.kick();
+		} else if (isPressed[KeyEvent.VK_CONTROL]) {
+			playerTwo.block();
+		} else {
+			playerTwo.idle();
+		}
 
 		// If it takes longer than five seconds to register
 		// an input as pressed, display it on the console
@@ -228,7 +245,7 @@ public class VersusView extends JPanel implements FatalView, KeyListener {
 			final long t2 = System.currentTimeMillis();
 
 			if (t2 - t1 > ABNORMAL_DELAY) {
-				System.err.println("Time to read input: " + (t2 - t1) + "ms");
+				System.err.println("Delayed input detected. Time to read input: " + (t2 - t1) + "ms");
 			}
 		}
 	}

@@ -1,10 +1,8 @@
 package characters;
-
-//package characters;
-
 import java.awt.Color;
 import java.awt.Graphics;
 
+import kernel.FatalKernel;
 import factory.CharacterType;
 
 /**
@@ -15,39 +13,38 @@ import factory.CharacterType;
  */
 public class AyakoTurner extends VanillaCharacter {
 
-	final String IMG_PREFIX = CharacterType.AyakoTurner + "";
+	private final String IMG_PREFIX = CharacterType.AyakoTurner + "";
 
-	final int BLOCK_Y = HEIGHT_Y + 10;
+	// How long the range for each hitbox should extend
+	// relative to the character
+	private final int BLOCK_Y = HEIGHT_Y + 10;
 
-	final int DUCK_Y = HEIGHT_Y + 100;
-	final int DUCK_W = characterWidth + 10;
+	private final int DUCK_Y = HEIGHT_Y + 100;
+	private final int DUCK_W = characterWidth + 10;
 
-	final int KICK_W = characterWidth + 50;
-	final int KICK_H = characterHeight + 15;
-	final int KICK_Y = HEIGHT_Y - 15;
+	private final int KICK_W = characterWidth + 60;
+	private final int KICK_H = characterHeight + 15;
+	private final int KICK_Y = HEIGHT_Y - 5;
 
-	final int BLOCK_W = characterWidth - 10;
+	private final int BLOCK_W = characterWidth - 10;
 
-	final int PUNCH_W = characterWidth + 30;
-	final int PUNCH_H = characterHeight - 20;
-	final int PUNCH_Y = HEIGHT_Y + 20;
+	private final int PUNCH_W = characterWidth + 40;
+	private final int PUNCH_H = characterHeight - 20;
+	private final int PUNCH_Y = HEIGHT_Y + 20;
 
-	final int WALK_H = characterHeight - 25;
-	final int WALK_Y = HEIGHT_Y + 25;
+	private final int WALK_H = characterHeight - 25;
+	private final int WALK_Y = HEIGHT_Y + 25;
 
-	String[] a_position = { "idle", "crouch", "light_punch", "walking",
+	private String[] a_position = { "idle", "crouch", "light_punch", "walking",
 			"block", "light_kick", "die", "hit", "jump" };
-	int[] a_count = { 3, 2, 3, 8, 2, 4, 4, 2, 3 };
-
-	final boolean DEBUG_MODE_ON = true;
+	private int[] a_count = { 3, 2, 3, 8, 2, 4, 4, 2, 3 };
 
 	/**
-	 * Instantiates an object to represent this character.
-	 * All sprites for facing both left and right are 
-	 * created.
+	 * Instantiates an object to represent this character. All sprites for
+	 * facing both left and right are created.
 	 * 
-	 * @param lookingRight - determines if the character
-	 * is player one or player two
+	 * @param lookingRight
+	 *            - determines if the character is player one or player two
 	 */
 	public AyakoTurner(boolean lookingRight) {
 		super(lookingRight, CharacterType.AyakoTurner);
@@ -76,7 +73,7 @@ public class AyakoTurner extends VanillaCharacter {
 			strikeBox.setYPosition(a.y + 20);
 
 			strikeBox.setHeight(60);
-			strikeBox.setWidth(75);
+			strikeBox.setWidth(95);
 
 			if (lookingRight)
 				strikeBox.setXPosition(centerX + 15);
@@ -84,9 +81,7 @@ public class AyakoTurner extends VanillaCharacter {
 				strikeBox.setXPosition(centerX - 90);
 
 			a.setCurrentAnimation(PUNCH);
-			
 		}
-
 	}
 
 	/**
@@ -111,6 +106,9 @@ public class AyakoTurner extends VanillaCharacter {
 		}
 	}
 
+	/**
+	 * Kick animation for Ayako Turner
+	 */
 	public void kick() {
 		if (!isDucking && !isJumping) {
 
@@ -121,8 +119,8 @@ public class AyakoTurner extends VanillaCharacter {
 			a.setYPosition(KICK_Y);
 
 			strikeBox.setHeight(40);
-			strikeBox.setWidth(100);
-			strikeBox.setYPosition(a.y + 60);
+			strikeBox.setWidth(150);
+			strikeBox.setYPosition(a.y + 100);
 
 			if (lookingRight)
 				strikeBox.setXPosition(centerX + 15);
@@ -133,6 +131,9 @@ public class AyakoTurner extends VanillaCharacter {
 		}
 	}
 
+	/**
+	 * Duck animation for Ayako Turner
+	 */
 	public void duck() {
 		if (!isJumping && !isKicking) {
 			isDucking = true;
@@ -146,14 +147,17 @@ public class AyakoTurner extends VanillaCharacter {
 
 			a.setCurrentAnimation(DUCK);
 		}
-
 	}
 
+	/**
+	 * Draws the character and it's associated strike boxes on the screen. Note
+	 * that the strike boxes will still move even if they are not being drawn.
+	 * 
+	 * @param g graphics context
+	 */
 	public void draw(Graphics g) {
-
-		if (isJumping)// Jumping
+		if (isJumping)
 		{
-
 			a.moveUpBy(vy);
 
 			strikeBox.moveUpBy(vy);
@@ -173,10 +177,10 @@ public class AyakoTurner extends VanillaCharacter {
 				}
 			}
 		}
-
+		
 		a.draw(g);
 
-		if (DEBUG_MODE_ON) {
+		if (FatalKernel.DEBUG_MODE_ON) {
 			strikeBox.draw(g);
 			hitBox.draw(g);
 			guardBox.draw(g);
@@ -188,7 +192,8 @@ public class AyakoTurner extends VanillaCharacter {
 	public void moveForward(int dx) {
 
 		if (isLookingRight()) {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking
+					&& forwardCapable) {
 
 				setCenterX(getCenterX() + dx);
 
@@ -208,7 +213,8 @@ public class AyakoTurner extends VanillaCharacter {
 
 			}
 		} else {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking
+					&& forwardCapable) {
 
 				setCenterX(getCenterX() - dx);
 
@@ -294,13 +300,13 @@ public class AyakoTurner extends VanillaCharacter {
 	public int getHealth() {
 		return health;
 	}
-	
+
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void victory() {
 		// TODO Auto-generated method stub

@@ -7,7 +7,9 @@ import kernel.FatalKernel;
 
 /**
  * The Animation class manages a series of images (frames) and the amount of
- * time to display each frame
+ * time to display each frame.
+ * 
+ * @author Marcos Davila, Rafael Abbondanza
  */
 
 public class Animation {
@@ -27,6 +29,15 @@ public class Animation {
 		start();
 	}
 
+	/**
+	 * Creates an animation for a specific character along with the
+	 * number of positions, direction, and amount of each.
+	 * 
+	 * @param fighterName character's name
+	 * @param position number of possible stances
+	 * @param direction left or right
+	 * @param count how many images it takes to complete one animation
+	 */
 	public Animation(String fighterName, String position, String direction,
 			int count) {
 		frames = new ArrayList<AnimFrame>();
@@ -49,6 +60,9 @@ public class Animation {
 
 	/**
 	 * Adds an image to the animation with the specified duration
+	 * 
+	 * @param image a fighter pose
+	 * @param duration how long the pose should be shown
 	 */
 	public synchronized void addFrame(Image image, long duration) {
 		totalDuration += duration;
@@ -65,6 +79,9 @@ public class Animation {
 
 	/**
 	 * Updates this animation's current image if necessary
+	 * 
+	 * @param elapsedTime amount of time since last image
+	 * was shown
 	 */
 	public synchronized void update(long elapsedTime) {
 		if (frames.size() > 1) {
@@ -94,10 +111,22 @@ public class Animation {
 		}
 	}
 
-	private AnimFrame getFrame(int i) {
-		return frames.get(i);
+	/**
+	 * Returns the specified animation at the index
+	 * 
+	 * @param index index of the list
+	 */
+	private AnimFrame getFrame(int index) {
+		return frames.get(index);
 	}
 
+	/*
+	 * Associates an image that's a character pose with
+	 * the amount of time it should be shown on screen.
+	 *  
+	 * @author Marcos Davila
+	 *
+	 */
 	private class AnimFrame {
 		Image image;
 		long endTime;

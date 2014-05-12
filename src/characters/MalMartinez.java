@@ -3,12 +3,12 @@ package characters;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import kernel.FatalKernel;
 import factory.CharacterType;
 
-public class MalMartinez extends VanillaCharacter
-{
+public class MalMartinez extends VanillaCharacter {
 
-	final String IMG_PREFIX = CharacterType.MalMartinez+"";
+	final String IMG_PREFIX = CharacterType.MalMartinez + "";
 
 	final int BLOCK_Y = HEIGHT_Y + 10;
 
@@ -27,14 +27,11 @@ public class MalMartinez extends VanillaCharacter
 
 	final int WALK_H = characterHeight - 25;
 	final int WALK_Y = HEIGHT_Y + 25;
-	
-	String[] a_position = {"idle", "crouch", "light_punch", "walking", "block", 
-			"light_kick", "die", "hit"};
-	
-	int[]    a_count    = { 3 , 2 , 2 , 4 , 2 , 2 , 4, 3} ;
 
-	final boolean DEBUG_MODE_ON = true;
+	String[] a_position = { "idle", "crouch", "light_punch", "walking",
+			"block", "light_kick", "die", "hit", "jump" };
 
+	int[] a_count = { 3, 2, 2, 4, 2, 2, 4, 3, 6 };
 
 	public MalMartinez(boolean lookingRight) {
 		super(lookingRight, CharacterType.MalMartinez);
@@ -52,10 +49,8 @@ public class MalMartinez extends VanillaCharacter
 
 	@Override
 	public void punch() {
-		if (!isDucking && !isJumping)
-		{
+		if (!isDucking && !isJumping) {
 			isPunching = true;
-
 
 			a.setWidth(PUNCH_W);
 			a.setHeight(PUNCH_H);
@@ -66,20 +61,18 @@ public class MalMartinez extends VanillaCharacter
 			strikeBox.setHeight(60);
 			strikeBox.setWidth(75);
 
-			if(lookingRight) strikeBox.setXPosition(centerX + 15);
-			else             strikeBox.setXPosition(centerX - 90);
+			if (lookingRight)
+				strikeBox.setXPosition(centerX + 15);
+			else
+				strikeBox.setXPosition(centerX - 90);
 
 			a.setCurrentAnimation(PUNCH);
-
 		}
-
 	}
-
 
 	@Override
 	public void kick() {
-		if(!isDucking && !isJumping)
-		{
+		if (!isDucking && !isJumping) {
 
 			isKicking = true;
 
@@ -87,31 +80,31 @@ public class MalMartinez extends VanillaCharacter
 			a.setHeight(KICK_H);
 			a.setYPosition(KICK_Y);
 
-			strikeBox.setHeight(80);
-			strikeBox.setWidth(80);
-			strikeBox.setYPosition(a.y + 110);
+			strikeBox.setHeight(40);
+			strikeBox.setWidth(190);
+			strikeBox.setYPosition(a.y + 100);
 
-			if(lookingRight)
-				strikeBox.setXPosition(centerX + 25);
+			if (lookingRight)
+				strikeBox.setXPosition(centerX + 15);
 			else
-				strikeBox.setXPosition(centerX - 105);
-				a.setXPosition(a.x - KICK_W);
-				
+				strikeBox.setXPosition(centerX - 115);
+
 			a.setCurrentAnimation(KICK);
 		}
 	}
 
 	@Override
 	public void block() {
-		if(!isDucking && !isPunching && !isJumping)
-		{
+		if (!isDucking && !isPunching && !isJumping) {
 			isBlocking = true;
 
 			a.setWidth(BLOCK_W);
 			a.setYPosition(BLOCK_Y);
 
-			if(lookingRight) strikeBox.setXPosition(a.x);
-			else             strikeBox.setXPosition(a.x + characterHeight);
+			if (lookingRight)
+				strikeBox.setXPosition(a.x);
+			else
+				strikeBox.setXPosition(a.x + characterHeight);
 
 			guardBox.setHeight(hitBox.h + 30);
 			guardBox.setWidth(hitBox.w);
@@ -121,13 +114,11 @@ public class MalMartinez extends VanillaCharacter
 
 	}
 
-
 	@Override
 	public void die() {
 		// TODO Auto-generated method stub
 
 	}
-
 
 	@Override
 	public void victory() {
@@ -135,19 +126,17 @@ public class MalMartinez extends VanillaCharacter
 
 	}
 
-
-
 	@Override
 	public void moveForward(int dx) {
 		if (isLookingRight()) {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking
+					&& forwardCapable) {
 
 				setCenterX(getCenterX() + dx);
 
 				strikeBox.moveRightBy(dx);
 				hitBox.moveRightBy(dx);
 				guardBox.moveRightBy(dx);
-
 
 				a.moveRightBy(dx);
 				a_lt.moveRightBy(dx);
@@ -161,7 +150,8 @@ public class MalMartinez extends VanillaCharacter
 
 			}
 		} else {
-			if (!isDucking && !isBlocking && !isPunching && !isKicking && forwardCapable) {
+			if (!isDucking && !isBlocking && !isPunching && !isKicking
+					&& forwardCapable) {
 
 				setCenterX(getCenterX() - dx);
 
@@ -183,7 +173,6 @@ public class MalMartinez extends VanillaCharacter
 		}
 
 	}
-
 
 	@Override
 	public void moveBackward(int dx) {
@@ -229,25 +218,20 @@ public class MalMartinez extends VanillaCharacter
 
 	}
 
-
 	@Override
 	public void fightAgainst(VanillaCharacter other) {
 		// TODO Auto-generated method stub
-		if (other.isKicking || other.isPunching )
-		{
+		if (other.isKicking || other.isPunching) {
 			duck();
 		}
 
-
 	}
-
 
 	@Override
 	public void draw(Graphics g) {
 
-		if (isJumping)
-		{
-			a.moveUpBy( vy );
+		if (isJumping) {
+			a.moveUpBy(vy);
 
 			strikeBox.moveUpBy(vy);
 			hitBox.moveUpBy(vy);
@@ -255,32 +239,22 @@ public class MalMartinez extends VanillaCharacter
 
 			vy -= GRAVITY;
 
+			if (isDead) {
+				if (a.y >= HEIGHT_Y + characterWidth) {
+					isJumping = false;
+				}
 
-
-			if(isDead)
-			{
-				if (a.y  >= HEIGHT_Y + characterWidth)
-				{
+			} else {
+				if (a.y >= HEIGHT_Y) {
 					isJumping = false;
 				}
 
 			}
-			else
-			{
-				if (a.y  >= HEIGHT_Y)
-				{
-					isJumping = false;
-				}
-
-
-			}
-
 		}
-		
+
 		a.draw(g);
-		
-		if(DEBUG_MODE_ON)
-		{
+
+		if (FatalKernel.DEBUG_MODE_ON) {
 			strikeBox.draw(g);
 			hitBox.draw(g);
 			guardBox.draw(g);
@@ -289,12 +263,10 @@ public class MalMartinez extends VanillaCharacter
 		}
 	}
 
-
 	@Override
 	public void duck() {
 
-		if(!isJumping && !isKicking)
-		{
+		if (!isJumping && !isKicking) {
 			isDucking = true;
 
 			hitBox.setWidth(DUCK_W - 75);
@@ -302,12 +274,12 @@ public class MalMartinez extends VanillaCharacter
 			a.setYPosition(DUCK_Y);
 			a.setWidth(DUCK_W);
 
-			hitBox.setYPosition(DUCK_Y+50);
+			hitBox.setYPosition(DUCK_Y + 50);
 			a.setCurrentAnimation(DUCK);
 		}
 
 	}
-	
+
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
